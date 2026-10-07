@@ -12,9 +12,11 @@ import SwiftUI
 @MainActor
 enum Marketing {
 
-    /// Output sizes App Store Connect accepts for iPhone: 6.9" (required) and 6.5".
+    /// Output sizes App Store Connect accepts for iPhone: 6.9", 6.3" (iPhone 17 Pro) and 6.5".
+    /// All share the 6.9" aspect ratio, so panels scale without cropping.
     static let sizes: [(name: String, width: CGFloat, height: CGFloat)] = [
         ("6.9in", 1320, 2868),
+        ("6.3in", 1206, 2622),
         ("6.5in", 1284, 2778),
     ]
 
@@ -30,11 +32,12 @@ enum Marketing {
                 }
                 let popOutSource = panel.popOutCapture.flatMap { NSImage(contentsOf: rawDirectory.appendingPathComponent($0 + ".png")) }
                 let view = PanelView(panel: panel, screen: screen, popOutSource: popOutSource, scale: size.width / 1320)
-                let url = folder.appendingPathComponent(String(format: "%02d-%@.png", index + 1, panel.id))
+                let url = folder.appendingPathComponent(String(format: "%@-%02d-%@.png", size.name, index + 1, panel.id))
                 try RenderAssets.write(view, width: size.width, height: size.height, opaque: true, to: url)
             }
         }
         try renderOverview(rawDirectory: rawDirectory, outDirectory: outDirectory)
+        try renderHeader(rawDirectory: rawDirectory, outDirectory: outDirectory.deletingLastPathComponent().appendingPathComponent("header"))
     }
 
     // MARK: - Content
@@ -110,6 +113,122 @@ enum Marketing {
         .background(Color(red: 0.11, green: 0.08, blue: 0.07))
         let width = CGFloat(thumbs.count) * 330 + CGFloat(thumbs.count - 1) * 24 + 80
         try RenderAssets.write(sheet, width: width, height: 717 + 80, opaque: true, to: outDirectory.appendingPathComponent("overview.png"))
+    }
+}
+
+// MARK: - Product page header (3840 × 1646)
+
+extension Marketing {
+    /// The wide hero image at the top of the App Store product page (Creative Assets).
+    /// Key content stays in the centre; the phones at the sides are decorative and may be cropped.
+    static func renderHeader(rawDirectory: URL, outDirectory: URL) throws {
+        guard let fridge = NSImage(contentsOf: rawDirectory.appendingPathComponent("fridge.png")),
+              let recipes = NSImage(contentsOf: rawDirectory.appendingPathComponent("recipes.png"))
+        else {
+            print("missing fridge.png / recipes.png for the header")
+            return
+        }
+        try FileManager.default.createDirectory(at: outDirectory, withIntermediateDirectories: true)
+        try RenderAssets.write(HeaderView(left: fridge, right: recipes), width: 3840, height: 1646, opaque: true,
+                               to: outDirectory.appendingPathComponent("product-page-header-3840x1646.png"))
+        // Website hero (mazesys.com/zerobite/): neutral white and black versions with the app's orange → red glow.
+        for style in [HeaderView.Style.light, .dark] {
+            try RenderAssets.write(HeaderView(left: fridge, right: recipes, style: style), width: 3840, height: 1646, opaque: true,
+                                   to: outDirectory.appendingPathComponent("web-header-\(style == .light ? "light" : "dark").png"))
+        }
+    }
+}
+
+private struct HeaderView: View {
+    /// `brand`: warm dark App Store header. `light` / `dark`: neutral website heroes.
+    enum Style { case brand, light, dark }
+
+    let left: NSImage
+    let right: NSImage
+    var style: Style = .brand
+
+    private var cream: Color {
+        switch style {
+        case .brand: Color(red: 1, green: 0.984, blue: 0.969)
+        case .light: Color(white: 0.08)
+        case .dark: Color(white: 0.95)
+        }
+    }
+
+    private var sand: Color {
+        switch style {
+        case .brand: Color(red: 0.914, green: 0.839, blue: 0.776)
+        case .light: Color(white: 0.36)
+        case .dark: Color(white: 0.64)
+        }
+    }
+
+    private var background: [Color] {
+        switch style {
+        case .brand: [Color(red: 0.23, green: 0.14, blue: 0.10), Color(red: 0.12, green: 0.07, blue: 0.05)]
+        case .light: [Color.white, Color(white: 0.965)]
+        case .dark: [Color(white: 0.06), Color(white: 0.02)]
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            LinearGradient(colors: background, startPoint: .topLeading, endPoint: .bottomTrailing)
+            // Glow behind the headline: warm on the brand header, orange → red on the website versions.
+            if style == .brand {
+                Ellipse()
+                    .fill(Color(red: 0.76, green: 0.38, blue: 0.10).opacity(0.35))
+                    .frame(width: 2200, height: 1200)
+                    .blur(radius: 260)
+            } else if style == .light {
+                // On black any soft orange glow reads as brown, so the dark version stays neutral.
+                Ellipse()
+                    .fill(LinearGradient(colors: [Color(red: 0.76, green: 0.38, blue: 0.10), Color(red: 0.70, green: 0.23, blue: 0.13)],
+                                         startPoint: .leading, endPoint: .trailing))
+                    .opacity(0.16)
+                    .frame(width: 2400, height: 1100)
+                    .blur(radius: 280)
+            }
+
+            // Phones either side, tilted in towards the centre and running off the bottom edge.
+            DeviceFrame(screen: left, scale: 0.62)
+                .frame(width: 620)
+                .rotationEffect(.degrees(-7))
+                .offset(x: -1440, y: 600)
+            DeviceFrame(screen: right, scale: 0.62)
+                .frame(width: 620)
+                .rotationEffect(.degrees(7))
+                .offset(x: 1440, y: 600)
+
+            NotificationBanner(scale: 0.62)
+                .frame(width: 720)
+                .rotationEffect(.degrees(4))
+                .offset(x: 1380, y: -420)
+
+            VStack(spacing: 0) {
+                HStack(spacing: 40) {
+                    BrandMark().frame(width: 160, height: 160)
+                    Text("Zero Bite")
+                        .font(Marketing.font(104, .semibold))
+                        .tracking(-2.5)
+                        .foregroundStyle(cream)
+                }
+                Text("Waste less. Cook more.")
+                    .font(Marketing.font(164, .bold))
+                    .tracking(-6)
+                    .foregroundStyle(cream)
+                    .padding(.top, 70)
+                Text("Scan labels, get a nudge before food goes off,\nand cook what's about to expire.")
+                    .font(Marketing.font(72, .medium))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(10)
+                    .foregroundStyle(sand)
+                    .padding(.top, 44)
+            }
+            .offset(y: -20)
+        }
+        .frame(width: 3840, height: 1646)
+        .clipped()
     }
 }
 

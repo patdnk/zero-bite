@@ -3,10 +3,16 @@
 | Path | What it is |
 |---|---|
 | `app-icon-1024.png` | Marketing icon (opaque, no alpha), same as the app's default icon |
-| `screenshots/6.9in/` | 1320 × 2868 panels for 6.9" iPhones (required by App Store Connect) |
-| `screenshots/6.5in/` | 1284 × 2778 panels for 6.5" iPhones |
+| `screenshots/6.9in/` | 1320 × 2868 panels → **iPhone 6.9" Display** slot |
+| `screenshots/6.3in/` | 1206 × 2622 panels → **iPhone 6.1"/6.3" Display** slot |
+| `screenshots/6.5in/` | 1284 × 2778 panels → **iPhone 6.5" Display** slot |
+| `header/product-page-header-3840x1646.png` | Product page header (Creative Assets); key content stays in the centre, the phones at the sides may be cropped |
 | `screenshots/overview.png` | All 6.9" panels side by side, for review only (don't upload) |
-| `metadata/en-GB/` | Name, subtitle, keywords, description, promo text, release notes (fastlane `deliver` layout) |
+
+Each slot in App Store Connect only accepts its own pixel size, and file names start with the size (`6.3in-01-…`) so the sets can't be mixed up.
+| `metadata/en-GB/` | Name, subtitle, keywords, description, promo text, release notes and URLs (fastlane `deliver` layout) |
+| `app-privacy.md` | Answers for App Store Connect's App Privacy questionnaire, and where the URLs come from |
+| `../docs/` | Marketing, support and privacy pages to host for the URLs |
 | `raw/` | Unframed simulator captures the panels are built from |
 
 ## Regenerating
@@ -17,7 +23,7 @@ so the logo can't drift between the app and the store.
 ```bash
 scripts/fetch-fonts.sh              # Mona Sans, needed for the app and the panel headlines
 scripts/render-assets.sh icons      # AppIcon light / dark / tinted → Assets.xcassets
-scripts/render-assets.sh marketing  # panels → appstore/screenshots
+scripts/render-assets.sh marketing  # panels → appstore/screenshots, header → appstore/header
 ```
 
 Panel copy, colours and pop-out crops are in `design/Marketing.swift`.
