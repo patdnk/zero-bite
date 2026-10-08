@@ -35,6 +35,10 @@ fi
 
 mkdir -p "$DEST"
 cp "$FONT" "$DEST/Mona-Sans.ttf"
+ANDROID_DEST="$ROOT/android/app/src/main/assets/fonts"
+mkdir -p "$ANDROID_DEST"
+cp "$FONT" "$ANDROID_DEST/mona_sans.ttf"
+echo "Installed $(basename "$FONT") → android/app/src/main/assets/fonts/mona_sans.ttf"
 echo "Installed $(basename "$FONT") → ios/ZeroBite/Resources/Fonts/Mona-Sans.ttf"
 
 if command -v xcodegen >/dev/null 2>&1; then

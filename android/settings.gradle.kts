@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ZeroBite"
-include(":core")
+include(":core", ":app")
