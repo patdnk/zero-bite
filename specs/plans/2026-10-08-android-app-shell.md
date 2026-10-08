@@ -1741,6 +1741,7 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Kitchen
 import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
