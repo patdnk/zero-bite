@@ -111,7 +111,7 @@ data class FoodItem(
 internal val MONTH_ABBREVIATIONS = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
 /** Up to two decimal places, no trailing zeros: 1 → "1", 0.5 → "0.5", 1.25 → "1.25". */
-internal fun formatQuantity(quantity: Double): String {
+fun formatQuantity(quantity: Double): String {
     val hundredths = round(quantity * 100).toLong()
     val whole = hundredths / 100
     val fraction = hundredths % 100
