@@ -71,3 +71,24 @@ when it's missing):
 ```bash
 scripts/fetch-fonts.sh
 ```
+
+## Android
+
+The Android app lives in `android/` (in progress — see `specs/`). Its `:core` module holds all
+of Zero Bite's pure logic — date parsing, name guessing, recipe matching, reminder planning,
+recall matching and the Open Food Facts / FSA clients — with no Android dependencies, so it
+can later become a Kotlin Multiplatform module shared with iOS.
+
+```bash
+cd android
+./gradlew :core:check
+```
+
+Requires JDK 17+ (Android Studio's bundled JDK works).
+
+### Keeping iOS and Android in step
+
+`testdata/` holds golden fixtures (label text → expected dates, fridge → recipe ranking,
+items → reminders, FSA notices → recall matches). Both test suites run them:
+`ios/ZeroBiteTests/GoldenFixtureTests.swift` and the `:core` tests. Swift is the reference
+implementation: change behaviour in both, and update the fixture in the same commit.
