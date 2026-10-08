@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.ui.components
 
+import androidx.compose.ui.draw.alpha
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -85,9 +86,11 @@ fun ActionRow(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     tint: Color = ZeroBiteTheme.colors.textPrimary,
+    enabled: Boolean = true,
 ) {
     Row(
-        modifier.fillMaxWidth().heightIn(min = 24.dp).clickable(role = Role.Button, onClick = onClick),
+        modifier.fillMaxWidth().heightIn(min = 24.dp).alpha(if (enabled) 1f else 0.45f)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {

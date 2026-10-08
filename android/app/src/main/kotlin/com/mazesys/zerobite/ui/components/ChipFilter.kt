@@ -33,17 +33,24 @@ fun <T> ChipFilter(
     val style = ZeroBiteTheme.type.subheadline
     LazyRow(modifier, contentPadding = contentPadding, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         items(options) { option ->
-            val isSelected = option == selected
-            Text(
-                label(option),
-                style = if (isSelected) style.semibold() else style,
-                color = if (isSelected) colors.onInk else colors.textSecondary,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(Radius.control))
-                    .background(if (isSelected) colors.textPrimary else colors.chipFill)
-                    .selectable(selected = isSelected, role = Role.Tab, onClick = { onSelect(option) })
-                    .padding(horizontal = 12.dp, vertical = 7.dp),
-            )
+            Chip(label(option), option == selected, onClick = { onSelect(option) })
         }
     }
+}
+
+/** One single-select chip (ink when selected). */
+@Composable
+fun Chip(text: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val colors = ZeroBiteTheme.colors
+    val style = ZeroBiteTheme.type.subheadline
+    Text(
+        text,
+        style = if (selected) style.semibold() else style,
+        color = if (selected) colors.onInk else colors.textSecondary,
+        modifier = modifier
+            .clip(RoundedCornerShape(Radius.control))
+            .background(if (selected) colors.textPrimary else colors.chipFill)
+            .selectable(selected = selected, role = Role.Tab, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 7.dp),
+    )
 }

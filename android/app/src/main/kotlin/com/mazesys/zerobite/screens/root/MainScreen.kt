@@ -1,5 +1,8 @@
 package com.mazesys.zerobite.screens.root
 
+import com.mazesys.zerobite.BuildConfig
+import com.mazesys.zerobite.screens.settings.SettingsScreen
+import com.mazesys.zerobite.screens.settings.SettingsViewModel
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -52,6 +55,9 @@ fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, d
     val recipesList = viewModel(key = "recipes") {
         RecipesViewModel(dependencies.inventory, dependencies.settings, dependencies.recipes, dependencies.clock, coordinator.recipes)
     }
+    val settingsScreen = viewModel(key = "settings") {
+        SettingsViewModel(dependencies, coordinator.settings, "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+    }
     val tabState = rememberSaveableStateHolder()
     val presentedId = coordinator.presentedSheet?.id
     LaunchedEffect(presentedId) { sheetStores.retainOnly(presentedId) }
@@ -66,7 +72,7 @@ fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, d
                     when (coordinator.selectedTab) {
                         AppTab.FRIDGE -> InventoryTab(coordinator.inventory, inventoryList, dependencies)
                         AppTab.RECIPES -> RecipesTab(coordinator.recipes, recipesList, dependencies)
-                        AppTab.SETTINGS -> PlaceholderTab(overline = "Zero Bite", title = "Settings")
+                        AppTab.SETTINGS -> SettingsScreen(settingsScreen)
                     }
                 }
             }
