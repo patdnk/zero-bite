@@ -1,5 +1,13 @@
 package com.mazesys.zerobite.screens.inventory
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.rounded.NotificationsActive
+import com.mazesys.zerobite.reminders.LocalPermissionRequester
+import com.mazesys.zerobite.ui.components.AppButton
+import com.mazesys.zerobite.ui.components.AppCard
+import com.mazesys.zerobite.ui.components.ButtonKind
+import com.mazesys.zerobite.ui.components.IconTile
+import com.mazesys.zerobite.ui.theme.semibold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -105,6 +113,9 @@ private fun LazyGridScope.fullWidth(key: String, content: @Composable () -> Unit
     item(key = key, span = { GridItemSpan(maxLineSpan) }) { content() }
 
 private fun LazyGridScope.fridgeContent(state: InventoryUiState, viewModel: InventoryViewModel) {
+    if (state.showsNotificationTip) {
+        fullWidth("tip") { NotificationTip(viewModel) }
+    }
     state.useFirstItem?.let { hero ->
         fullWidth("useFirst") {
             UseFirstCard(
@@ -186,6 +197,25 @@ private fun AddMenu(onScan: () -> Unit, onAddManually: () -> Unit) {
         AppDropdownMenu(expanded = open, onDismiss = { open = false }) {
             AppMenuItem("Scan label or barcode", Icons.Rounded.QrCodeScanner, onClick = { open = false; onScan() })
             AppMenuItem("Add manually", Icons.Rounded.EditNote, onClick = { open = false; onAddManually() })
+        }
+    }
+}
+
+@Composable
+private fun NotificationTip(viewModel: InventoryViewModel) {
+    val requester = LocalPermissionRequester.current
+    val colors = ZeroBiteTheme.colors
+    AppCard(Modifier.padding(top = Spacing.sm).testTag("inventory.notificationTip")) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+            IconTile(Icons.Rounded.NotificationsActive, tint = colors.brandOrange)
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                Text("Get reminded before food expires", style = ZeroBiteTheme.type.subheadline.semibold(), color = colors.textPrimary)
+                Text("We'll nudge you a few days before the date.", style = ZeroBiteTheme.type.caption, color = colors.textSecondary)
+                Row(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    AppButton("Turn on", { viewModel.enableNotifications(requester) }, Modifier.weight(1f), compact = true)
+                    AppButton("Not now", viewModel::dismissNotificationTip, Modifier.weight(1f), kind = ButtonKind.TONAL, compact = true)
+                }
+            }
         }
     }
 }

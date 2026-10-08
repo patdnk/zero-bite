@@ -1,5 +1,8 @@
 package com.mazesys.zerobite.screens.inventory
 
+import com.mazesys.zerobite.data.SettingsSnapshot
+import com.mazesys.zerobite.testing.FakeAccess
+import com.mazesys.zerobite.reminders.NotificationPermission
 import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.coordination.InventoryRoute
 import com.mazesys.zerobite.coordination.SheetDestination
@@ -28,7 +31,7 @@ class InventoryViewModelTest {
     private val app = AppCoordinator { TestClock.today }
 
     private fun viewModel(repository: FakeInventoryRepository = inventory) =
-        InventoryViewModel(repository, FakeSettings(), TestClock.fixed(), SequentialIds(), app.inventory)
+        InventoryViewModel(repository, FakeSettings(SettingsSnapshot(dismissedNotificationTip = true)), TestClock.fixed(), SequentialIds(), app.inventory, FakeAccess())
 
     private fun InventoryUiState.gridNames() = gridSections.flatMap { it.items }.map { it.name }
 
@@ -109,5 +112,42 @@ class InventoryViewModelTest {
         assertEquals(SheetDestination.EditItem(spinach.id), app.presentedSheet?.destination)
         vm.showScan()
         assertEquals(SheetDestination.Scan, app.presentedSheet?.destination)
+    }
+
+    private fun tipViewModel(access: FakeAccess, settings: FakeSettings = FakeSettings()) =
+        InventoryViewModel(inventory, settings, TestClock.fixed(), SequentialIds(), app.inventory, access)
+
+    @Test
+    fun `reminder tip shows until answered`() {
+        val vm = tipViewModel(FakeAccess(NotificationPermission.NOT_ASKED))
+        assertTrue(vm.state.value.showsNotificationTip)
+        vm.dismissNotificationTip()
+        assertFalse(vm.state.value.showsNotificationTip)
+    }
+
+    @Test
+    fun `turning reminders on from the tip asks for permission`() {
+        val access = FakeAccess(NotificationPermission.NOT_ASKED)
+        val settings = FakeSettings()
+        val vm = tipViewModel(access, settings)
+        vm.enableNotifications { access.current = NotificationPermission.GRANTED; true }
+        assertTrue(access.asked)
+        assertTrue(settings.state.value.notificationsEnabled)
+        assertFalse(vm.state.value.showsNotificationTip)
+    }
+
+    @Test
+    fun `refusing hides the tip and leaves reminders off`() {
+        val access = FakeAccess(NotificationPermission.NOT_ASKED)
+        val settings = FakeSettings()
+        val vm = tipViewModel(access, settings)
+        vm.enableNotifications { access.current = NotificationPermission.DENIED; false }
+        assertFalse(settings.state.value.notificationsEnabled)
+        assertFalse(vm.state.value.showsNotificationTip)
+    }
+
+    @Test
+    fun `no tip once permission was refused at the system level`() {
+        assertFalse(tipViewModel(FakeAccess(NotificationPermission.DENIED)).state.value.showsNotificationTip)
     }
 }

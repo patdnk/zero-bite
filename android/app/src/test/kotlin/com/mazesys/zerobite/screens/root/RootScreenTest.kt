@@ -68,14 +68,14 @@ class RootScreenTest {
 
     @Test
     fun `returning user lands on the fridge`() {
-        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true)))
+        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true, dismissedNotificationTip = true)))
         waitForTag("tab.fridge")
         compose.onNodeWithText("Greek yogurt").assertIsDisplayed()
     }
 
     @Test
     fun `tabs switch between screens`() {
-        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true)))
+        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true, dismissedNotificationTip = true)))
         waitForTag("tab.recipes")
         compose.onNodeWithTag("tab.recipes").performClick()
         compose.onNodeWithText("Nothing to cook yet").assertIsDisplayed()
@@ -85,7 +85,7 @@ class RootScreenTest {
 
     @Test
     fun `adding by hand puts the item in the fridge`() {
-        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true)), FakeInventoryRepository())
+        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true, dismissedNotificationTip = true)), FakeInventoryRepository())
         waitFor("Try it with sample food")
         compose.runOnUiThread { app.inventory.showAddItem() }
         waitForTag("itemForm.name")
@@ -97,7 +97,7 @@ class RootScreenTest {
 
     @Test
     fun `back on another tab returns to the fridge before leaving`() {
-        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true)))
+        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true, dismissedNotificationTip = true)))
         waitForTag("tab.settings")
         compose.onNodeWithTag("tab.settings").performClick()
         compose.waitForIdle()
@@ -108,7 +108,7 @@ class RootScreenTest {
 
     @Test
     fun `back closes the sheet, then pops detail`() {
-        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true)))
+        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true, dismissedNotificationTip = true)))
         waitFor("Spinach")
         compose.onNodeWithText("Spinach").performClick()
         waitFor("Details")

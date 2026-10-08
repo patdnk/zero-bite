@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.screens.inventory
 
+import com.mazesys.zerobite.testing.FakeAccess
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isHeading
@@ -35,7 +36,7 @@ class InventoryTabTest {
     fun `opens detail from the grid and comes back`() {
         val dependencies = testDependencies(inventory = FakeInventoryRepository(sampleFridge()))
         val app = AppCoordinator { TestClock.today }
-        val list = InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, app.inventory)
+        val list = InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, app.inventory, FakeAccess())
         compose.setContent { ZeroBiteTheme { InventoryTab(app.inventory, list, dependencies) } }
 
         compose.onNodeWithText("Spinach").performClick()

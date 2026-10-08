@@ -1,5 +1,8 @@
 package com.mazesys.zerobite.screens.inventory
 
+import com.mazesys.zerobite.reminders.NotificationAccess
+import com.mazesys.zerobite.reminders.NotificationPermission
+import com.mazesys.zerobite.reminders.PermissionRequester
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mazesys.zerobite.IdGenerator
@@ -47,6 +50,7 @@ data class InventoryUiState(
     val attentionCount: Int = 0,
     /** Sections below the hero card, which already shows its item. */
     val gridSections: List<InventorySection> = emptyList(),
+    val showsNotificationTip: Boolean = false,
 ) {
     val isEmpty: Boolean get() = !isLoading && activeItems.isEmpty()
 
@@ -99,10 +103,11 @@ data class InventoryUiState(
 /** The Fridge list: filtering, grouping by urgency, and item actions. */
 class InventoryViewModel(
     private val inventory: InventoryRepository,
-    settings: SettingsRepository,
+    private val settings: SettingsRepository,
     private val clock: AppClock,
     private val ids: IdGenerator,
     private val coordinator: InventoryCoordinator,
+    private val notifications: NotificationAccess,
 ) : ViewModel() {
 
     private val searchText = MutableStateFlow("")
@@ -111,7 +116,12 @@ class InventoryViewModel(
     val state: StateFlow<InventoryUiState> =
         combine(inventory.items, settings.state, searchText, storageFilter) { items, s, query, filter ->
             val built = InventoryUiState.build(items.filterNot { it.isConsumed }, query, filter, s.soonThresholdDays, clock.today())
-            built.copy(useFirstProgress = built.useFirstItem?.shelfLifeProgress(clock.now(), clock.timeZone) ?: 0f)
+            built.copy(
+                useFirstProgress = built.useFirstItem?.shelfLifeProgress(clock.now(), clock.timeZone) ?: 0f,
+                // Nudge while reminders are off and the user hasn't refused at the system level.
+                showsNotificationTip = !s.dismissedNotificationTip && !s.notificationsEnabled &&
+                    notifications.permission() != NotificationPermission.DENIED,
+            )
         }.stateIn(viewModelScope, SharingStarted.Eagerly, InventoryUiState(today = clock.today()))
 
     fun setSearchText(text: String) {
@@ -146,6 +156,18 @@ class InventoryViewModel(
     fun showAddItem() = coordinator.showAddItem()
 
     fun showEditItem(item: FoodItem) = coordinator.showEditItem(item.id)
+
+    fun enableNotifications(requester: PermissionRequester) {
+        viewModelScope.launch {
+            val granted = requester.requestNotifications()
+            notifications.markAsked()
+            settings.update { it.copy(notificationsEnabled = granted, dismissedNotificationTip = true) }
+        }
+    }
+
+    fun dismissNotificationTip() {
+        viewModelScope.launch { settings.update { it.copy(dismissedNotificationTip = true) } }
+    }
 
     fun loadSampleData() {
         viewModelScope.launch {

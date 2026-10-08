@@ -47,7 +47,7 @@ private val MAIN_TABS = listOf(
 fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, dependencies: AppDependencies) {
     // Tab roots live in the activity's store so they survive switching tabs.
     val inventoryList = viewModel(key = "inventory") {
-        InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, coordinator.inventory)
+        InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, coordinator.inventory, dependencies.notifications)
     }
     val recipesList = viewModel(key = "recipes") {
         RecipesViewModel(dependencies.inventory, dependencies.settings, dependencies.recipes, dependencies.clock, coordinator.recipes)
