@@ -1,6 +1,7 @@
 package com.mazesys.zerobite.screens.root
 
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,9 @@ fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, d
     val tabState = rememberSaveableStateHolder()
     val presentedId = coordinator.presentedSheet?.id
     LaunchedEffect(presentedId) { sheetStores.retainOnly(presentedId) }
+
+    // Android convention: back on another tab returns to the start tab before leaving the app.
+    BackHandler(enabled = coordinator.selectedTab != AppTab.FRIDGE) { coordinator.selectTab(AppTab.FRIDGE) }
 
     Box(Modifier.fillMaxSize().background(ZeroBiteTheme.colors.backgroundPrimary)) {
         Column(Modifier.fillMaxSize().imePadding()) {

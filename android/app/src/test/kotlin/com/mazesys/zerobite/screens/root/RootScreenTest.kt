@@ -96,6 +96,17 @@ class RootScreenTest {
     }
 
     @Test
+    fun `back on another tab returns to the fridge before leaving`() {
+        show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true)))
+        waitForTag("tab.settings")
+        compose.onNodeWithTag("tab.settings").performClick()
+        compose.waitForIdle()
+        pressBack()
+        compose.waitUntil(3_000) { app.selectedTab == com.mazesys.zerobite.coordination.AppTab.FRIDGE }
+        assertTrue(!compose.activity.isFinishing, "back on Settings returns to the Fridge tab")
+    }
+
+    @Test
     fun `back closes the sheet, then pops detail`() {
         show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true)))
         waitFor("Spinach")

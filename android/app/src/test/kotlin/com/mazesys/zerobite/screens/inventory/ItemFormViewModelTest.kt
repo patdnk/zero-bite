@@ -103,4 +103,19 @@ class ItemFormViewModelTest {
         assertEquals("1,5", vm.state.value.quantityText, "keeps what was typed")
         assertNull(vm.state.value.errorMessage)
     }
+
+    @Test
+    fun `float syntax, tiny and huge quantities are rejected`() {
+        val vm = add()
+        vm.updateDraft { it.copy(name = "Rice") }
+        for (bad in listOf("Infinity", "1e30", "1.5f", "0.001", "0.00", "1,000", "1.2.3", "10000000")) {
+            vm.setQuantityText(bad)
+            assertFalse(vm.state.value.canSave, "\"$bad\" must not be saveable")
+        }
+        for ((good, value) in listOf("2" to 2.0, "0.25" to 0.25, "1,5" to 1.5, " 500 " to 500.0)) {
+            vm.setQuantityText(good)
+            assertTrue(vm.state.value.canSave, "\"$good\" should be saveable")
+            assertEquals(value, vm.state.value.draft.quantity)
+        }
+    }
 }

@@ -78,9 +78,13 @@ class ItemFormViewModel(
         _state.update { it.copy(draft = transform(it.draft)) }
     }
 
-    /** Accepts a comma as the decimal separator; anything unparseable counts as zero (not saveable). */
+    /**
+     * Plain decimals only ("2", "0.25", "1,5"): up to six digits and two decimal places. Anything
+     * else (float syntax, "1,000", amounts that round to zero) counts as zero, which can't be saved.
+     */
     fun setQuantityText(text: String) {
-        val parsed = text.trim().replace(',', '.').toDoubleOrNull() ?: 0.0
+        val trimmed = text.trim()
+        val parsed = if (QUANTITY.matches(trimmed)) trimmed.replace(',', '.').toDouble() else 0.0
         _state.update { it.copy(quantityText = text, draft = it.draft.copy(quantity = parsed)) }
     }
 
@@ -116,5 +120,6 @@ class ItemFormViewModel(
 
     private companion object {
         const val MISSING = "This item no longer exists."
+        val QUANTITY = Regex("""\d{1,6}([.,]\d{1,2})?""")
     }
 }
