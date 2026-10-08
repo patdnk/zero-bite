@@ -24,8 +24,12 @@ class SmokeTest {
 
     @Test
     fun addAnItemByHand() {
-        compose.waitUntil(10_000) { exists("welcome.start") || exists("inventory.addButton") }
-        if (exists("welcome.start")) compose.onNodeWithTag("welcome.start").performClick()
+        compose.waitUntil(10_000) { exists("welcome.skip") || exists("inventory.addButton") }
+        if (exists("welcome.skip")) {
+            compose.onNodeWithTag("welcome.skip").performClick()
+            compose.waitUntil(5_000) { exists("welcome.notNow") }
+            compose.onNodeWithTag("welcome.notNow").performClick()
+        }
 
         compose.waitUntil(5_000) { exists("inventory.addButton") }
         compose.onNodeWithTag("inventory.addButton").performClick()

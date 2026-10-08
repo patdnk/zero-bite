@@ -76,8 +76,8 @@ scripts/fetch-fonts.sh
 
 The Android app lives in `android/`: `:core` holds all of Zero Bite's pure logic (no Android
 dependencies, ready to become a Kotlin Multiplatform module), and `:app` is the Jetpack
-Compose app with the same bespoke look as iOS. Scanning, reminders, recipes, alerts and
-settings arrive in the next plan (see `specs/plans/`).
+Compose app with the same bespoke look as iOS. Label scanning and UK food alerts arrive in the next plan (see `specs/plans/`);
+everything else matches iOS.
 
 Open `android/` in Android Studio, or from the command line (JDK 17+; Android Studio's
 bundled JDK works):
