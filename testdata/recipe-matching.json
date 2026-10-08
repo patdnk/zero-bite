@@ -1,0 +1,83 @@
+{
+  "today": "2026-09-07",
+  "soonThresholdDays": 3,
+  "nameMatches": [
+    { "ingredient": "eggs", "item": "Egg", "matches": true },
+    { "ingredient": "tomatoes", "item": "Cherry tomatoes", "matches": true },
+    { "ingredient": "cheese", "item": "Cheddar cheese", "matches": true },
+    { "ingredient": "cheese", "item": "Parmesan", "matches": true },
+    { "ingredient": "bell pepper", "item": "Red pepper", "matches": true },
+    { "ingredient": "chicken", "item": "Chicken breast", "matches": true },
+    { "ingredient": "eggs", "item": "Eggplant", "matches": false },
+    { "ingredient": "milk", "item": "Bread", "matches": false },
+    { "ingredient": "cream", "item": "Crème fraîche", "matches": true },
+    { "ingredient": "spring onions", "item": "Scallions", "matches": true }
+  ],
+  "staples": [
+    { "name": "salt", "isStaple": true },
+    { "name": "Olive oil", "isStaple": true },
+    { "name": "soy sauce", "isStaple": true },
+    { "name": "Sea salt", "isStaple": true },
+    { "name": "chicken", "isStaple": false }
+  ],
+  "recipes": [
+    {
+      "id": "omelette", "title": "Omelette", "summary": "", "prepMinutes": 10, "servings": 1, "tags": [], "steps": [],
+      "ingredients": [
+        { "name": "eggs", "amount": "3" },
+        { "name": "cheese", "amount": "30g", "optional": true },
+        { "name": "butter", "amount": "1 tbsp" },
+        { "name": "salt", "amount": "pinch" }
+      ]
+    },
+    {
+      "id": "stirfry", "title": "Stir-fry", "summary": "", "prepMinutes": 20, "servings": 2, "tags": [], "steps": [],
+      "ingredients": [
+        { "name": "chicken", "amount": "2" },
+        { "name": "bell pepper", "amount": "1" },
+        { "name": "soy sauce", "amount": "2 tbsp" }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "can make when required ingredients are present",
+      "inventory": [
+        { "id": "eggs", "name": "Eggs", "expiresInDays": 10 },
+        { "id": "butter", "name": "Butter", "expiresInDays": 30 }
+      ],
+      "recipes": ["omelette"],
+      "matches": {
+        "omelette": { "canMake": true, "missing": [], "missingOptional": ["cheese"], "staples": ["salt"], "usedItemIds": ["eggs", "butter"] }
+      }
+    },
+    {
+      "name": "missing required ingredient blocks can-make",
+      "inventory": [{ "id": "chicken", "name": "Chicken breast", "expiresInDays": 1 }],
+      "recipes": ["stirfry"],
+      "matches": { "stirfry": { "canMake": false, "missing": ["bell pepper"] } }
+    },
+    {
+      "name": "expiring items boost ranking and the soonest item is used",
+      "inventory": [
+        { "id": "fresh-eggs", "name": "Eggs", "expiresInDays": 20 },
+        { "id": "old-eggs", "name": "Eggs", "expiresInDays": 1 },
+        { "id": "butter", "name": "Butter", "expiresInDays": 30 },
+        { "id": "chicken", "name": "Chicken breast", "expiresInDays": 20 },
+        { "id": "pepper", "name": "Red pepper", "expiresInDays": 20 }
+      ],
+      "recipes": ["stirfry", "omelette"],
+      "ranking": ["omelette", "stirfry"],
+      "matches": { "omelette": { "expiringItemIds": ["old-eggs"], "ingredientItems": { "eggs": "old-eggs" } } }
+    },
+    {
+      "name": "consumed items are ignored",
+      "inventory": [
+        { "id": "eggs", "name": "Eggs", "expiresInDays": 10, "consumed": true },
+        { "id": "butter", "name": "Butter", "expiresInDays": 30 }
+      ],
+      "recipes": ["omelette"],
+      "matches": { "omelette": { "canMake": false, "missing": ["eggs"] } }
+    }
+  ]
+}

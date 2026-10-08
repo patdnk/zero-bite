@@ -1,0 +1,8 @@
+{
+  "cases": [
+    { "name": "picks the product line, not the retailer or date", "lines": ["TESCO", "SEMI SKIMMED MILK", "USE BY 12 SEP", "2 PINTS 1.136L", "Keep refrigerated"], "expected": "Semi Skimmed Milk" },
+    { "name": "nothing looks like a name", "lines": ["12/09/2026", "500g", "www.example.com"], "expected": null },
+    { "name": "shouted pack front wins", "lines": ["GREEK YOGURT", "USE BY 14 SEP 2026"], "expected": "Greek Yogurt" },
+    { "name": "uppercase product beats mixed-case brand", "lines": ["Ingredients: milk", "Cathedral City", "MATURE CHEDDAR"], "expected": "Mature Cheddar" }
+  ]
+}

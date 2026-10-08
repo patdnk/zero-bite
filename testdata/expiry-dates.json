@@ -1,0 +1,30 @@
+{
+  "today": "2026-09-07",
+  "cases": [
+    { "name": "UK numeric date", "lines": ["BEST BEFORE 12/09/2026"], "best": "2026-09-12" },
+    { "name": "month name with two-digit year", "lines": ["USE BY 15 SEP 26"], "best": "2026-09-15" },
+    { "name": "dotted two-digit year", "lines": ["BB 03.10.26"], "best": "2026-10-03" },
+    { "name": "ISO date", "lines": ["2026-11-02"], "best": "2026-11-02" },
+    { "name": "obviously month-first numeric date is swapped", "lines": ["09/14/2026"], "best": "2026-09-14" },
+    { "name": "month and year means end of month", "lines": ["BEST BEFORE END OCT 2026"], "best": "2026-10-31" },
+    { "name": "missing year assumes the upcoming occurrence", "lines": ["USE BY 05 JAN"], "best": "2027-01-05" },
+    { "name": "keyword line outranks packing date", "lines": ["PACKED 01/09/2026", "USE BY 10/09/2026"], "best": "2026-09-10", "count": 2 },
+    { "name": "keyword on previous line boosts the date", "lines": ["BEST BEFORE", "20 SEP 2026", "LOT 4471 12/08/2026"], "best": "2026-09-20" },
+    { "name": "batch code is not a date", "lines": ["LOT 123456"], "best": null, "count": 0 },
+    { "name": "batch code with a space is not a date", "lines": ["L2026091 4"], "best": null, "count": 0 },
+    { "name": "impossible date is rejected", "lines": ["31/02/2026"], "best": null, "count": 0 },
+    { "name": "volume is not a date", "lines": ["1.136L"], "best": null, "count": 0 },
+    { "name": "compact digits without a keyword are ignored", "lines": ["120926"], "best": null, "count": 0 },
+    { "name": "compact digits with a keyword are read", "lines": ["EXP 120926"], "best": "2026-09-12" },
+    { "name": "year far in the past is rejected", "lines": ["USE BY 12/09/1999"], "best": null, "count": 0 },
+    { "name": "year far in the future is rejected", "lines": ["USE BY 12/09/2099"], "best": null, "count": 0 },
+    { "name": "same day is de-duplicated keeping the higher confidence", "lines": ["12/09/2026", "USE BY 12 SEP 2026"], "best": "2026-09-12", "count": 1, "bestSourceLine": "USE BY 12 SEP 2026" },
+    { "name": "ordinal day with month name", "lines": ["Use by: 3rd Oct 2026"], "best": "2026-10-03" },
+    { "name": "dotted four-digit year", "lines": ["EXP 12.09.2026"], "best": "2026-09-12" },
+    { "name": "day and month only uses the current year", "lines": ["DISPLAY UNTIL 14 SEP"], "best": "2026-09-14" },
+    { "name": "numeric month and year means end of month", "lines": ["BEST BEFORE END 09/2026"], "best": "2026-09-30" },
+    { "name": "lowercase label", "lines": ["use by 12 sep 2026"], "best": "2026-09-12" },
+    { "name": "leap day in a leap year", "lines": ["USE BY 29/02/2028"], "best": "2028-02-29" },
+    { "name": "leap day in a common year is impossible", "lines": ["USE BY 29/02/2027"], "best": null, "count": 0 }
+  ]
+}
