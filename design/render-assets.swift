@@ -14,7 +14,7 @@ struct RenderAssets {
     static func main() throws {
         let args = CommandLine.arguments.dropFirst()
         guard let command = args.first else {
-            print("usage: render-assets icons <appiconset-dir> | marketing <raw-screens-dir> <out-dir>")
+            print("usage: render-assets icons <appiconset-dir> | marketing <raw-screens-dir> <out-dir> | mark <out.png>")
             exit(1)
         }
         switch command {
@@ -23,6 +23,10 @@ struct RenderAssets {
         case "marketing":
             let rest = Array(args.dropFirst())
             try Marketing.render(rawDirectory: URL(fileURLWithPath: rest[0]), outDirectory: URL(fileURLWithPath: rest[1]))
+        case "mark":
+            // Reference for the Android BrandMark test: the mark on white, 256 px square.
+            let out = URL(fileURLWithPath: args.dropFirst().first ?? "brandmark-256.png")
+            try write(ZStack { Color.white; BrandMark() }, size: 256, opaque: true, to: out)
         default:
             print("unknown command \(command)")
             exit(1)

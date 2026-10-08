@@ -3,6 +3,7 @@
 # BrandMark.swift the app uses. Usage:
 #   scripts/render-assets.sh icons
 #   scripts/render-assets.sh marketing   # after updating appstore/raw (see appstore/README.md)
+#   scripts/render-assets.sh mark        # testdata/brandmark-256.png for the Android BrandMark test
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -19,5 +20,8 @@ case "${1:-icons}" in
     ;;
   marketing)
     "$BIN" marketing "$ROOT/appstore/raw" "$ROOT/appstore/screenshots"
+    ;;
+  mark)
+    "$BIN" mark "$ROOT/testdata/brandmark-256.png"
     ;;
 esac
