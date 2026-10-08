@@ -4,6 +4,11 @@ import com.mazesys.zerobite.AppDependencies
 import com.mazesys.zerobite.IdGenerator
 import com.mazesys.zerobite.core.inventory.InventoryRepository
 import com.mazesys.zerobite.core.model.FoodItem
+import com.mazesys.zerobite.core.notifications.PlannedNotification
+import com.mazesys.zerobite.reminders.NotificationAccess
+import com.mazesys.zerobite.reminders.NotificationPermission
+import com.mazesys.zerobite.reminders.Notifier
+import com.mazesys.zerobite.reminders.ReminderScheduler
 import com.mazesys.zerobite.core.model.Recipe
 import com.mazesys.zerobite.core.recipes.RecipeRepository
 import com.mazesys.zerobite.core.time.AppClock
@@ -75,11 +80,14 @@ class FakeRecipes(private val recipes: List<Recipe> = emptyList()) : RecipeRepos
 
 fun testDependencies(
     inventory: FakeInventoryRepository = FakeInventoryRepository(),
-    settings: FakeSettings = FakeSettings(SettingsSnapshot(hasCompletedWelcome = true)),
+    settings: FakeSettings = FakeSettings(SettingsSnapshot(hasCompletedWelcome = true, dismissedNotificationTip = true)),
     recipes: FakeRecipes = FakeRecipes(),
     clock: AppClock = TestClock.fixed(),
     ids: IdGenerator = SequentialIds(),
-) = AppDependencies(clock, settings, inventory, recipes, ids, CoroutineScope(Dispatchers.Unconfined))
+    access: FakeAccess = FakeAccess(),
+    scheduler: FakeScheduler = FakeScheduler(),
+    notifier: FakeNotifier = FakeNotifier(),
+) = AppDependencies(clock, settings, inventory, recipes, ids, CoroutineScope(Dispatchers.Unconfined), access, scheduler, notifier)
 
 /** Runs `viewModelScope` work immediately on the test thread. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -108,4 +116,28 @@ fun recipeFridge(): List<FoodItem> {
     fun item(id: String, name: String, days: Int) =
         FoodItem(id = id, name = name, addedAt = TestClock.now, expiresOn = TestClock.today.plus(days, DateTimeUnit.DAY))
     return listOf(item("eggs", "Eggs", 1), item("butter", "Butter", 20), item("chicken", "Chicken breast", 5))
+}
+
+class FakeAccess(var current: NotificationPermission = NotificationPermission.GRANTED) : NotificationAccess {
+    var asked = false
+    override fun permission() = current
+    override fun markAsked() {
+        asked = true
+    }
+}
+
+class FakeScheduler : ReminderScheduler {
+    var last: List<PlannedNotification> = emptyList()
+    var calls = 0
+    override fun reschedule(planned: List<PlannedNotification>) {
+        last = planned
+        calls++
+    }
+}
+
+class FakeNotifier : Notifier {
+    var tests = 0
+    override fun sendTest() {
+        tests++
+    }
 }

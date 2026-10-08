@@ -13,6 +13,13 @@ import com.mazesys.zerobite.data.DataStoreSettings
 import com.mazesys.zerobite.data.RoomInventoryRepository
 import com.mazesys.zerobite.data.SettingsRepository
 import com.mazesys.zerobite.data.ZeroBiteDatabase
+import com.mazesys.zerobite.reminders.AlarmReminderScheduler
+import com.mazesys.zerobite.reminders.AndroidNotificationAccess
+import com.mazesys.zerobite.reminders.AndroidNotifier
+import com.mazesys.zerobite.reminders.NotificationAccess
+import com.mazesys.zerobite.reminders.Notifier
+import com.mazesys.zerobite.reminders.ReminderScheduler
+import com.mazesys.zerobite.reminders.ReminderSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -36,13 +43,19 @@ class AppDependencies(
     val inventory: InventoryRepository,
     val recipes: RecipeRepository,
     val ids: IdGenerator,
-    /** Outlives screens: background syncs (reminders, recalls) run here in Plan 3. */
+    /** Outlives screens: background syncs (reminders, recalls) run here. */
     val appScope: CoroutineScope,
+    val notifications: NotificationAccess,
+    val scheduler: ReminderScheduler,
+    val notifier: Notifier,
 ) {
+    val reminders = ReminderSync(inventory, settings, clock, notifications, scheduler)
+
     companion object {
         fun live(context: Context): AppDependencies {
             val app = context.applicationContext
             val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            val prefs = app.getSharedPreferences("reminders", Context.MODE_PRIVATE)
             return AppDependencies(
                 clock = SystemAppClock,
                 settings = DataStoreSettings(app.settingsDataStore, scope),
@@ -50,6 +63,9 @@ class AppDependencies(
                 recipes = BundledRecipeRepository(app.assets),
                 ids = IdGenerator.Random,
                 appScope = scope,
+                notifications = AndroidNotificationAccess(app, prefs),
+                scheduler = AlarmReminderScheduler(app, prefs),
+                notifier = AndroidNotifier(app),
             )
         }
     }
