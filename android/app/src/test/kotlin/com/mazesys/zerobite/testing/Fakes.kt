@@ -21,7 +21,9 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 import kotlinx.datetime.TimeZone
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
@@ -84,4 +86,26 @@ fun testDependencies(
 class MainDispatcherRule(private val dispatcher: TestDispatcher = UnconfinedTestDispatcher()) : TestWatcher() {
     override fun starting(description: Description) = Dispatchers.setMain(dispatcher)
     override fun finished(description: Description) = Dispatchers.resetMain()
+}
+
+/** Four recipes whose ranking against [recipeFridge] is easy to reason about. */
+fun testRecipes(): List<Recipe> {
+    fun recipe(id: String, title: String, vararg ingredients: Pair<String, Boolean>) = Recipe(
+        id = id, title = title, summary = "$title summary", prepMinutes = 15, servings = 2,
+        tags = listOf("quick"), steps = listOf("Prepare", "Cook", "Serve"),
+        ingredients = ingredients.map { (name, optional) -> Recipe.Ingredient(name, amount = "1", optional = optional) },
+    )
+    return listOf(
+        recipe("omelette", "Omelette", "eggs" to false, "butter" to false, "salt" to false, "cheese" to true),
+        recipe("stirfry", "Chicken stir-fry", "chicken" to false, "bell pepper" to false, "soy sauce" to false),
+        recipe("pancakes", "Pancakes", "flour" to false, "eggs" to false, "milk" to false, "blueberries" to false),
+        recipe("salad", "Big salad", "lettuce" to false, "tomatoes" to false, "cucumber" to false, "olive oil" to false),
+    )
+}
+
+/** Eggs expiring tomorrow, butter and chicken: omelette ready, stir-fry and pancakes nearly, salad far off. */
+fun recipeFridge(): List<FoodItem> {
+    fun item(id: String, name: String, days: Int) =
+        FoodItem(id = id, name = name, addedAt = TestClock.now, expiresOn = TestClock.today.plus(days, DateTimeUnit.DAY))
+    return listOf(item("eggs", "Eggs", 1), item("butter", "Butter", 20), item("chicken", "Chicken breast", 5))
 }

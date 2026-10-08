@@ -43,6 +43,7 @@ class AppCoordinator(val today: () -> LocalDate) {
     private var sheetCount = 0L
 
     val inventory = InventoryCoordinator(this)
+    val recipes = RecipesCoordinator(this)
 
     fun selectTab(tab: AppTab) {
         selectedTab = tab
