@@ -39,7 +39,7 @@ class OpenFoodFactsClient(private val http: HttpClient) : ProductLookup {
         data class Product(
             @SerialName("product_name") val productName: String? = null,
             val brands: String? = null,
-            @SerialName("categories_tags") val categoriesTags: List<String> = emptyList(),
+            @SerialName("categories_tags") val categoriesTags: List<String>? = null,
         )
     }
 
@@ -55,7 +55,7 @@ class OpenFoodFactsClient(private val http: HttpClient) : ProductLookup {
                 barcode = code,
                 name = name,
                 brand = product.brands?.split(',')?.firstOrNull()?.trim(),
-                category = category(product.categoriesTags),
+                category = category(product.categoriesTags.orEmpty()),
             )
         }
 

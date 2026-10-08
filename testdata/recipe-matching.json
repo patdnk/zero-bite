@@ -11,7 +11,8 @@
     { "ingredient": "eggs", "item": "Eggplant", "matches": false },
     { "ingredient": "milk", "item": "Bread", "matches": false },
     { "ingredient": "cream", "item": "Crème fraîche", "matches": true },
-    { "ingredient": "spring onions", "item": "Scallions", "matches": true }
+    { "ingredient": "spring onions", "item": "Scallions", "matches": true },
+    { "ingredient": "cream", "item": "Cre\u0300me fraiche", "matches": true }
   ],
   "staples": [
     { "name": "salt", "isStaple": true },

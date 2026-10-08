@@ -1,6 +1,7 @@
 package com.mazesys.zerobite.core.scanning
 
 import com.mazesys.zerobite.core.model.DateCandidate
+import com.mazesys.zerobite.core.text.TextFolding
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
@@ -28,14 +29,16 @@ class ExpiryDateParser(private val today: LocalDate) {
         cleaned.forEachIndexed { index, line ->
             val hasKeyword = containsKeyword(line)
             val previousHasKeyword = index > 0 && containsKeyword(cleaned[index - 1])
-            val looksLikeManufacture = MANUFACTURE.containsMatchIn(line)
+            // Same length as `line`, so match ranges index into the original text too.
+            val scanned = TextFolding.normalizeSpaces(line)
+            val looksLikeManufacture = MANUFACTURE.containsMatchIn(scanned)
             val consumed = mutableListOf<IntRange>()
 
             for (pattern in PATTERNS) {
                 // Bare digit runs are only worth considering when the line says "use by" etc.
                 if ((pattern.kind == Kind.COMPACT6 || pattern.kind == Kind.COMPACT8) && !hasKeyword) continue
 
-                for (match in pattern.regex.findAll(line)) {
+                for (match in pattern.regex.findAll(scanned)) {
                     if (consumed.any { it.overlaps(match.range) }) continue
                     consumed += match.range
                     val date = makeDate(pattern.kind, match) ?: continue
@@ -48,7 +51,7 @@ class ExpiryDateParser(private val today: LocalDate) {
                     if (days < -365) confidence -= 0.3 else if (days < -30) confidence -= 0.1
                     if (days > 365 * 5) confidence -= 0.15
 
-                    found += DateCandidate(date, match.value, line, confidence.coerceIn(0.0, 1.0))
+                    found += DateCandidate(date, line.substring(match.range), line, confidence.coerceIn(0.0, 1.0))
                 }
             }
         }
@@ -143,7 +146,7 @@ class ExpiryDateParser(private val today: LocalDate) {
         )
 
         /** True when the line is about the expiry date ("use by", "best before", "exp"…). */
-        fun containsKeyword(line: String): Boolean = KEYWORD.containsMatchIn(line)
+        fun containsKeyword(line: String): Boolean = KEYWORD.containsMatchIn(TextFolding.normalizeSpaces(line))
 
         private fun IntRange.overlaps(other: IntRange) = first <= other.last && other.first <= last
     }

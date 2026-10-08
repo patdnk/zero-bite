@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.core.alerts
 
+import com.mazesys.zerobite.core.text.TextFolding
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
@@ -29,7 +30,8 @@ object AlertDateParser {
 
     private val MONTH_NAMES = listOf("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
 
-    fun dates(text: String): List<AlertDateSpec> {
+    fun dates(raw: String): List<AlertDateSpec> {
+        val text = TextFolding.normalizeSpaces(raw)
         val specs = mutableListOf<AlertDateSpec>()
 
         for (match in WRITTEN.findAll(text)) {

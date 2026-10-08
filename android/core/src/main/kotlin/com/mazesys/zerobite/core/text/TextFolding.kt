@@ -26,6 +26,18 @@ object TextFolding {
     }
 
     fun foldDiacritics(text: String): String = buildString(text.length) {
-        for (c in text) append(FOLDS[c] ?: c)
+        for (c in text) {
+            // Decomposed accents ("e" + U+0300) arrive as separate combining marks; drop them.
+            if (c in '\u0300'..'\u036F') continue
+            append(FOLDS[c] ?: c)
+        }
+    }
+
+    /**
+     * Turns non-breaking and other Unicode spaces into plain spaces, one for one, so regex `\s`
+     * behaves like iOS (ICU) on every platform. Line breaks are kept.
+     */
+    fun normalizeSpaces(text: String): String = buildString(text.length) {
+        for (c in text) append(if (c != '\n' && c != '\r' && c.isWhitespace()) ' ' else c)
     }
 }

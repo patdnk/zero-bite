@@ -25,6 +25,7 @@
     { "name": "numeric month and year means end of month", "lines": ["BEST BEFORE END 09/2026"], "best": "2026-09-30" },
     { "name": "lowercase label", "lines": ["use by 12 sep 2026"], "best": "2026-09-12" },
     { "name": "leap day in a leap year", "lines": ["USE BY 29/02/2028"], "best": "2028-02-29" },
-    { "name": "leap day in a common year is impossible", "lines": ["USE BY 29/02/2027"], "best": null, "count": 0 }
+    { "name": "leap day in a common year is impossible", "lines": ["USE BY 29/02/2027"], "best": null, "count": 0 },
+    { "name": "non-breaking spaces between day, month and year", "lines": ["USE BY 15\u00a0SEP\u00a026"], "best": "2026-09-15" }
   ]
 }

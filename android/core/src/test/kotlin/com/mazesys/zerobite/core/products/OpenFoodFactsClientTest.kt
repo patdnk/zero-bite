@@ -61,6 +61,14 @@ class OpenFoodFactsClientTest {
     }
 
     @Test
+    fun `null fields still resolve the product`() {
+        assertEquals(
+            ProductInfo("123", "Oat Milk", null, null),
+            OpenFoodFactsClient.parse("123", """{"status":1,"product":{"product_name":"Oat Milk","brands":null,"categories_tags":null}}"""),
+        )
+    }
+
+    @Test
     fun `category comes from the most specific matching tag`() {
         assertEquals(FoodCategory.DAIRY, OpenFoodFactsClient.category(listOf("en:beverages", "en:milks")))
         assertEquals(FoodCategory.FRUIT, OpenFoodFactsClient.category(listOf("en:plant-based-foods", "en:fruits")))

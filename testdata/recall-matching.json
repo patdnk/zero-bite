@@ -65,6 +65,7 @@
     { "text": "May 2027", "expected": [{ "year": 2027, "month": 5, "day": null }] },
     { "text": "31 January 2027 02 May 2027", "expected": [{ "year": 2027, "month": 1, "day": 31 }, { "year": 2027, "month": 5, "day": 2 }] },
     { "text": "12/08/2026", "expected": [{ "year": 2026, "month": 8, "day": 12 }] },
+    { "text": "16\u00a0July\u00a02026", "expected": [{ "year": 2026, "month": 7, "day": 16 }] },
     { "text": "All best before dates", "expected": [] }
   ],
   "nameMatches": [
