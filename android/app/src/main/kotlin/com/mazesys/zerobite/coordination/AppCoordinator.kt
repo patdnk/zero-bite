@@ -72,6 +72,7 @@ class AppCoordinator(val today: () -> LocalDate) {
     /** Deep link (e.g. a notification tap): jump to the Fridge tab and open the item. */
     fun showItem(id: String) {
         presentedSheet = null
+        alert = null
         selectedTab = AppTab.FRIDGE
         inventory.popToRoot()
         inventory.showItem(id)

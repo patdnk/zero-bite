@@ -75,4 +75,12 @@ class CoordinationTest {
         app.dismissAlert()
         assertNull(app.alert)
     }
+
+    @Test
+    fun `deep link closes any open alert`() {
+        val app = AppCoordinator { TestClock.today }
+        app.showAlert(AlertConfig("Delete everything?", primary = AlertButton("Delete all", isDestructive = true)))
+        app.showItem("milk")
+        assertNull(app.alert)
+    }
 }

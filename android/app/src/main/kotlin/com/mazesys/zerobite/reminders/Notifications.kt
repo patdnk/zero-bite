@@ -34,8 +34,12 @@ object Notifications {
     fun canPost(context: Context): Boolean {
         val granted = Build.VERSION.SDK_INT < 33 ||
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-        return granted && NotificationManagerCompat.from(context).areNotificationsEnabled()
+        return granted && NotificationManagerCompat.from(context).areNotificationsEnabled() && !reminderChannelBlocked(context)
     }
+
+    /** The user can block just the "Expiry reminders" channel while leaving the app's notifications on. */
+    fun reminderChannelBlocked(context: Context): Boolean =
+        NotificationManagerCompat.from(context).getNotificationChannel(CHANNEL_EXPIRY)?.importance == NotificationManagerCompat.IMPORTANCE_NONE
 
     /** Posts (or replaces) the notification identified by `tag`; tapping it opens `itemId` if given. */
     @SuppressLint("MissingPermission") // checked by canPost

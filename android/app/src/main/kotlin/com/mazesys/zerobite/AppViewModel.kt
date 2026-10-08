@@ -13,6 +13,7 @@ class AppViewModel(dependencies: AppDependencies) : ViewModel() {
     val flow = AppFlowController(dependencies.settings)
     val coordinator = AppCoordinator(today = dependencies.clock::today)
     val sheetStores = SheetViewModelStores()
+    val permissions = com.mazesys.zerobite.reminders.PermissionRelay()
 
     override fun onCleared() = sheetStores.clearAll()
 

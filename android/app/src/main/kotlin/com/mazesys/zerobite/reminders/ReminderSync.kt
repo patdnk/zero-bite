@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Re-plans every reminder from scratch whenever the fridge or settings change, so the
@@ -32,7 +34,10 @@ class ReminderSync(
     /** After a reboot, app update, time change, or returning to the app (permission may have changed). */
     suspend fun resyncNow() = sync(inventory.items.first(), settings.current())
 
-    private fun sync(items: List<FoodItem>, settings: SettingsSnapshot) {
+    // One replan at a time: overlapping cancel/schedule passes could leave an untracked alarm.
+    private val mutex = Mutex()
+
+    private suspend fun sync(items: List<FoodItem>, settings: SettingsSnapshot) = mutex.withLock {
         val allowed = settings.notificationsEnabled && access.permission() == NotificationPermission.GRANTED
         val summaries = items.filterNot { it.isConsumed }.map { ExpiringItemSummary(it.id, it.name, it.expiresOn) }
         val preferences = settings.notificationPreferences.copy(enabled = allowed)

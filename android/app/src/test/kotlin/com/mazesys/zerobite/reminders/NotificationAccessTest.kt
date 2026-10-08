@@ -25,4 +25,14 @@ class NotificationAccessTest {
         shadowOf(app).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
         assertEquals(NotificationPermission.GRANTED, access.permission())
     }
+
+    @Test
+    fun `blocking just the reminders channel reads as denied`() {
+        shadowOf(app).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
+        val manager = app.getSystemService(android.app.NotificationManager::class.java)
+        manager.deleteNotificationChannel(Notifications.CHANNEL_EXPIRY)
+        manager.createNotificationChannel(android.app.NotificationChannel(Notifications.CHANNEL_EXPIRY, "Expiry reminders", android.app.NotificationManager.IMPORTANCE_NONE))
+        assertEquals(NotificationPermission.DENIED, access.permission())
+        kotlin.test.assertFalse(Notifications.canPost(app))
+    }
 }

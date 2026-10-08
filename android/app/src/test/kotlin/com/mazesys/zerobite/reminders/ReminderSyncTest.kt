@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class)
+
 package com.mazesys.zerobite.reminders
 
 import com.mazesys.zerobite.data.SettingsSnapshot
@@ -10,6 +12,7 @@ import com.mazesys.zerobite.testing.recipeFridge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -57,5 +60,22 @@ class ReminderSyncTest {
         assertEquals("Chicken breast expires tomorrow", chickenSoon.title)
         // Chicken expires Sat 12 Sep; one day before at 07:15 BST.
         assertEquals(kotlin.time.Instant.parse("2026-09-11T06:15:00Z"), chickenSoon.fireAt)
+    }
+
+    @Test
+    fun `replans never overlap, so no alarm is left untracked`() = runBlocking {
+        val slow = object : ReminderScheduler {
+            val inside = java.util.concurrent.atomic.AtomicInteger()
+            var maxInside = 0
+            override fun reschedule(planned: List<com.mazesys.zerobite.core.notifications.PlannedNotification>) {
+                maxInside = maxOf(maxInside, inside.incrementAndGet())
+                Thread.sleep(50)
+                inside.decrementAndGet()
+            }
+        }
+        val overlapping = ReminderSync(inventory, settings, TestClock.fixed(), access, slow)
+        val jobs = List(4) { kotlinx.coroutines.GlobalScope.launch(Dispatchers.Default) { overlapping.resyncNow() } }
+        jobs.forEach { it.join() }
+        assertEquals(1, slow.maxInside)
     }
 }

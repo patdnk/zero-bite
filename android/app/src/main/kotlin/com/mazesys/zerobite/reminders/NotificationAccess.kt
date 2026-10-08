@@ -19,6 +19,7 @@ interface NotificationAccess {
 class AndroidNotificationAccess(private val context: Context, private val prefs: SharedPreferences) : NotificationAccess {
     override fun permission(): NotificationPermission = when {
         Notifications.canPost(context) -> NotificationPermission.GRANTED
+        Notifications.reminderChannelBlocked(context) -> NotificationPermission.DENIED
         prefs.getBoolean(ASKED, false) -> NotificationPermission.DENIED
         else -> NotificationPermission.NOT_ASKED
     }
