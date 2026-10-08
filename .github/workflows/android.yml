@@ -8,7 +8,7 @@ on:
     paths: ['android/**', 'testdata/**', 'shared-assets/**', '.github/workflows/android.yml']
 
 jobs:
-  core:
+  android:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -20,4 +20,4 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :core:check
+      - run: ./gradlew :core:check :app:testDebugUnitTest :app:lintDebug :app:assembleDebug

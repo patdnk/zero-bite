@@ -74,17 +74,24 @@ scripts/fetch-fonts.sh
 
 ## Android
 
-The Android app lives in `android/` (in progress — see `specs/`). Its `:core` module holds all
-of Zero Bite's pure logic — date parsing, name guessing, recipe matching, reminder planning,
-recall matching and the Open Food Facts / FSA clients — with no Android dependencies, so it
-can later become a Kotlin Multiplatform module shared with iOS.
+The Android app lives in `android/`: `:core` holds all of Zero Bite's pure logic (no Android
+dependencies, ready to become a Kotlin Multiplatform module), and `:app` is the Jetpack
+Compose app with the same bespoke look as iOS. Scanning, reminders, recipes, alerts and
+settings arrive in the next plan (see `specs/plans/`).
+
+Open `android/` in Android Studio, or from the command line (JDK 17+; Android Studio's
+bundled JDK works):
 
 ```bash
 cd android
-./gradlew :core:check
+./gradlew :app:installDebug          # build and install on a running emulator/device
+./gradlew :core:check :app:testDebugUnitTest
+./gradlew :app:connectedDebugAndroidTest   # on-device smoke test
 ```
 
-Requires JDK 17+ (Android Studio's bundled JDK works).
+`scripts/fetch-fonts.sh` also installs Mona Sans into the Android app (it falls back to the
+system font without it). Screenshot tests use Roborazzi: `./gradlew :app:recordRoborazziDebug`
+records `android/app/src/test/screenshots/`, `verifyRoborazziDebug` compares against them.
 
 ### Keeping iOS and Android in step
 
