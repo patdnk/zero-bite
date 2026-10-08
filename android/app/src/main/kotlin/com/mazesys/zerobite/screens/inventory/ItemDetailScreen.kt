@@ -1,6 +1,9 @@
 package com.mazesys.zerobite.screens.inventory
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.semantics.Role
+import com.mazesys.zerobite.ui.components.RecipeRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -130,6 +133,7 @@ private fun DetailContent(item: FoodItem, ui: ItemDetailUiState, viewModel: Item
                 Text(item.notes, style = ZeroBiteTheme.type.subheadline, color = ZeroBiteTheme.colors.textPrimary)
             }))
         }
+        if (ui.state == DetailState.ACTIVE) RecipesUsing(item, ui, viewModel)
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
             if (ui.state == DetailState.USED) {
                 AppButton("Put it back in the fridge", viewModel::restore, kind = ButtonKind.TONAL, icon = Icons.AutoMirrored.Rounded.Undo)
@@ -171,4 +175,18 @@ private fun StatusCard(item: FoodItem, ui: ItemDetailUiState) {
         }
         if (!used) ShelfLifeBar(ui.progress, tint, Modifier.padding(top = Spacing.md))
     }
+}
+
+@Composable
+private fun RecipesUsing(item: FoodItem, ui: ItemDetailUiState, viewModel: ItemDetailViewModel) {
+    val rows: List<@Composable () -> Unit> = if (ui.recipeMatches.isEmpty()) {
+        listOf {
+            Text("No recipe in the catalogue uses this yet.", style = ZeroBiteTheme.type.subheadline, color = ZeroBiteTheme.colors.textSecondary)
+        }
+    } else {
+        ui.recipeMatches.map { match ->
+            { RecipeRow(match, Modifier.clickable(role = Role.Button) { viewModel.showRecipe(match) }) }
+        }
+    }
+    CardSection(title = "Recipes using ${item.name.lowercase()}", rows = rows)
 }

@@ -2,9 +2,12 @@ package com.mazesys.zerobite.screens.inventory
 
 import com.mazesys.zerobite.core.model.ExpiryStatus
 import com.mazesys.zerobite.testing.FakeInventoryRepository
+import com.mazesys.zerobite.testing.FakeRecipes
 import com.mazesys.zerobite.testing.FakeSettings
 import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.TestClock
+import com.mazesys.zerobite.testing.recipeFridge
+import com.mazesys.zerobite.testing.testRecipes
 import com.mazesys.zerobite.testing.sampleFridge
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
@@ -22,7 +25,7 @@ class ItemDetailViewModelTest {
     private var deleted = 0
 
     private fun viewModel(id: String = milk.id) =
-        ItemDetailViewModel(id, inventory, FakeSettings(), TestClock.fixed(), onEdit = { edited = it }, onDeleted = { deleted++ })
+        ItemDetailViewModel(id, inventory, FakeSettings(), FakeRecipes(), TestClock.fixed(), onEdit = { edited = it }, onShowRecipe = {}, onDeleted = { deleted++ })
 
     @Test
     fun `active item shows its urgency`() {
@@ -62,5 +65,15 @@ class ItemDetailViewModelTest {
     fun `edit asks the coordinator`() {
         viewModel().edit()
         assertEquals(milk.id, edited)
+    }
+
+    @Test
+    fun `recipes using the item are listed`() {
+        val fridge = FakeInventoryRepository(recipeFridge())
+        val vm = ItemDetailViewModel(
+            "eggs", fridge, FakeSettings(), FakeRecipes(testRecipes()), TestClock.fixed(),
+            onEdit = {}, onShowRecipe = {}, onDeleted = {},
+        )
+        assertEquals(listOf("omelette", "pancakes"), vm.state.value.recipeMatches.map { it.recipe.id })
     }
 }

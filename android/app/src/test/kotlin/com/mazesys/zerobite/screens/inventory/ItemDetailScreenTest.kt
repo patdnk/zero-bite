@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.mazesys.zerobite.testing.FakeInventoryRepository
+import com.mazesys.zerobite.testing.FakeRecipes
 import com.mazesys.zerobite.testing.FakeSettings
 import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.TestClock
@@ -38,7 +39,7 @@ class ItemDetailScreenTest {
     private var deleted = 0
 
     private fun show(dark: Boolean = false) {
-        val vm = ItemDetailViewModel(milk.id, inventory, FakeSettings(), TestClock.fixed(), onEdit = {}, onDeleted = { deleted++ })
+        val vm = ItemDetailViewModel(milk.id, inventory, FakeSettings(), FakeRecipes(), TestClock.fixed(), onEdit = {}, onShowRecipe = {}, onDeleted = { deleted++ })
         compose.setContent { ZeroBiteTheme(darkTheme = dark) { ItemDetailScreen(vm, onBack = {}) } }
     }
 

@@ -32,6 +32,8 @@ class RecipesCoordinator(private val parent: AppCoordinator) {
 
     fun showEditItem(id: String) = parent.presentSheet(SheetDestination.EditItem(id))
 
+    fun showCooked(recipeId: String) = parent.presentSheet(SheetDestination.Cooked(recipeId))
+
     fun pop() {
         if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
     }

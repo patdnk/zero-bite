@@ -29,6 +29,8 @@ import com.mazesys.zerobite.coordination.AppTab
 import com.mazesys.zerobite.coordination.SheetViewModelStores
 import com.mazesys.zerobite.screens.inventory.InventoryTab
 import com.mazesys.zerobite.screens.inventory.InventoryViewModel
+import com.mazesys.zerobite.screens.recipes.RecipesTab
+import com.mazesys.zerobite.screens.recipes.RecipesViewModel
 import com.mazesys.zerobite.ui.components.AppTabBar
 import com.mazesys.zerobite.ui.components.TabItem
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
@@ -47,6 +49,9 @@ fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, d
     val inventoryList = viewModel(key = "inventory") {
         InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, coordinator.inventory)
     }
+    val recipesList = viewModel(key = "recipes") {
+        RecipesViewModel(dependencies.inventory, dependencies.settings, dependencies.recipes, dependencies.clock, coordinator.recipes)
+    }
     val tabState = rememberSaveableStateHolder()
     val presentedId = coordinator.presentedSheet?.id
     LaunchedEffect(presentedId) { sheetStores.retainOnly(presentedId) }
@@ -60,7 +65,7 @@ fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, d
                 tabState.SaveableStateProvider(coordinator.selectedTab) {
                     when (coordinator.selectedTab) {
                         AppTab.FRIDGE -> InventoryTab(coordinator.inventory, inventoryList, dependencies)
-                        AppTab.RECIPES -> PlaceholderTab(overline = "From your fridge", title = "Recipes")
+                        AppTab.RECIPES -> RecipesTab(coordinator.recipes, recipesList, dependencies)
                         AppTab.SETTINGS -> PlaceholderTab(overline = "Zero Bite", title = "Settings")
                     }
                 }

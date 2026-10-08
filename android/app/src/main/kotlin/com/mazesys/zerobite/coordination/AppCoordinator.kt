@@ -16,6 +16,7 @@ sealed interface SheetDestination {
     data object Scan : SheetDestination
     data class AddItem(val draft: ItemDraft) : SheetDestination
     data class EditItem(val itemId: String) : SheetDestination
+    data class Cooked(val recipeId: String) : SheetDestination
 }
 
 /** One presentation of a sheet; `id` is unique per presentation so its view models are fresh. */

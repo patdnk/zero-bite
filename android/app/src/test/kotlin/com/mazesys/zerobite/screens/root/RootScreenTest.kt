@@ -78,7 +78,7 @@ class RootScreenTest {
         show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true)))
         waitForTag("tab.recipes")
         compose.onNodeWithTag("tab.recipes").performClick()
-        compose.onNodeWithText("Arrives in the next build.").assertIsDisplayed()
+        compose.onNodeWithText("Nothing to cook yet").assertIsDisplayed()
         compose.onNodeWithTag("tab.fridge").performClick()
         compose.onNodeWithText("Greek yogurt").assertIsDisplayed()
     }

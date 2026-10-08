@@ -23,6 +23,8 @@ import com.mazesys.zerobite.core.model.ItemDraft
 import com.mazesys.zerobite.screens.inventory.ItemFormMode
 import com.mazesys.zerobite.screens.inventory.ItemFormScreen
 import com.mazesys.zerobite.screens.inventory.ItemFormViewModel
+import com.mazesys.zerobite.screens.recipes.CookedScreen
+import com.mazesys.zerobite.screens.recipes.CookedViewModel
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 
 /** Full-screen sheets that slide up over the tabs (add/edit item, scan). */
@@ -42,6 +44,7 @@ fun SheetHost(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, de
                     SheetDestination.Scan -> ScanPlaceholder(onClose = coordinator::dismissSheet, onAddManually = coordinator.inventory::showAddItem)
                     is SheetDestination.AddItem -> ItemFormSheet(ItemFormMode.Add, destination.draft, coordinator, dependencies)
                     is SheetDestination.EditItem -> ItemFormSheet(ItemFormMode.Edit(destination.itemId), null, coordinator, dependencies)
+                    is SheetDestination.Cooked -> CookedSheet(destination.recipeId, coordinator, dependencies)
                 }
             }
         }
@@ -54,4 +57,12 @@ private fun ItemFormSheet(mode: ItemFormMode, draft: ItemDraft?, coordinator: Ap
         ItemFormViewModel(mode, draft, dependencies.inventory, dependencies.clock, dependencies.ids, onSaved = { coordinator.dismissSheet() })
     }
     ItemFormScreen(form, onCancel = coordinator::dismissSheet)
+}
+
+@Composable
+private fun CookedSheet(recipeId: String, coordinator: AppCoordinator, dependencies: AppDependencies) {
+    val cooked = viewModel {
+        CookedViewModel(recipeId, dependencies.inventory, dependencies.settings, dependencies.recipes, dependencies.clock, onDone = { coordinator.dismissSheet() })
+    }
+    CookedScreen(cooked)
 }

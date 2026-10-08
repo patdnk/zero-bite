@@ -13,6 +13,9 @@ sealed interface InventoryRoute : NavKey {
 
     @Serializable
     data class ItemDetail(val itemId: String) : InventoryRoute
+
+    @Serializable
+    data class RecipeDetail(val recipeId: String) : InventoryRoute
 }
 
 /** Navigation within the Fridge tab. The back stack is the Android counterpart of iOS's NavigationPath. */
@@ -23,6 +26,12 @@ class InventoryCoordinator(private val parent: AppCoordinator) {
     fun showItem(id: String) {
         backStack.add(InventoryRoute.ItemDetail(id))
     }
+
+    fun showRecipe(id: String) {
+        backStack.add(InventoryRoute.RecipeDetail(id))
+    }
+
+    fun showCooked(recipeId: String) = parent.presentSheet(SheetDestination.Cooked(recipeId))
 
     fun showScan() = parent.presentSheet(SheetDestination.Scan)
 
