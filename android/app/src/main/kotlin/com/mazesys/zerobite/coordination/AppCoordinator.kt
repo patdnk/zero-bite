@@ -14,6 +14,8 @@ enum class AppTab(val title: String) {
 
 sealed interface SheetDestination {
     data object Scan : SheetDestination
+    /** The onboarding explainer, replayed from Settings. */
+    data object HowItWorks : SheetDestination
     data class AddItem(val draft: ItemDraft) : SheetDestination
     data class EditItem(val itemId: String) : SheetDestination
     data class Cooked(val recipeId: String) : SheetDestination

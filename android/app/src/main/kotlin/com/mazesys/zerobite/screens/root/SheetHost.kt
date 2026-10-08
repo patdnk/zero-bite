@@ -1,5 +1,8 @@
 package com.mazesys.zerobite.screens.root
 
+import com.mazesys.zerobite.screens.welcome.WelcomeMode
+import com.mazesys.zerobite.screens.welcome.WelcomeScreen
+import com.mazesys.zerobite.screens.welcome.WelcomeViewModel
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.slideInVertically
@@ -45,6 +48,12 @@ fun SheetHost(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, de
                     is SheetDestination.AddItem -> ItemFormSheet(ItemFormMode.Add, destination.draft, coordinator, dependencies)
                     is SheetDestination.EditItem -> ItemFormSheet(ItemFormMode.Edit(destination.itemId), null, coordinator, dependencies)
                     is SheetDestination.Cooked -> CookedSheet(destination.recipeId, coordinator, dependencies)
+                    SheetDestination.HowItWorks -> {
+                        val replay = viewModel {
+                            WelcomeViewModel(WelcomeMode.REPLAY, dependencies.settings, dependencies.notifications, onComplete = { coordinator.dismissSheet() })
+                        }
+                        WelcomeScreen(replay)
+                    }
                 }
             }
         }

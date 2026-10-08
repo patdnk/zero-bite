@@ -1,5 +1,11 @@
 package com.mazesys.zerobite.screens.root
 
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mazesys.zerobite.screens.welcome.WelcomeMode
+import com.mazesys.zerobite.screens.welcome.WelcomeScreen
+import com.mazesys.zerobite.screens.welcome.WelcomeViewModel
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
@@ -21,7 +27,12 @@ fun RootScreen(flow: AppFlowController, coordinator: AppCoordinator, sheetStores
     Crossfade(phase, animationSpec = tween(300), label = "phase") { current ->
         when (current) {
             AppFlowPhase.LAUNCH -> LaunchScreen(onFinish = { scope.launch { flow.transitionFromLaunch() } })
-            AppFlowPhase.WELCOME -> WelcomePlaceholder(onDone = { scope.launch { flow.transitionToMain() } })
+            AppFlowPhase.WELCOME -> {
+                val welcome = viewModel(key = "welcome-first-run") {
+                    WelcomeViewModel(WelcomeMode.FIRST_RUN, dependencies.settings, dependencies.notifications, onComplete = { flow.transitionToMain() })
+                }
+                WelcomeScreen(welcome, Modifier.systemBarsPadding())
+            }
             AppFlowPhase.MAIN -> MainScreen(coordinator, sheetStores, dependencies)
         }
     }
