@@ -17,7 +17,7 @@ Each slot in App Store Connect only accepts its own pixel size, and file names s
 
 ## Regenerating
 
-Icons and panels are rendered from `ZeroBite/UI/BrandMark.swift`, the same view the app draws,
+Icons and panels are rendered from `ios/ZeroBite/UI/BrandMark.swift`, the same view the app draws,
 so the logo can't drift between the app and the store.
 
 ```bash

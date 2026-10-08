@@ -17,6 +17,8 @@ targets:
     platform: iOS
     sources:
       - path: ZeroBite
+      - path: ../shared-assets/recipes.json
+        buildPhase: resources
     info:
       path: ZeroBite/Info.plist
       properties:
@@ -43,6 +45,8 @@ targets:
     platform: iOS
     sources:
       - path: ZeroBiteTests
+      - path: ../testdata
+        buildPhase: resources
     dependencies:
       - target: ZeroBite
     settings:

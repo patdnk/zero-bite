@@ -4,7 +4,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-DEST="$ROOT/ZeroBite/Resources/Fonts"
+DEST="$ROOT/ios/ZeroBite/Resources/Fonts"
 TMP="$(mktemp -d)"
 # Asset names carry the version (e.g. mona-sans-variable-v2.0.27.zip), so resolve the
 # latest variable-font archive through the GitHub API rather than a fixed URL.
@@ -35,11 +35,11 @@ fi
 
 mkdir -p "$DEST"
 cp "$FONT" "$DEST/Mona-Sans.ttf"
-echo "Installed $(basename "$FONT") → ZeroBite/Resources/Fonts/Mona-Sans.ttf"
+echo "Installed $(basename "$FONT") → ios/ZeroBite/Resources/Fonts/Mona-Sans.ttf"
 
 if command -v xcodegen >/dev/null 2>&1; then
-  (cd "$ROOT" && xcodegen generate)
+  (cd "$ROOT/ios" && xcodegen generate)
 else
-  echo "xcodegen not found — run 'xcodegen generate' in $ROOT to add the font to the project."
+  echo "xcodegen not found — run 'xcodegen generate' in $ROOT/ios to add the font to the project."
 fi
 rm -rf "$TMP"

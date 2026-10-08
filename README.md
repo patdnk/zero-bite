@@ -16,6 +16,19 @@ food expires, and ranks recipes by what you can cook right now — expiring item
   ingredient matching (cheddar ≈ cheese, red pepper ≈ bell pepper) and store-cupboard staples.
   "I cooked this" marks the used items as consumed.
 
+## Repository layout
+
+| Folder | What |
+|---|---|
+| `ios/` | The SwiftUI app (`project.yml`, `ZeroBite/`, `ZeroBiteTests/`) |
+| `android/` | The Android app (Gradle: `:core` pure logic, `:app` Compose UI) |
+| `shared-assets/` | Data both apps bundle (`recipes.json`) |
+| `testdata/` | Golden fixtures run by both test suites — the cross-platform behaviour contract |
+| `design/`, `scripts/` | Brand mark, icon and screenshot rendering, font fetching |
+| `appstore/` | App Store listing |
+| `docs/` | Website (GitHub Pages) |
+| `specs/` | Design specs and implementation plans |
+
 ## Architecture
 
 MVVM-C, mirroring `drivvy-ios`:
@@ -37,6 +50,7 @@ matching, notification planning, the store, and the view models (Swift Testing).
 Requires Xcode 26 and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
+cd ios
 xcodegen generate
 open ZeroBite.xcodeproj
 ```
@@ -45,7 +59,7 @@ Run the `ZeroBite` scheme on an iPhone simulator. Launch argument `--sample-data
 empty fridge. Run tests with ⌘U or:
 
 ```bash
-xcodebuild test -project ZeroBite.xcodeproj -scheme ZeroBite -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+cd ios && xcodebuild test -project ZeroBite.xcodeproj -scheme ZeroBite -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
 ### Typeface
