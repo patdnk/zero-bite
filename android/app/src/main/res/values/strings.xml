@@ -48,7 +48,8 @@
     <string name="storage_freezer">Freezer</string>
     <string name="storage_pantry">Cupboard</string>
 
-    <!-- Units offered on the item form (stored as pcs / pack / slices) -->
+    <!-- Units, stored as codes (pcs, pack, slices, bag, …) and shown in the app language.
+         English keeps the stored word whatever the count. -->
     <string name="unit_pcs">pcs</string>
     <string name="unit_pack">pack</string>
     <string name="unit_slices">slices</string>
@@ -59,6 +60,26 @@
     </plurals>
     <!-- "slices" after a fraction ("1.5 slices") -->
     <string name="unit_slices_fraction">slices</string>
+    <string name="unit_bag">bag</string>
+    <string name="unit_punnet">punnet</string>
+    <string name="unit_pints">pints</string>
+    <plurals name="unit_pints_count">
+        <item quantity="one">pints</item>
+        <item quantity="other">pints</item>
+    </plurals>
+    <string name="unit_pints_fraction">pints</string>
+    <string name="unit_loaf">loaf</string>
+    <plurals name="unit_loaf_count">
+        <item quantity="one">loaf</item>
+        <item quantity="other">loaf</item>
+    </plurals>
+    <string name="unit_loaf_fraction">loaf</string>
+    <string name="unit_bulb">bulb</string>
+    <plurals name="unit_bulb_count">
+        <item quantity="one">bulb</item>
+        <item quantity="other">bulb</item>
+    </plurals>
+    <string name="unit_bulb_fraction">bulb</string>
 
     <!-- Expiry -->
     <string name="status_expired">Expired</string>
@@ -382,9 +403,4 @@
     <string name="sample_salmon">Salmon fillets</string>
     <string name="sample_rice">Basmati rice</string>
     <string name="sample_spaghetti">Spaghetti</string>
-    <string name="sample_unit_bag">bag</string>
-    <string name="sample_unit_pints">pints</string>
-    <string name="sample_unit_loaf">loaf</string>
-    <string name="sample_unit_punnet">punnet</string>
-    <string name="sample_unit_bulb">bulb</string>
 </resources>

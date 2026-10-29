@@ -42,6 +42,21 @@ class QuantityLabelPolishTest {
     }
 
     @Test
+    fun `other count nouns agree with the number too`() {
+        val expected = mapOf(
+            "pints" to listOf("1 pinta", "2 pinty", "5 pint", "1,5 pinty"),
+            "loaf" to listOf("1 bochenek", "2 bochenki", "5 bochenków", "1,5 bochenka"),
+            "bulb" to listOf("1 główka", "2 główki", "5 główek", "1,5 główki"),
+            "bag" to listOf("1 opak.", "2 opak.", "5 opak.", "1,5 opak."),
+        )
+        val quantities = listOf(1.0, 2.0, 5.0, 1.5)
+        compose.setContent {
+            Column { expected.keys.forEach { unit -> quantities.forEach { Text(item(it, unit).quantityLabel()) } } }
+        }
+        expected.values.flatten().forEach { compose.onNodeWithText(it).assertExists() }
+    }
+
+    @Test
     fun `typed unit labels map back to their codes`() {
         lateinit var codes: Map<String, String>
         compose.setContent { codes = unitCodes() }

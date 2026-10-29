@@ -57,6 +57,32 @@
         <item quantity="other">plastra</item>
     </plurals>
     <string name="unit_slices_fraction">plastra</string>
+    <string name="unit_bag">opak.</string>
+    <string name="unit_punnet">opak.</string>
+    <string name="unit_pints">pinty</string>
+    <plurals name="unit_pints_count">
+        <item quantity="one">pinta</item>
+        <item quantity="few">pinty</item>
+        <item quantity="many">pint</item>
+        <item quantity="other">pinty</item>
+    </plurals>
+    <string name="unit_pints_fraction">pinty</string>
+    <string name="unit_loaf">bochenek</string>
+    <plurals name="unit_loaf_count">
+        <item quantity="one">bochenek</item>
+        <item quantity="few">bochenki</item>
+        <item quantity="many">bochenków</item>
+        <item quantity="other">bochenka</item>
+    </plurals>
+    <string name="unit_loaf_fraction">bochenka</string>
+    <string name="unit_bulb">główka</string>
+    <plurals name="unit_bulb_count">
+        <item quantity="one">główka</item>
+        <item quantity="few">główki</item>
+        <item quantity="many">główek</item>
+        <item quantity="other">główki</item>
+    </plurals>
+    <string name="unit_bulb_fraction">główki</string>
 
     <!-- Expiry -->
     <string name="status_expired">Po terminie</string>
@@ -394,9 +420,4 @@
     <string name="sample_salmon">Filety z łososia</string>
     <string name="sample_rice">Ryż basmati</string>
     <string name="sample_spaghetti">Spaghetti</string>
-    <string name="sample_unit_bag">opak.</string>
-    <string name="sample_unit_pints">butelki</string>
-    <string name="sample_unit_loaf">bochenek</string>
-    <string name="sample_unit_punnet">opak.</string>
-    <string name="sample_unit_bulb">główka</string>
 </resources>

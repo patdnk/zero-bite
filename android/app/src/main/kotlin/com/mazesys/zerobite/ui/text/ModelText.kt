@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.ui.text
 
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -75,18 +76,32 @@ val Allergen.labelRes: Int
         Allergen.SULPHITES -> R.string.allergen_sulphites
     }
 
-/** Stored unit codes from the form's suggestions that read differently per language ("pcs" → "szt."). */
-@StringRes
-fun unitLabelRes(unit: String): Int? = when (unit) {
-    "pcs" -> R.string.unit_pcs
-    "pack" -> R.string.unit_pack
-    "slices" -> R.string.unit_slices
-    else -> null
-}
+/**
+ * How a stored unit code reads in the app language. Codes come from the form's suggestions and
+ * the sample food; anything else is text the user typed and is shown as is. Count nouns that
+ * inflect in Polish agree with the number ("1 plaster", "5 plastrów"); fractions take [fraction].
+ */
+private class UnitText(
+    @StringRes val label: Int,
+    @PluralsRes val counted: Int? = null,
+    @StringRes val fraction: Int? = null,
+)
 
+private val UNITS = mapOf(
+    "pcs" to UnitText(R.string.unit_pcs),
+    "pack" to UnitText(R.string.unit_pack),
+    "bag" to UnitText(R.string.unit_bag),
+    "punnet" to UnitText(R.string.unit_punnet),
+    "slices" to UnitText(R.string.unit_slices, R.plurals.unit_slices_count, R.string.unit_slices_fraction),
+    "pints" to UnitText(R.string.unit_pints, R.plurals.unit_pints_count, R.string.unit_pints_fraction),
+    "loaf" to UnitText(R.string.unit_loaf, R.plurals.unit_loaf_count, R.string.unit_loaf_fraction),
+    "bulb" to UnitText(R.string.unit_bulb, R.plurals.unit_bulb_count, R.string.unit_bulb_fraction),
+)
+
+/** The unit on its own, for the form's chips and field: "pcs" → "szt.". */
 @Composable
 @ReadOnlyComposable
-fun unitLabel(unit: String): String = unitLabelRes(unit)?.let { stringResource(it) } ?: unit
+fun unitLabel(unit: String): String = UNITS[unit]?.let { stringResource(it.label) } ?: unit
 
 /** Up to two decimals with the language's decimal separator: "1.5" / "1,5". */
 fun formatQuantity(quantity: Double, locale: Locale): String {
@@ -99,18 +114,19 @@ fun formatQuantity(quantity: Double, locale: Locale): String {
 @ReadOnlyComposable
 fun FoodItem.quantityLabel(): String = "${formatQuantity(quantity, appLocale())} ${unitLabel(unit, quantity)}"
 
-/** The unit as it reads after [quantity]: slices agree with the number in Polish ("1 plaster", "5 plastrów"). */
+/** The unit as it reads after [quantity]: "1 plaster", "5 plastrów", "1,5 plastra". */
 @Composable
 @ReadOnlyComposable
 fun unitLabel(unit: String, quantity: Double): String {
-    if (unit != "slices") return unitLabel(unit)
+    val text = UNITS[unit] ?: return unit
+    val counted = text.counted ?: return stringResource(text.label)
     val hundredths = round(quantity * 100).toLong()
     return if (hundredths % 100 == 0L && hundredths / 100 <= Int.MAX_VALUE) {
         val whole = (hundredths / 100).toInt()
-        pluralStringResource(R.plurals.unit_slices_count, whole, whole)
+        pluralStringResource(counted, whole, whole)
     } else {
-        // Fractions take the plural rules' "other" form, which no whole number selects in Polish.
-        stringResource(R.string.unit_slices_fraction)
+        // Fractions take the genitive singular, which no whole number selects in Polish.
+        stringResource(text.fraction ?: text.label)
     }
 }
 
