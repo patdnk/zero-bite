@@ -62,14 +62,14 @@ final class ScanFlowViewModel {
         guard phase != .processing else { return }
         phase = .processing
         guard let normalized = UIImage(data: imageData)?.normalizedJPEGData() else {
-            phase = .failed("That file doesn't look like a photo.")
+            phase = .failed(String(localized: "That file doesn't look like a photo."))
             return
         }
         do {
             let result = try await scan(normalized)
             phase = .idle
             if result.isEmpty {
-                phase = .failed("No text or barcode was found. Try a sharper, closer photo of the label.")
+                phase = .failed(String(localized: "No text or barcode was found. Try a sharper, closer photo of the label."))
             } else {
                 coordinator.showReview(result)
             }
@@ -79,7 +79,7 @@ final class ScanFlowViewModel {
     }
 
     func photoLoadFailed() {
-        phase = .failed("Couldn't load that photo.")
+        phase = .failed(String(localized: "Couldn't load that photo."))
     }
 
     func dismissError() {

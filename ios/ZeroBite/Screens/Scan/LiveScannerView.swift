@@ -71,7 +71,7 @@ struct LiveScannerView: View {
             Text("\(seenLines.count) lines read")
                 .font(.app(.caption))
                 .foregroundStyle(Constants.TextSecondary)
-            PrimaryButton("Use what I've found", isEnabled: !current.isEmpty) {
+            PrimaryButton(String(localized: "Use what I've found"), isEnabled: !current.isEmpty) {
                 onFinish(current)
             }
         }

@@ -124,7 +124,7 @@ final class RecallStore {
             Self.saveCache(alerts, to: cacheURL)
             return true
         } catch {
-            lastErrorMessage = "Couldn't reach the Food Standards Agency. Showing the last alerts we downloaded."
+            lastErrorMessage = String(localized: "Couldn't reach the Food Standards Agency. Showing the last alerts we downloaded.")
             return false
         }
     }

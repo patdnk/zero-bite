@@ -18,10 +18,10 @@ final class FoodAlertsViewModel {
 
         var title: String {
             switch self {
-            case .forYou: "For you"
-            case .recalls: "Recalls"
-            case .allergy: "Allergy alerts"
-            case .all: "All"
+            case .forYou: String(localized: "For you")
+            case .recalls: String(localized: "Recalls")
+            case .allergy: String(localized: "Allergy alerts")
+            case .all: String(localized: "All")
             }
         }
     }
@@ -52,8 +52,8 @@ final class FoodAlertsViewModel {
     var hasAllergies: Bool { !settings.allergenProfile.isEmpty }
 
     var lastCheckedText: String {
-        guard let date = recalls.lastChecked else { return "Not checked yet" }
-        return "Checked \(date.formatted(.relative(presentation: .named)))"
+        guard let date = recalls.lastChecked else { return String(localized: "Not checked yet") }
+        return String(localized: "Checked \(date.formatted(.relative(presentation: .named)))")
     }
 
     var rows: [Row] {
@@ -62,9 +62,9 @@ final class FoodAlertsViewModel {
         let allergens = settings.allergenProfile
 
         return recalls.alerts.compactMap { alert in
-            let fridge = matchedNames[alert.id].map { "In your fridge: " + $0.joined(separator: ", ") }
+            let fridge = matchedNames[alert.id].map { String(localized: "In your fridge: \($0.joined(separator: ", "))") }
             let concerns = alert.concerns(allergens)
-            let allergy = concerns.isEmpty ? nil : "Contains: " + concerns.map(\.label).joined(separator: ", ")
+            let allergy = concerns.isEmpty ? nil : String(localized: "Contains: \(concerns.map(\.label).joined(separator: ", "))")
             let highlight = fridge ?? allergy
 
             switch filter {
@@ -79,21 +79,21 @@ final class FoodAlertsViewModel {
 
     var emptyTitle: String {
         switch filter {
-        case .forYou: "Nothing affects you right now"
-        case .recalls: "No recent recalls"
-        case .allergy: "No recent allergy alerts"
-        case .all: "No alerts downloaded yet"
+        case .forYou: String(localized: "Nothing affects you right now")
+        case .recalls: String(localized: "No recent recalls")
+        case .allergy: String(localized: "No recent allergy alerts")
+        case .all: String(localized: "No alerts downloaded yet")
         }
     }
 
     var emptyMessage: String {
         if filter == .forYou && !hasAllergies {
-            return "No recall matches anything in your fridge. Add your allergies in Settings to see allergy alerts here too."
+            return String(localized: "No recall matches anything in your fridge. Add your allergies in Settings to see allergy alerts here too.")
         }
         if filter == .forYou {
-            return "No recall matches anything in your fridge, and there are no allergy alerts for your allergies."
+            return String(localized: "No recall matches anything in your fridge, and there are no allergy alerts for your allergies.")
         }
-        return "Pull down to check the Food Standards Agency again."
+        return String(localized: "Pull down to check the Food Standards Agency again.")
     }
 
     func refresh() async {

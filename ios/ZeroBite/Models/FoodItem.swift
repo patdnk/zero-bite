@@ -15,17 +15,17 @@ enum FoodCategory: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var label: String {
         switch self {
-        case .dairy: "Dairy & eggs"
-        case .meat: "Meat"
-        case .fish: "Fish & seafood"
-        case .vegetables: "Vegetables"
-        case .fruit: "Fruit"
-        case .bakery: "Bakery"
-        case .grains: "Grains & pasta"
-        case .condiments: "Condiments"
-        case .drinks: "Drinks"
-        case .leftovers: "Leftovers"
-        case .other: "Other"
+        case .dairy: String(localized: "Dairy & eggs")
+        case .meat: String(localized: "Meat")
+        case .fish: String(localized: "Fish & seafood")
+        case .vegetables: String(localized: "Vegetables")
+        case .fruit: String(localized: "Fruit")
+        case .bakery: String(localized: "Bakery")
+        case .grains: String(localized: "Grains & pasta")
+        case .condiments: String(localized: "Condiments")
+        case .drinks: String(localized: "Drinks")
+        case .leftovers: String(localized: "Leftovers")
+        case .other: String(localized: "Other")
         }
     }
 
@@ -70,9 +70,9 @@ enum StorageLocation: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var label: String {
         switch self {
-        case .fridge: "Fridge"
-        case .freezer: "Freezer"
-        case .pantry: "Cupboard"
+        case .fridge: String(localized: "Fridge")
+        case .freezer: String(localized: "Freezer")
+        case .pantry: String(localized: "Cupboard")
         }
     }
 
@@ -93,10 +93,10 @@ enum ExpiryStatus: Int, CaseIterable, Comparable, Sendable {
 
     var sectionTitle: String {
         switch self {
-        case .expired: "Expired"
-        case .today: "Expires today"
-        case .soon: "Expiring soon"
-        case .fresh: "Fresh"
+        case .expired: String(localized: "Expired")
+        case .today: String(localized: "Expires today")
+        case .soon: String(localized: "Expiring soon")
+        case .fresh: String(localized: "Fresh")
         }
     }
 
@@ -162,7 +162,7 @@ final class FoodItem {
 
     var quantityText: String {
         let number = quantity.formatted(.number.precision(.fractionLength(0...2)))
-        return "\(number) \(unit)"
+        return "\(number) \(ItemDraft.unitLabel(unit))"
     }
 
     /// Whole calendar days until expiry. Negative when already expired.
@@ -184,11 +184,11 @@ final class FoodItem {
     func expiryDescription(now: Date = .now) -> String {
         let days = daysUntilExpiry(from: now)
         switch days {
-        case ..<(-1): return "Expired \(-days) days ago"
-        case -1: return "Expired yesterday"
-        case 0: return "Expires today"
-        case 1: return "Expires tomorrow"
-        default: return "Expires in \(days) days"
+        case ..<(-1): return String(localized: "Expired \(-days) days ago")
+        case -1: return String(localized: "Expired yesterday")
+        case 0: return String(localized: "Expires today")
+        case 1: return String(localized: "Expires tomorrow")
+        default: return String(localized: "Expires in \(days) days")
         }
     }
 
@@ -196,10 +196,10 @@ final class FoodItem {
     func shortExpiryLabel(now: Date = .now) -> String {
         let days = daysUntilExpiry(from: now)
         switch days {
-        case ..<0: return "Expired"
-        case 0: return "Today"
-        case 1: return "Tomorrow"
-        case 2...14: return "\(days)d"
+        case ..<0: return String(localized: "Expired")
+        case 0: return String(localized: "Today")
+        case 1: return String(localized: "Tomorrow")
+        case 2...14: return String(localized: "\(days)d", comment: "Compact badge: days left, e.g. 4d")
         default: return expiresAt.formatted(.dateTime.day().month(.abbreviated))
         }
     }

@@ -33,7 +33,7 @@ private struct LoadingOverlayModifier: ViewModifier {
 }
 
 extension View {
-    func loadingOverlay(_ isLoading: Bool, message: String = "Working…") -> some View {
+    func loadingOverlay(_ isLoading: Bool, message: String = String(localized: "Working…")) -> some View {
         modifier(LoadingOverlayModifier(isLoading: isLoading, message: message))
     }
 }

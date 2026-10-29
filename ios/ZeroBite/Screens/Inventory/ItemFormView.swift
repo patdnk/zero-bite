@@ -16,19 +16,19 @@ struct ItemFormView: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
-                    DetailTitle(overline: viewModel.isEditing ? "Edit" : "Add to your fridge", title: viewModel.title)
+                    DetailTitle(overline: viewModel.isEditing ? String(localized: "Edit") : String(localized: "Add to your fridge"), title: viewModel.title)
 
                     LabeledInput(
-                        label: "Name",
-                        placeholder: "Greek yogurt",
+                        label: String(localized: "Name"),
+                        placeholder: String(localized: "Greek yogurt"),
                         text: $viewModel.draft.name,
                         accessibilityID: "itemForm.name",
                         autoFocus: viewModel.draft.name.isEmpty
                     )
 
                     LabeledInput(
-                        label: "Brand (optional, helps spot recalls)",
-                        placeholder: "Yeo Valley",
+                        label: String(localized: "Brand (optional, helps spot recalls)"),
+                        placeholder: String(localized: "Yeo Valley", comment: "Placeholder: an example food brand"),
                         text: Binding(
                             get: { viewModel.draft.brand ?? "" },
                             set: { viewModel.draft.brand = $0.trimmingCharacters(in: .whitespaces).isEmpty ? nil : $0 }
@@ -37,32 +37,32 @@ struct ItemFormView: View {
                     )
 
                     VStack(alignment: .leading, spacing: Spacing.sm) {
-                        Overline("Category")
+                        Overline(String(localized: "Category"))
                         ChipFilter(options: FoodCategory.allCases, selection: $viewModel.draft.category) { $0.label }
                     }
 
                     VStack(alignment: .leading, spacing: Spacing.sm) {
-                        Overline("Stored in")
+                        Overline(String(localized: "Stored in"))
                         ChipFilter(options: StorageLocation.allCases, selection: $viewModel.draft.storage) { $0.label }
                     }
 
                     quantity
 
-                    CardSection("Expiry", footer: "No date on the label? Use the typical shelf life for \(viewModel.draft.category.label.lowercased()).") {
-                        InfoRow("Expires on", symbol: "calendar") {
+                    CardSection(String(localized: "Expiry"), footer: String(localized: "No date on the label? Use the typical shelf life for \(viewModel.draft.category.label.lowercased()).")) {
+                        InfoRow(String(localized: "Expires on"), symbol: "calendar") {
                             DatePicker("Expires on", selection: $viewModel.draft.expiresAt, displayedComponents: .date)
                                 .labelsHidden()
                         }
-                        ActionRow(title: "Use typical shelf life (\(viewModel.defaultShelfLifeDays) days)", symbol: "wand.and.stars", tint: Constants.BrandOrange) {
+                        ActionRow(title: String(localized: "Use typical shelf life (\(viewModel.defaultShelfLifeDays) days)"), symbol: "wand.and.stars", tint: Constants.BrandOrange) {
                             viewModel.applyDefaultShelfLife()
                         }
                     }
 
-                    LabeledInput(label: "Notes", placeholder: "Opened on Monday, half left", text: $viewModel.draft.notes, axis: .vertical)
+                    LabeledInput(label: String(localized: "Notes"), placeholder: String(localized: "Opened on Monday, half left"), text: $viewModel.draft.notes, axis: .vertical)
 
                     if let barcode = viewModel.draft.barcode {
                         CardSection {
-                            InfoRow("Barcode", symbol: "barcode", value: barcode)
+                            InfoRow(String(localized: "Barcode"), symbol: "barcode", value: barcode)
                         }
                     }
 
@@ -77,7 +77,7 @@ struct ItemFormView: View {
             }
             .scrollDismissesKeyboard(.interactively)
 
-            PrimaryButton(viewModel.isEditing ? "Save changes" : "Add to fridge", isEnabled: viewModel.canSave) {
+            PrimaryButton(viewModel.isEditing ? String(localized: "Save changes") : String(localized: "Add to fridge"), isEnabled: viewModel.canSave) {
                 viewModel.save()
             }
             .accessibilityIdentifier("itemForm.save")
@@ -91,14 +91,17 @@ struct ItemFormView: View {
 
     private var quantity: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Overline("Quantity")
+            Overline(String(localized: "Quantity"))
             HStack(spacing: Spacing.sm) {
                 TextField("Amount", value: $viewModel.draft.quantity, format: .number)
                     .keyboardType(.decimalPad)
                     .font(.app(.body))
                     .focused($quantityFocused)
                     .inputChrome(isFocused: quantityFocused)
-                TextField("Unit", text: $viewModel.draft.unit)
+                TextField("Unit", text: Binding(
+                    get: { ItemDraft.unitLabel(viewModel.draft.unit) },
+                    set: { viewModel.draft.unit = ItemDraft.unitCode(forLabel: $0) }
+                ))
                     .font(.app(.body))
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
@@ -106,7 +109,7 @@ struct ItemFormView: View {
                     .inputChrome(isFocused: unitFocused)
                     .frame(width: 110)
             }
-            ChipFilter(options: ItemDraft.unitSuggestions, selection: $viewModel.draft.unit) { $0 }
+            ChipFilter(options: ItemDraft.unitSuggestions, selection: $viewModel.draft.unit) { ItemDraft.unitLabel($0) }
         }
     }
 }

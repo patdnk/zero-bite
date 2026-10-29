@@ -17,11 +17,11 @@ struct RecipesView: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
-                        ScreenHeader(overline: "From your fridge", title: "Recipes")
+                        ScreenHeader(overline: String(localized: "From your fridge"), title: String(localized: "Recipes"))
 
                         if viewModel.showsExpiringStrip {
                             VStack(alignment: .leading, spacing: Spacing.sm) {
-                                SectionHeading(title: "Use these first", tint: Constants.BrandOrange, symbol: "clock.badge.exclamationmark")
+                                SectionHeading(title: String(localized: "Use these first"), tint: Constants.BrandOrange, symbol: "clock.badge.exclamationmark")
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 6) {
                                         ForEach(viewModel.expiringItems) { item in
@@ -46,7 +46,7 @@ struct RecipesView: View {
                     .padding(.bottom, Spacing.xl)
                 }
                 .scrollDismissesKeyboard(.interactively)
-                BottomSearchBar(text: $viewModel.searchText, prompt: "Search recipes or ingredients", accessibilityID: "recipes.search")
+                BottomSearchBar(text: $viewModel.searchText, prompt: String(localized: "Search recipes or ingredients"), accessibilityID: "recipes.search")
             }
             .pageBackground()
             .toolbar(.hidden, for: .navigationBar)
@@ -72,7 +72,7 @@ struct RecipesView: View {
         } else {
             SectionHeading(
                 title: viewModel.scope.sectionTitle,
-                detail: matches.count == 1 ? "1 recipe" : "\(matches.count) recipes"
+                detail: String(localized: "\(matches.count) recipes")
             )
             if let first = matches.first {
                 NavigationLink(value: RecipesRoute.recipe(first.recipe.id)) {

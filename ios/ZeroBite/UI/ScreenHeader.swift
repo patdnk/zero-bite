@@ -34,7 +34,7 @@ struct ScreenHeader<Trailing: View>: View {
                         .foregroundStyle(Constants.TextPrimary)
                         .accessibilityAddTraits(.isHeader)
                     if let count {
-                        Text("\(count)")
+                        Text(verbatim: "\(count)")
                             .font(.app(.caption, weight: .semibold))
                             .foregroundStyle(Constants.TextSecondary)
                             .padding(.horizontal, 6)

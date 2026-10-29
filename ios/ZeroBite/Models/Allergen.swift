@@ -15,10 +15,20 @@ enum Allergen: String, CaseIterable, Identifiable, Codable, Sendable {
 
     var label: String {
         switch self {
-        case .gluten: "Gluten"
-        case .nuts: "Tree nuts"
-        case .sulphites: "Sulphites"
-        default: rawValue.capitalized
+        case .celery: String(localized: "Celery")
+        case .gluten: String(localized: "Gluten")
+        case .crustaceans: String(localized: "Crustaceans")
+        case .egg: String(localized: "Egg")
+        case .fish: String(localized: "Fish")
+        case .lupin: String(localized: "Lupin")
+        case .milk: String(localized: "Milk")
+        case .molluscs: String(localized: "Molluscs")
+        case .mustard: String(localized: "Mustard")
+        case .nuts: String(localized: "Tree nuts")
+        case .peanuts: String(localized: "Peanuts")
+        case .sesame: String(localized: "Sesame")
+        case .soya: String(localized: "Soya")
+        case .sulphites: String(localized: "Sulphites")
         }
     }
 

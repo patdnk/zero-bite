@@ -23,10 +23,10 @@ final class InventoryViewModel {
 
         var title: String {
             switch self {
-            case .all: "All"
-            case .fridge: "Fridge"
-            case .freezer: "Freezer"
-            case .pantry: "Cupboard"
+            case .all: String(localized: "All")
+            case .fridge: String(localized: "Fridge")
+            case .freezer: String(localized: "Freezer")
+            case .pantry: String(localized: "Cupboard")
             }
         }
 

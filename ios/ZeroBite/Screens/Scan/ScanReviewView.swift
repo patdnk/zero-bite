@@ -14,10 +14,10 @@ struct ScanReviewView: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
-                    DetailTitle(overline: "Scanned label", title: "Check the details")
+                    DetailTitle(overline: String(localized: "Scanned label"), title: String(localized: "Check the details"))
 
                     VStack(alignment: .leading, spacing: Spacing.sm) {
-                        LabeledInput(label: "Name", placeholder: "Product name", text: $viewModel.name, accessibilityID: "review.name")
+                        LabeledInput(label: String(localized: "Name"), placeholder: String(localized: "Product name"), text: $viewModel.name, accessibilityID: "review.name")
                         if viewModel.isLookingUp {
                             HStack(spacing: Spacing.sm) {
                                 ProgressView().controlSize(.small)
@@ -29,17 +29,17 @@ struct ScanReviewView: View {
                     }
 
                     VStack(alignment: .leading, spacing: Spacing.sm) {
-                        Overline("Category")
+                        Overline(String(localized: "Category"))
                         ChipFilter(options: FoodCategory.allCases, selection: $viewModel.category) { $0.label }
                     }
 
                     if viewModel.product != nil || viewModel.barcode != nil {
-                        CardSection("Product") {
+                        CardSection(String(localized: "Product")) {
                             if let product = viewModel.product {
-                                InfoRow("Found", symbol: "checkmark.seal", value: [product.brand, product.name].compactMap { $0 }.joined(separator: " · "))
+                                InfoRow(String(localized: "Found"), symbol: "checkmark.seal", value: [product.brand, product.name].compactMap { $0 }.joined(separator: " · "))
                             }
                             if let barcode = viewModel.barcode {
-                                InfoRow("Barcode", symbol: "barcode", value: barcode)
+                                InfoRow(String(localized: "Barcode"), symbol: "barcode", value: barcode)
                             }
                         }
                     }
@@ -47,8 +47,8 @@ struct ScanReviewView: View {
                     expiry
 
                     if !viewModel.lines.isEmpty {
-                        CardSection("Text read from the label") {
-                            ActionRow(title: showsLines ? "Hide \(viewModel.lines.count) lines" : "Show \(viewModel.lines.count) lines",
+                        CardSection(String(localized: "Text read from the label")) {
+                            ActionRow(title: showsLines ? String(localized: "Hide \(viewModel.lines.count) lines") : String(localized: "Show \(viewModel.lines.count) lines"),
                                       symbol: showsLines ? "chevron.up" : "chevron.down",
                                       tint: Constants.TextSecondary) {
                                 withAnimation(.snappy) { showsLines.toggle() }
@@ -70,7 +70,7 @@ struct ScanReviewView: View {
             }
             .scrollDismissesKeyboard(.interactively)
 
-            PrimaryButton("Continue", isEnabled: viewModel.canContinue) { viewModel.continueToForm() }
+            PrimaryButton(String(localized: "Continue"), isEnabled: viewModel.canContinue) { viewModel.continueToForm() }
                 .accessibilityIdentifier("review.continue")
                 .padding(.horizontal, Spacing.gutter)
                 .padding(.vertical, Spacing.sm)
@@ -84,20 +84,20 @@ struct ScanReviewView: View {
     @ViewBuilder
     private var expiry: some View {
         if viewModel.candidates.isEmpty {
-            CardSection("Expiry date") {
+            CardSection(String(localized: "Expiry date")) {
                 Text("No date was found on the label. You can set one on the next screen.")
                     .font(.app(.subheadline))
                     .foregroundStyle(Constants.TextSecondary)
             }
         } else {
-            CardSection("Expiry date", footer: "Pick the best-before or use-by date. Most likely first.") {
+            CardSection(String(localized: "Expiry date"), footer: String(localized: "Pick the best-before or use-by date. Most likely first.")) {
                 ForEach(viewModel.candidates) { candidate in
                     Button { viewModel.select(candidate) } label: {
                         candidateRow(candidate, isSelected: viewModel.selectedCandidateID == candidate.id)
                     }
                     .buttonStyle(.plain)
                 }
-                ActionRow(title: "None of these", symbol: "xmark", tint: Constants.TextSecondary) {
+                ActionRow(title: String(localized: "None of these"), symbol: "xmark", tint: Constants.TextSecondary) {
                     viewModel.clearSelection()
                 }
             }
@@ -110,7 +110,7 @@ struct ScanReviewView: View {
                 Text(candidate.date.formatted(date: .long, time: .omitted))
                     .font(.app(.subheadline, weight: .semibold))
                     .foregroundStyle(Constants.TextPrimary)
-                Text("“\(candidate.sourceLine)”")
+                Text("“\(candidate.sourceLine)”", comment: "A line of label text in quotation marks")
                     .font(.app(.caption))
                     .foregroundStyle(Constants.TextSecondary)
                     .lineLimit(1)

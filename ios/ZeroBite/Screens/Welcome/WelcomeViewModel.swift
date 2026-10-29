@@ -61,10 +61,10 @@ final class WelcomeViewModel {
 
     var primaryTitle: String {
         switch currentPage {
-        case .reminders: step == .denied ? "Continue" : "Turn on reminders"
-        case .cook: mode == .replay ? "Done" : "Next"
-        case .welcome: "Show me how"
-        default: "Next"
+        case .reminders: step == .denied ? String(localized: "Continue") : String(localized: "Turn on reminders")
+        case .cook: mode == .replay ? String(localized: "Done") : String(localized: "Next")
+        case .welcome: String(localized: "Show me how")
+        default: String(localized: "Next")
         }
     }
 

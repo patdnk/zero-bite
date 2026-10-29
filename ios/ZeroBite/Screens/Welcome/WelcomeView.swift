@@ -49,7 +49,7 @@ struct WelcomeView: View {
             PageIndicator(count: viewModel.pages.count, index: viewModel.pageIndex)
             Spacer()
             if !viewModel.isLastPage {
-                Button(viewModel.mode == .replay ? "Close" : "Skip") { viewModel.skipIntro() }
+                Button(viewModel.mode == .replay ? String(localized: "Close") : String(localized: "Skip")) { viewModel.skipIntro() }
                     .font(.app(.subheadline, weight: .medium))
                     .foregroundStyle(Constants.TextSecondary)
                     .accessibilityIdentifier("welcome.skip")
@@ -73,7 +73,7 @@ struct WelcomeView: View {
             .accessibilityIdentifier("welcome.primary")
 
             if viewModel.currentPage == .reminders, viewModel.step != .denied {
-                SecondaryButton("Not now") { viewModel.skip() }
+                SecondaryButton(String(localized: "Not now")) { viewModel.skip() }
                     .accessibilityIdentifier("welcome.notNow")
             }
         }
@@ -140,37 +140,37 @@ private struct OnboardingPage: View {
     private var overline: String {
         switch page {
         case .welcome: "Zero Bite"
-        case .scan: "1 · Scan"
-        case .remind: "2 · Get reminded"
-        case .cook: "3 · Cook"
-        case .reminders: "Last step"
+        case .scan: String(localized: "1 · Scan")
+        case .remind: String(localized: "2 · Get reminded")
+        case .cook: String(localized: "3 · Cook")
+        case .reminders: String(localized: "Last step")
         }
     }
 
     private var title: String {
         switch page {
-        case .welcome: "Waste less,\ncook more."
-        case .scan: "Scan the label, skip the typing."
-        case .remind: "Know what to use first."
-        case .cook: "Cook with what you have."
-        case .reminders: isDenied ? "Reminders are off." : "Want a nudge before food goes off?"
+        case .welcome: String(localized: "Waste less,\ncook more.")
+        case .scan: String(localized: "Scan the label, skip the typing.")
+        case .remind: String(localized: "Know what to use first.")
+        case .cook: String(localized: "Cook with what you have.")
+        case .reminders: isDenied ? String(localized: "Reminders are off.") : String(localized: "Want a nudge before food goes off?")
         }
     }
 
     private var message: String {
         switch page {
         case .welcome:
-            "Keep track of what's in your fridge, freezer and cupboard, and use it up before the date."
+            String(localized: "Keep track of what's in your fridge, freezer and cupboard, and use it up before the date.")
         case .scan:
-            "Point the camera at a best-before or use-by date. A barcode fills in the product name. Everything is read on your phone."
+            String(localized: "Point the camera at a best-before or use-by date. A barcode fills in the product name. Everything is read on your phone.")
         case .remind:
-            "Your fridge is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze."
+            String(localized: "Your fridge is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze.")
         case .cook:
-            "Recipes are ranked by what's already in your fridge, with food that's about to expire counted first."
+            String(localized: "Recipes are ranked by what's already in your fridge, with food that's about to expire counted first.")
         case .reminders:
             isDenied
-                ? "You can turn them on any time in Settings."
-                : "We'll remind you a few days before the date, on the day, and if it slips past. You choose when."
+                ? String(localized: "You can turn them on any time in Settings.")
+                : String(localized: "We'll remind you a few days before the date, on the day, and if it slips past. You choose when.")
         }
     }
 
@@ -232,20 +232,32 @@ private struct WelcomeIllustration: View {
     var body: some View {
         VStack(spacing: Spacing.sm) {
             HStack(spacing: Spacing.sm) {
-                MockItemTile(symbol: "drop.fill", name: "Greek yogurt", detail: "500 g", label: "Today", tint: Constants.StatusToday)
-                MockItemTile(symbol: "carrot.fill", name: "Spinach", detail: "1 bag", label: "2d", tint: Constants.StatusSoon)
+                MockItemTile(symbol: "drop.fill", name: String(localized: "Greek yogurt"), detail: Self.amount(500, "g"), label: String(localized: "Today"), tint: Constants.StatusToday)
+                MockItemTile(symbol: "carrot.fill", name: String(localized: "Spinach"), detail: Self.amount(1, "bag"), label: Self.daysLeft(2), tint: Constants.StatusSoon)
             }
             HStack(spacing: Spacing.sm) {
-                MockItemTile(symbol: "fish.fill", name: "Salmon", detail: "2 pcs", label: "3 Nov", tint: Constants.StatusFresh, accent: false)
-                MockItemTile(symbol: "basket.fill", name: "Spaghetti", detail: "500 g", label: "Jun", tint: Constants.StatusFresh, accent: false)
+                MockItemTile(symbol: "fish.fill", name: String(localized: "Salmon"), detail: Self.amount(2, "pcs"), label: Self.date(month: 11, day: 3).formatted(.dateTime.day().month(.abbreviated)), tint: Constants.StatusFresh, accent: false)
+                MockItemTile(symbol: "basket.fill", name: String(localized: "Spaghetti"), detail: Self.amount(500, "g"), label: Self.date(month: 6, day: 1).formatted(.dateTime.month(.abbreviated)), tint: Constants.StatusFresh, accent: false)
             }
             HStack(spacing: Spacing.sm) {
-                MockItemTile(symbol: "birthday.cake.fill", name: "Sourdough", detail: "1 loaf", label: "4d", tint: Constants.StatusFresh, accent: false)
-                MockItemTile(symbol: "leaf.fill", name: "Lemons", detail: "3 pcs", label: "9d", tint: Constants.StatusFresh, accent: false)
+                MockItemTile(symbol: "birthday.cake.fill", name: String(localized: "Sourdough"), detail: Self.amount(1, "loaf"), label: Self.daysLeft(4), tint: Constants.StatusFresh, accent: false)
+                MockItemTile(symbol: "leaf.fill", name: String(localized: "Lemons"), detail: Self.amount(3, "pcs"), label: Self.daysLeft(9), tint: Constants.StatusFresh, accent: false)
             }
             .opacity(0.5)
         }
         .accessibilityHidden(true)
+    }
+
+    private static func amount(_ quantity: Int, _ unit: String) -> String {
+        "\(quantity) \(ItemDraft.unitLabel(unit))"
+    }
+
+    private static func daysLeft(_ days: Int) -> String {
+        String(localized: "\(days)d", comment: "Compact badge: days left, e.g. 4d")
+    }
+
+    private static func date(month: Int, day: Int) -> Date {
+        Calendar.current.date(from: DateComponents(year: 2026, month: month, day: day)) ?? .now
     }
 }
 
@@ -253,13 +265,13 @@ private struct ScanIllustration: View {
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 10) {
-                Text("SEMI SKIMMED MILK")
+                Text("SEMI SKIMMED MILK", comment: "Mock food label text, upper case")
                     .font(.system(size: 13, weight: .bold, design: .monospaced))
                     .foregroundStyle(Constants.TextSecondary)
-                Text("2 PINTS · 1.136 L")
+                Text("2 PINTS · 1.136 L", comment: "Mock food label text, upper case")
                     .font(.system(size: 12, weight: .medium, design: .monospaced))
                     .foregroundStyle(Constants.TextMuted)
-                Text("USE BY 12 OCT")
+                Text("USE BY 12 OCT", comment: "Mock food label text, upper case: a use-by date, keep it short")
                     .font(.system(size: 22, weight: .bold, design: .monospaced))
                     .foregroundStyle(Constants.TextPrimary)
                     .padding(.horizontal, 8)
@@ -306,19 +318,19 @@ private struct RemindIllustration: View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
-                    Overline("Use first")
+                    Overline(String(localized: "Use first"))
                     Spacer()
-                    Text("2 more need attention").font(.app(.caption)).foregroundStyle(Constants.TextSecondary)
+                    Text("\(2) more need attention").font(.app(.caption)).foregroundStyle(Constants.TextSecondary)
                 }
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Spinach").font(.app(.title3, weight: .semibold)).foregroundStyle(Constants.TextPrimary)
-                        Text("1 bag · Fridge").font(.app(.caption)).foregroundStyle(Constants.TextSecondary)
+                        Text(verbatim: "1 \(ItemDraft.unitLabel("bag")) · \(StorageLocation.fridge.label)").font(.app(.caption)).foregroundStyle(Constants.TextSecondary)
                     }
                     Spacer()
                     HStack(alignment: .firstTextBaseline, spacing: 3) {
-                        Text("1").font(.system(size: 40, weight: .semibold)).tracking(-1.5)
-                        Text("day").font(.app(.subheadline))
+                        Text(verbatim: "1").font(.system(size: 40, weight: .semibold)).tracking(-1.5)
+                        Text(CountUnit.unit(in: String(localized: "\(1) days left", comment: "Countdown: the number is drawn large and the rest small"), count: 1)).font(.app(.subheadline))
                     }
                     .foregroundStyle(Constants.StatusToday)
                 }
@@ -372,12 +384,12 @@ private struct CookIllustration: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text("Spinach and egg frittata").font(.app(.headline, weight: .semibold)).foregroundStyle(Constants.TextPrimary)
                     Spacer()
-                    Text("92%").font(.app(.headline, weight: .semibold)).foregroundStyle(Constants.BrandOrange)
+                    Text(verbatim: "92%").font(.app(.headline, weight: .semibold)).foregroundStyle(Constants.BrandOrange)
                 }
-                Text("20 min · serves 2 · uses 2 expiring").font(.app(.caption)).foregroundStyle(Constants.TextSecondary)
+                Text(verbatim: [String(localized: "\(20) min"), String(localized: "serves \(2)"), String(localized: "uses \(2) expiring")].joined(separator: " · ")).font(.app(.caption)).foregroundStyle(Constants.TextSecondary)
                 HStack(spacing: 6) {
-                    Tag(text: "Spinach", tint: Constants.BrandOrange)
-                    Tag(text: "Eggs", tint: Constants.BrandOrange)
+                    Tag(text: String(localized: "Spinach"), tint: Constants.BrandOrange)
+                    Tag(text: String(localized: "Eggs"), tint: Constants.BrandOrange)
                     Tag(text: "+3")
                 }
                 .padding(.top, 6)
@@ -393,9 +405,9 @@ private struct CookIllustration: View {
 private struct RemindersIllustration: View {
     var body: some View {
         VStack(spacing: Spacing.sm) {
-            reminderRow(when: "3 days before", text: "Greek yogurt is due on Friday", tint: Constants.StatusSoon)
-            reminderRow(when: "On the day", text: "Use your spinach today", tint: Constants.StatusToday)
-            reminderRow(when: "Day after", text: "Milk went past its date yesterday", tint: Constants.StatusExpired)
+            reminderRow(when: String(localized: "3 days before"), text: String(localized: "Greek yogurt is due on Friday"), tint: Constants.StatusSoon)
+            reminderRow(when: String(localized: "On the day"), text: String(localized: "Use your spinach today"), tint: Constants.StatusToday)
+            reminderRow(when: String(localized: "Day after"), text: String(localized: "Milk went past its date yesterday"), tint: Constants.StatusExpired)
         }
         .accessibilityHidden(true)
     }

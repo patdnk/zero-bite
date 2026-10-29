@@ -24,7 +24,7 @@ struct FoodAlertsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.lg) {
-                DetailTitle(overline: viewModel.lastCheckedText, title: "Food alerts")
+                DetailTitle(overline: viewModel.lastCheckedText, title: String(localized: "Food alerts"))
 
                 if let error = viewModel.errorMessage {
                     Text(error)
@@ -91,19 +91,19 @@ struct FoodAlertDetailView: View {
 
                 if !alert.businesses.isEmpty {
                     CardSection {
-                        InfoRow("From", symbol: "building.2", value: alert.businesses.joined(separator: ", "))
+                        InfoRow(String(localized: "From"), symbol: "building.2", value: alert.businesses.joined(separator: ", "))
                     }
                 }
 
                 if !alert.allergens.isEmpty {
                     VStack(alignment: .leading, spacing: Spacing.sm) {
-                        Overline("Allergens")
+                        Overline(String(localized: "Allergens"))
                         FlowTags(tags: alert.allergens, tint: alert.kind.tint)
                     }
                 }
 
                 if let risk = alert.risk {
-                    CardSection("Why") {
+                    CardSection(String(localized: "Why")) {
                         Text(risk)
                             .font(.app(.subheadline))
                             .foregroundStyle(Constants.TextPrimary)
@@ -112,14 +112,14 @@ struct FoodAlertDetailView: View {
                 }
 
                 VStack(alignment: .leading, spacing: Spacing.sm) {
-                    Overline(alert.products.count == 1 ? "Product" : "Products")
+                    Overline(alert.products.count == 1 ? String(localized: "Product") : String(localized: "Products"))
                     ForEach(Array(alert.products.enumerated()), id: \.offset) { _, product in
                         AlertProductDetails(product: product)
                     }
                 }
 
                 if let advice = alert.consumerAdvice {
-                    CardSection("What to do") {
+                    CardSection(String(localized: "What to do")) {
                         Text(advice)
                             .font(.app(.subheadline))
                             .foregroundStyle(Constants.TextPrimary)

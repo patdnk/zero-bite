@@ -23,8 +23,8 @@ struct FoodAlert: Codable, Identifiable, Hashable, Sendable {
 
         var label: String {
             switch self {
-            case .allergy: "Allergy alert"
-            case .recall, .actionRequired: "Product recall"
+            case .allergy: String(localized: "Allergy alert")
+            case .recall, .actionRequired: String(localized: "Product recall")
             }
         }
     }
@@ -38,11 +38,16 @@ struct FoodAlert: Codable, Identifiable, Hashable, Sendable {
         /// Human-readable summary, e.g. "Batch L6232 · Best before May 2027".
         var summary: String {
             // "All batches" / "All use by dates" read on their own; don't prefix them.
-            func label(_ prefix: String, _ value: String?) -> String? {
+            func label(_ value: String?, _ format: (String) -> String) -> String? {
                 guard let value = value?.trimmingCharacters(in: .whitespacesAndNewlines), !value.isEmpty else { return nil }
-                return value.lowercased().hasPrefix("all") ? value : "\(prefix) \(value)"
+                return value.lowercased().hasPrefix("all") ? value : format(value)
             }
-            return [label("Batch", batchCode), label("Lot", lotNumber), label("Use by", useBy), label("Best before", bestBefore)]
+            return [
+                label(batchCode) { String(localized: "Batch \($0)") },
+                label(lotNumber) { String(localized: "Lot \($0)") },
+                label(useBy) { String(localized: "Use by \($0)") },
+                label(bestBefore) { String(localized: "Best before \($0)") },
+            ]
                 .compactMap { $0 }
                 .joined(separator: " · ")
         }

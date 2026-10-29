@@ -14,7 +14,7 @@ struct ItemDetailView: View {
             if let item = viewModel.item {
                 content(for: item)
             } else {
-                EmptyStateView(title: "Item removed", message: "This item is no longer in your fridge.", systemImage: "trash")
+                EmptyStateView(title: String(localized: "Item removed"), message: String(localized: "This item is no longer in your fridge."), systemImage: "trash")
                     .padding(Spacing.gutter)
             }
         }
@@ -50,18 +50,18 @@ struct ItemDetailView: View {
 
                 statusCard(for: item)
 
-                CardSection("Details") {
-                    InfoRow("Stored in", symbol: item.storage.symbol, value: item.storage.label)
-                    InfoRow("Quantity", symbol: "scalemass", value: item.quantityText)
-                    InfoRow("Expires", symbol: "calendar", value: item.expiresAt.formatted(date: .long, time: .omitted))
-                    InfoRow("Added", symbol: "plus.circle", value: item.addedAt.formatted(date: .abbreviated, time: .omitted))
+                CardSection(String(localized: "Details")) {
+                    InfoRow(String(localized: "Stored in"), symbol: item.storage.symbol, value: item.storage.label)
+                    InfoRow(String(localized: "Quantity"), symbol: "scalemass", value: item.quantityText)
+                    InfoRow(String(localized: "Expires"), symbol: "calendar", value: item.expiresAt.formatted(date: .long, time: .omitted))
+                    InfoRow(String(localized: "Added"), symbol: "plus.circle", value: item.addedAt.formatted(date: .abbreviated, time: .omitted))
                     if let barcode = item.barcode, !barcode.isEmpty {
-                        InfoRow("Barcode", symbol: "barcode", value: barcode)
+                        InfoRow(String(localized: "Barcode"), symbol: "barcode", value: barcode)
                     }
                 }
 
                 if !item.notes.isEmpty {
-                    CardSection("Notes") {
+                    CardSection(String(localized: "Notes")) {
                         Text(item.notes)
                             .font(.app(.subheadline))
                             .foregroundStyle(Constants.TextPrimary)
@@ -116,7 +116,7 @@ struct ItemDetailView: View {
     @ViewBuilder
     private func recipes(for item: FoodItem) -> some View {
         let matches = viewModel.recipeMatches
-        CardSection("Recipes using \(item.name.lowercased())") {
+        CardSection(String(localized: "Recipes using \(item.name.lowercased())")) {
             if matches.isEmpty {
                 Text("No recipe in the catalogue uses this yet.")
                     .font(.app(.subheadline))
@@ -136,12 +136,12 @@ struct ItemDetailView: View {
     private var actions: some View {
         VStack(spacing: Spacing.sm) {
             if viewModel.state == .used {
-                PrimaryButton("Put it back in the fridge", systemImage: "arrow.uturn.backward", kind: .tonal) {
+                PrimaryButton(String(localized: "Put it back in the fridge"), systemImage: "arrow.uturn.backward", kind: .tonal) {
                     viewModel.restore()
                 }
             } else {
-                PrimaryButton("Mark as used up", systemImage: "checkmark") { viewModel.markUsed() }
-                PrimaryButton("Edit", systemImage: "pencil", kind: .tonal) { viewModel.edit() }
+                PrimaryButton(String(localized: "Mark as used up"), systemImage: "checkmark") { viewModel.markUsed() }
+                PrimaryButton(String(localized: "Edit"), systemImage: "pencil", kind: .tonal) { viewModel.edit() }
             }
         }
     }

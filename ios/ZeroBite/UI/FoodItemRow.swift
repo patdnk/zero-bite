@@ -76,7 +76,7 @@ struct FoodItemRow: View {
                 Text(item.name)
                     .font(.app(.subheadline, weight: .semibold))
                     .foregroundStyle(Constants.TextPrimary)
-                Text("\(item.quantityText) · \(item.storage.label)")
+                Text(verbatim: "\(item.quantityText) · \(item.storage.label)")
                     .font(.app(.caption))
                     .foregroundStyle(Constants.TextSecondary)
             }
@@ -102,7 +102,7 @@ struct UseFirstCard: View {
         let days = item.daysUntilExpiry(from: now)
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Overline("Use first")
+                Overline(String(localized: "Use first"))
                 Spacer()
                 if othersNeedingAttention > 0 {
                     Text("\(othersNeedingAttention) more need attention")
@@ -118,7 +118,7 @@ struct UseFirstCard: View {
                             .font(.app(.title3, weight: .semibold))
                             .foregroundStyle(Constants.TextPrimary)
                             .multilineTextAlignment(.leading)
-                        Text("\(item.quantityText) · \(item.storage.label)")
+                        Text(verbatim: "\(item.quantityText) · \(item.storage.label)")
                             .font(.app(.caption))
                             .foregroundStyle(Constants.TextSecondary)
                     }
@@ -150,13 +150,13 @@ struct UseFirstCard: View {
     private func countdown(days: Int, status: ExpiryStatus) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 3) {
             if days < 0 {
-                Text("\(-days)").font(.system(size: 40, weight: .semibold)).tracking(-1.5)
-                Text(-days == 1 ? "day over" : "days over").font(.app(.subheadline))
+                Text(verbatim: "\(-days)").font(.system(size: 40, weight: .semibold)).tracking(-1.5)
+                Text(CountUnit.unit(in: String(localized: "\(-days) days over", comment: "Countdown: the number is drawn large and the rest small"), count: -days)).font(.app(.subheadline))
             } else if days == 0 {
                 Text("Today").font(.app(.title, weight: .semibold)).tracking(-1)
             } else {
-                Text("\(days)").font(.system(size: 40, weight: .semibold)).tracking(-1.5)
-                Text(days == 1 ? "day" : "days").font(.app(.subheadline))
+                Text(verbatim: "\(days)").font(.system(size: 40, weight: .semibold)).tracking(-1.5)
+                Text(CountUnit.unit(in: String(localized: "\(days) days left", comment: "Countdown: the number is drawn large and the rest small"), count: days)).font(.app(.subheadline))
             }
         }
         .foregroundStyle(status.tint)

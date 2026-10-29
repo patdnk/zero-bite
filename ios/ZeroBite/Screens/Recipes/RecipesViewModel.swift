@@ -17,17 +17,17 @@ final class RecipesViewModel {
 
         var title: String {
             switch self {
-            case .ready: "Ready"
-            case .nearly: "Nearly"
-            case .all: "All"
+            case .ready: String(localized: "Ready")
+            case .nearly: String(localized: "Nearly")
+            case .all: String(localized: "All")
             }
         }
 
         var sectionTitle: String {
             switch self {
-            case .ready: "You can make these now"
-            case .nearly: "Missing one or two things"
-            case .all: "All recipes"
+            case .ready: String(localized: "You can make these now")
+            case .nearly: String(localized: "Missing one or two things")
+            case .all: String(localized: "All recipes")
             }
         }
     }
@@ -86,18 +86,18 @@ final class RecipesViewModel {
 
     var emptyTitle: String {
         switch scope {
-        case .ready: "Nothing to cook yet"
-        case .nearly: "No near-misses"
-        case .all: "No recipes match"
+        case .ready: String(localized: "Nothing to cook yet")
+        case .nearly: String(localized: "No near-misses")
+        case .all: String(localized: "No recipes match")
         }
     }
 
     var emptyMessage: String {
-        if !searchText.isEmpty { return "Try a different search." }
+        if !searchText.isEmpty { return String(localized: "Try a different search.") }
         switch scope {
-        case .ready: return "Add a few more things to your fridge, or check the “Nearly” tab for recipes that need one more ingredient."
-        case .nearly: return "Everything is either ready to cook or needs more than a couple of ingredients."
-        case .all: return "The recipe catalogue is empty."
+        case .ready: return String(localized: "Add a few more things to your fridge, or check the “Nearly” tab for recipes that need one more ingredient.")
+        case .nearly: return String(localized: "Everything is either ready to cook or needs more than a couple of ingredients.")
+        case .all: return String(localized: "The recipe catalogue is empty.")
         }
     }
 

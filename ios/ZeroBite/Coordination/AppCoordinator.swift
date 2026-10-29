@@ -45,9 +45,18 @@ final class AppCoordinator {
 
         var title: String {
             switch self {
-            case .fridge: "Fridge"
-            case .recipes: "Recipes"
-            case .settings: "Settings"
+            case .fridge: String(localized: "Fridge")
+            case .recipes: String(localized: "Recipes")
+            case .settings: String(localized: "Settings")
+            }
+        }
+
+        /// Language-independent name for accessibility identifiers.
+        var identifier: String {
+            switch self {
+            case .fridge: "fridge"
+            case .recipes: "recipes"
+            case .settings: "settings"
             }
         }
 

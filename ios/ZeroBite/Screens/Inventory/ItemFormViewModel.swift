@@ -36,7 +36,7 @@ final class ItemFormViewModel {
         return false
     }
 
-    var title: String { isEditing ? "Edit item" : "New item" }
+    var title: String { isEditing ? String(localized: "Edit item") : String(localized: "New item") }
     var canSave: Bool { draft.isValid }
 
     var defaultShelfLifeDays: Int { draft.category.defaultShelfLifeDays }
@@ -53,7 +53,7 @@ final class ItemFormViewModel {
             onSaved(store.add(draft, now: now()))
         case .edit(let id):
             guard let item = store.item(id: id) else {
-                errorMessage = "This item no longer exists."
+                errorMessage = String(localized: "This item no longer exists.")
                 return
             }
             store.update(item, with: draft)

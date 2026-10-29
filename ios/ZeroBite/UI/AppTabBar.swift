@@ -45,7 +45,7 @@ struct AppTabBar: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel(tab.title)
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
-                .accessibilityIdentifier("tab.\(tab.title.lowercased())")
+                .accessibilityIdentifier("tab.\(tab.identifier)")
             }
         }
         .background(alignment: .top) {

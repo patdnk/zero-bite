@@ -17,19 +17,19 @@ struct InventoryView: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
-                        ScreenHeader(overline: viewModel.headerDate, title: "Fridge", count: viewModel.isEmpty ? nil : viewModel.items.count) {
+                        ScreenHeader(overline: viewModel.headerDate, title: String(localized: "Fridge"), count: viewModel.isEmpty ? nil : viewModel.items.count) {
                             addMenu
                         }
 
                         if viewModel.isEmpty {
                             EmptyStateView(
-                                title: "Your fridge is empty",
-                                message: "Scan a label or add something by hand. We'll remind you before it goes off and suggest what to cook.",
+                                title: String(localized: "Your fridge is empty"),
+                                message: String(localized: "Scan a label or add something by hand. We'll remind you before it goes off and suggest what to cook."),
                                 systemImage: "refrigerator",
-                                primaryTitle: "Scan a label",
+                                primaryTitle: String(localized: "Scan a label"),
                                 primaryAction: { viewModel.showScan() },
                                 primarySymbol: "barcode.viewfinder",
-                                secondaryTitle: "Try it with sample food",
+                                secondaryTitle: String(localized: "Try it with sample food"),
                                 secondaryAction: { viewModel.loadSampleData() }
                             )
                             .padding(.top, 40)
@@ -44,8 +44,8 @@ struct InventoryView: View {
                 if !viewModel.isEmpty {
                     BottomSearchBar(
                         text: $viewModel.searchText,
-                        prompt: "Search your food",
-                        accessoryAction: ("barcode.viewfinder", "Scan label or barcode", { viewModel.showScan() }),
+                        prompt: String(localized: "Search your food"),
+                        accessoryAction: ("barcode.viewfinder", String(localized: "Scan label or barcode"), { viewModel.showScan() }),
                         accessibilityID: "inventory.search"
                     )
                 }
@@ -87,7 +87,7 @@ struct InventoryView: View {
 
         let sections = viewModel.gridSections
         if sections.isEmpty {
-            Text(viewModel.searchText.isEmpty ? "Nothing stored here." : "Nothing matches “\(viewModel.searchText)”.")
+            Text(viewModel.searchText.isEmpty ? String(localized: "Nothing stored here.") : String(localized: "Nothing matches “\(viewModel.searchText)”."))
                 .font(.app(.subheadline))
                 .foregroundStyle(Constants.TextSecondary)
                 .frame(maxWidth: .infinity)
@@ -98,7 +98,7 @@ struct InventoryView: View {
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 SectionHeading(
                     title: section.status.sectionTitle,
-                    detail: section.items.count == 1 ? "1 item" : "\(section.items.count) items",
+                    detail: String(localized: "\(section.items.count) items"),
                     tint: section.status == .fresh ? Constants.TextPrimary : section.status.tint
                 )
                 let flagged = viewModel.recalledItemIDs

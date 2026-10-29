@@ -10,17 +10,17 @@ import SwiftUI
 
 extension RecallMatch {
     var headline: String {
-        confidence == .likely ? "Your \(itemName.lowercased()) may be recalled" : "Possible recall: \(itemName)"
+        confidence == .likely ? String(localized: "Your \(itemName.lowercased()) may be recalled") : String(localized: "Possible recall: \(itemName)")
     }
 
     /// Why we think it matches, in plain words.
     var explanation: String {
         var parts: [String] = []
-        if reasons.contains(.barcode) { parts.append("the barcode is on the notice") }
-        if reasons.contains(.brand) { parts.append("the brand matches") }
-        if reasons.contains(.name) && !reasons.contains(.barcode) { parts.append("the product name matches") }
-        if reasons.contains(.date) { parts.append("your date matches a recalled batch") }
-        if reasons.contains(.allBatches) { parts.append("every batch is affected") }
+        if reasons.contains(.barcode) { parts.append(String(localized: "the barcode is on the notice", comment: "Recall match reason; reasons are joined with commas into one sentence")) }
+        if reasons.contains(.brand) { parts.append(String(localized: "the brand matches", comment: "Recall match reason; reasons are joined with commas into one sentence")) }
+        if reasons.contains(.name) && !reasons.contains(.barcode) { parts.append(String(localized: "the product name matches", comment: "Recall match reason; reasons are joined with commas into one sentence")) }
+        if reasons.contains(.date) { parts.append(String(localized: "your date matches a recalled batch", comment: "Recall match reason; reasons are joined with commas into one sentence")) }
+        if reasons.contains(.allBatches) { parts.append(String(localized: "every batch is affected", comment: "Recall match reason; reasons are joined with commas into one sentence")) }
         guard let first = parts.first else { return "" }
         let sentence = ([first.prefix(1).uppercased() + first.dropFirst()] + parts.dropFirst()).joined(separator: ", ")
         return sentence + "."
@@ -54,7 +54,7 @@ struct RecallBanner: View {
                 HStack(alignment: .top, spacing: Spacing.md) {
                     IconTile(symbol: "exclamationmark.triangle.fill", tint: Constants.StatusExpired, size: 36)
                     VStack(alignment: .leading, spacing: 4) {
-                        Overline(matches.count == 1 ? "Food recall" : "\(matches.count) possible recalls", tint: Constants.StatusExpired)
+                        Overline(matches.count == 1 ? String(localized: "Food recall") : String(localized: "\(matches.count) possible recalls"), tint: Constants.StatusExpired)
                         Text(first.headline)
                             .font(.app(.subheadline, weight: .semibold))
                             .foregroundStyle(Constants.TextPrimary)
@@ -104,7 +104,7 @@ struct RecallCard: View {
                 }
             }
 
-            Text(match.explanation + " Compare the details below with your pack.")
+            Text(String(localized: "\(match.explanation) Compare the details below with your pack."))
                 .font(.app(.caption))
                 .foregroundStyle(Constants.TextSecondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -113,7 +113,7 @@ struct RecallCard: View {
 
             if let advice = alert.consumerAdvice {
                 VStack(alignment: .leading, spacing: 4) {
-                    Overline("What to do")
+                    Overline(String(localized: "What to do"))
                     Text(advice)
                         .font(.app(.subheadline))
                         .foregroundStyle(Constants.TextPrimary)

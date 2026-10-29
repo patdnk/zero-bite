@@ -23,7 +23,7 @@ final class SettingsCoordinator {
             title: title,
             message: message,
             primaryButton: .init(title: actionTitle, isDestructive: isDestructive, action: action),
-            secondaryButton: .init(title: "Cancel")
+            secondaryButton: .init(title: String(localized: "Cancel"))
         )
     }
 
@@ -32,6 +32,6 @@ final class SettingsCoordinator {
     }
 
     func showInfo(title: String, message: String) {
-        parent?.showAlert(title: title, message: message, primaryButton: .init(title: "OK"))
+        parent?.showAlert(title: title, message: message, primaryButton: .init(title: String(localized: "OK")))
     }
 }

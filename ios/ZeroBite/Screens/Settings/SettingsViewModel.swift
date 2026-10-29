@@ -100,9 +100,9 @@ final class SettingsViewModel {
 
     var alertsSummary: String {
         let recalls = dependencies.recalls
-        guard let checked = recalls.lastChecked else { return "Not checked yet" }
+        guard let checked = recalls.lastChecked else { return String(localized: "Not checked yet") }
         let count = recalls.alerts.count
-        return "\(count) in the last \(RecallStore.historyDays) days · checked \(checked.formatted(.relative(presentation: .named)))"
+        return String(localized: "\(count) in the last \(RecallStore.historyDays) days · checked \(checked.formatted(.relative(presentation: .named)))")
     }
 
     func setNotificationsEnabled(_ enabled: Bool) async {
@@ -113,8 +113,8 @@ final class SettingsViewModel {
             settings.notificationsEnabled = granted
             if !granted {
                 coordinator.showInfo(
-                    title: "Notifications are off",
-                    message: "Allow notifications for Zero Bite in the Settings app to get expiry reminders."
+                    title: String(localized: "Notifications are off"),
+                    message: String(localized: "Allow notifications for Zero Bite in the Settings app to get expiry reminders.")
                 )
             }
         } else {
@@ -152,9 +152,9 @@ final class SettingsViewModel {
         let used = store.consumedItems
         guard !used.isEmpty else { return }
         coordinator.confirm(
-            title: "Clear used-up history?",
-            message: "Removes \(used.count) items you've already marked as used.",
-            actionTitle: "Clear"
+            title: String(localized: "Clear used-up history?"),
+            message: String(localized: "Removes \(used.count) items you've already marked as used."),
+            actionTitle: String(localized: "Clear")
         ) { [store] in
             for item in used { store.delete(item) }
         }
@@ -162,9 +162,9 @@ final class SettingsViewModel {
 
     func deleteEverything() {
         coordinator.confirm(
-            title: "Delete everything?",
-            message: "This removes every item from your fridge. It can't be undone.",
-            actionTitle: "Delete all"
+            title: String(localized: "Delete everything?"),
+            message: String(localized: "This removes every item from your fridge. It can't be undone."),
+            actionTitle: String(localized: "Delete all")
         ) { [store] in
             store.deleteAll()
         }

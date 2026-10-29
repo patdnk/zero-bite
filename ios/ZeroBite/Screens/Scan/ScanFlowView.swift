@@ -17,23 +17,23 @@ struct ScanFlowView: View {
         NavigationStack(path: $coordinator.navigationPath) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.lg) {
-                    DetailTitle(overline: "Scan or type", title: "Add food")
+                    DetailTitle(overline: String(localized: "Scan or type"), title: String(localized: "Add food"))
 
                     VStack(spacing: Spacing.sm) {
                         if viewModel.supportsLiveScanning {
                             Button { viewModel.startLiveScan() } label: {
-                                ScanOptionRow(symbol: "barcode.viewfinder", title: "Scan with the camera", subtitle: "Reads dates and barcodes live", isPrimary: true)
+                                ScanOptionRow(symbol: "barcode.viewfinder", title: String(localized: "Scan with the camera"), subtitle: String(localized: "Reads dates and barcodes live"), isPrimary: true)
                             }
                             .buttonStyle(.plain)
                             .accessibilityIdentifier("scan.live")
                         }
                         PhotosPicker(selection: $pickerItem, matching: .images) {
-                            ScanOptionRow(symbol: "photo.on.rectangle", title: "Choose a photo of the label", subtitle: "Pick a picture of the packaging")
+                            ScanOptionRow(symbol: "photo.on.rectangle", title: String(localized: "Choose a photo of the label"), subtitle: String(localized: "Pick a picture of the packaging"))
                         }
                         .buttonStyle(.plain)
                         .accessibilityIdentifier("scan.photo")
                         Button { viewModel.enterManually() } label: {
-                            ScanOptionRow(symbol: "square.and.pencil", title: "Type it in", subtitle: "No label to read")
+                            ScanOptionRow(symbol: "square.and.pencil", title: String(localized: "Type it in"), subtitle: String(localized: "No label to read"))
                         }
                         .buttonStyle(.plain)
                         .accessibilityIdentifier("scan.manual")
@@ -52,7 +52,7 @@ struct ScanFlowView: View {
                 destination(for: route, coordinator: coordinator)
             }
         }
-        .loadingOverlay(viewModel.isProcessing, message: "Reading the label…")
+        .loadingOverlay(viewModel.isProcessing, message: String(localized: "Reading the label…"))
         .onChange(of: pickerItem) { _, item in
             guard let item else { return }
             pickerItem = nil

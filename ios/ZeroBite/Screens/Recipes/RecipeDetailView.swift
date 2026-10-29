@@ -13,7 +13,7 @@ struct RecipeDetailView: View {
             if let recipe = viewModel.recipe, let match = viewModel.match {
                 content(recipe: recipe, match: match)
             } else {
-                EmptyStateView(title: "Recipe not found", message: "It may have been removed from the catalogue.", systemImage: "questionmark")
+                EmptyStateView(title: String(localized: "Recipe not found"), message: String(localized: "It may have been removed from the catalogue."), systemImage: "questionmark")
                     .padding(Spacing.gutter)
             }
         }
@@ -28,16 +28,16 @@ struct RecipeDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
 
                 VStack(alignment: .leading, spacing: Spacing.sm) {
-                    DetailTitle(overline: "\(match.matchPercent)% in your fridge", title: recipe.title, overlineTint: match.accent)
+                    DetailTitle(overline: String(localized: "\(match.matchPercent)% in your fridge"), title: recipe.title, overlineTint: match.accent)
                     Text(recipe.summary)
                         .font(.app(.body))
                         .foregroundStyle(Constants.TextSecondary)
                 }
 
                 HStack(spacing: Spacing.sm) {
-                    stat("\(recipe.prepMinutes)", unit: "min", symbol: "clock")
-                    stat("\(recipe.servings)", unit: recipe.servings == 1 ? "serving" : "servings", symbol: "person.2")
-                    stat("\(match.expiringItems.count)", unit: "expiring", symbol: "clock.badge.exclamationmark",
+                    stat("\(recipe.prepMinutes)", unit: String(localized: "min", comment: "Unit after a number of minutes"), symbol: "clock")
+                    stat("\(recipe.servings)", unit: CountUnit.unit(in: String(localized: "\(recipe.servings) servings", comment: "The number is drawn large and the rest small"), count: recipe.servings), symbol: "person.2")
+                    stat("\(match.expiringItems.count)", unit: String(localized: "expiring", comment: "Unit after a number of fridge items that are about to expire"), symbol: "clock.badge.exclamationmark",
                          tint: match.expiringItems.isEmpty ? nil : Constants.BrandOrange)
                 }
 
@@ -54,7 +54,7 @@ struct RecipeDetailView: View {
                     .padding(.horizontal, -Spacing.gutter)
                 }
 
-                CardSection("Ingredients") {
+                CardSection(String(localized: "Ingredients")) {
                     ForEach(recipe.ingredients) { ingredient in
                         IngredientRow(
                             ingredient: ingredient,
@@ -65,7 +65,7 @@ struct RecipeDetailView: View {
                     }
                 }
 
-                CardSection("Method") {
+                CardSection(String(localized: "Method")) {
                     ForEach(Array(recipe.steps.enumerated()), id: \.offset) { index, step in
                         HStack(alignment: .top, spacing: Spacing.md) {
                             Text(String(format: "%02d", index + 1))
@@ -80,7 +80,7 @@ struct RecipeDetailView: View {
                     }
                 }
 
-                PrimaryButton("I cooked this — update my fridge", systemImage: "checkmark.seal", isEnabled: viewModel.canMarkCooked) {
+                PrimaryButton(String(localized: "I cooked this — update my fridge"), systemImage: "checkmark.seal", isEnabled: viewModel.canMarkCooked) {
                     viewModel.cooked()
                 }
                 .accessibilityIdentifier("recipe.cooked")
@@ -111,8 +111,8 @@ struct RecipeDetailView: View {
         HStack(alignment: .top, spacing: Spacing.sm) {
             Image(systemName: match.canMake ? "checkmark.circle.fill" : "cart.fill")
             Text(match.canMake
-                 ? "You have everything you need."
-                 : "Missing \(match.missing.map(\.name).joined(separator: ", ")).")
+                 ? String(localized: "You have everything you need.")
+                 : String(localized: "Missing \(match.missing.map(\.name).joined(separator: ", ")).", comment: "Followed by a list of missing ingredients"))
         }
         .font(.app(.subheadline, weight: .medium))
         .foregroundStyle(tint)

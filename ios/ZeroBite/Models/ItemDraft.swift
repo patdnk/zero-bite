@@ -21,6 +21,28 @@ struct ItemDraft: Hashable, Sendable {
 
     static let unitSuggestions = ["pcs", "g", "kg", "ml", "l", "pack", "slices"]
 
+    /// Display name of a unit in the current language. Known units are stored as their English
+    /// code (so data survives a language change); anything the user typed is shown as is.
+    static func unitLabel(_ unit: String) -> String {
+        switch unit {
+        case "pcs": String(localized: "pcs", comment: "Unit: pieces")
+        case "pack": String(localized: "pack", comment: "Unit: pack")
+        case "slices": String(localized: "slices", comment: "Unit: slices")
+        case "pints": String(localized: "pints", comment: "Unit: pints")
+        case "bag": String(localized: "bag", comment: "Unit: bag")
+        case "loaf": String(localized: "loaf", comment: "Unit: loaf of bread")
+        case "punnet": String(localized: "punnet", comment: "Unit: punnet (small fruit box)")
+        case "bulb": String(localized: "bulb", comment: "Unit: bulb of garlic")
+        default: unit
+        }
+    }
+
+    /// Inverse of `unitLabel`: maps a typed label back to its stored code when it names a known unit.
+    static func unitCode(forLabel label: String) -> String {
+        let known = unitSuggestions + ["pints", "bag", "loaf", "punnet", "bulb"]
+        return known.first { unitLabel($0) == label } ?? label
+    }
+
     init(now: Date = .now) {
         expiresAt = Calendar.current.date(byAdding: .day, value: 7, to: now) ?? now
     }

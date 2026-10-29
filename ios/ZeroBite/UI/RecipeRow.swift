@@ -35,10 +35,10 @@ extension RecipeMatch {
     }
 
     var statusText: String {
-        if canMake { return "Ready to cook" }
+        if canMake { return String(localized: "Ready to cook") }
         let names = missing.prefix(2).map(\.name).joined(separator: ", ")
         let more = missing.count > 2 ? " +\(missing.count - 2)" : ""
-        return "Missing \(names)\(more)"
+        return String(localized: "Missing \(names)\(more)")
     }
 
     var accent: Color {
@@ -80,7 +80,7 @@ struct FeaturedRecipeCard: View {
                         .foregroundStyle(Constants.TextPrimary)
                         .multilineTextAlignment(.leading)
                     Spacer()
-                    Text("\(match.matchPercent)%")
+                    Text(verbatim: "\(match.matchPercent)%")
                         .font(.app(.headline, weight: .semibold))
                         .foregroundStyle(match.accent)
                         .accessibilityLabel("\(match.matchPercent) percent of ingredients in your fridge")
@@ -113,9 +113,9 @@ struct FeaturedRecipeCard: View {
     }
 
     private var metaText: String {
-        var parts = ["\(match.recipe.prepMinutes) min", "serves \(match.recipe.servings)"]
+        var parts = [String(localized: "\(match.recipe.prepMinutes) min"), String(localized: "serves \(match.recipe.servings)")]
         if !match.expiringItems.isEmpty {
-            parts.append("uses \(match.expiringItems.count) expiring")
+            parts.append(String(localized: "uses \(match.expiringItems.count) expiring"))
         }
         return parts.joined(separator: " · ")
     }

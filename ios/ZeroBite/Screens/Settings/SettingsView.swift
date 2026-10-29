@@ -15,9 +15,9 @@ struct SettingsView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
-                    ScreenHeader(overline: "Zero Bite \(viewModel.appVersion)", title: "Settings")
+                    ScreenHeader(overline: "Zero Bite \(viewModel.appVersion)", title: String(localized: "Settings"))
 
-                    CardSection("Reminders", footer: "You'll get a heads-up before the date, one on the day, and one if it slips past.") {
+                    CardSection(String(localized: "Reminders"), footer: String(localized: "You'll get a heads-up before the date, one on the day, and one if it slips past.")) {
                         Toggle(isOn: Binding(
                             get: { viewModel.notificationsEnabled },
                             set: { enabled in Task { await viewModel.setNotificationsEnabled(enabled) } }
@@ -29,7 +29,7 @@ struct SettingsView: View {
                         .accessibilityIdentifier("settings.notificationsToggle")
 
                         if viewModel.notificationState == .denied {
-                            ActionRow(title: "Allow in Settings app", symbol: "gear", tint: Constants.BrandOrange) {
+                            ActionRow(title: String(localized: "Allow in Settings app"), symbol: "gear", tint: Constants.BrandOrange) {
                                 viewModel.openSystemSettings()
                             }
                         }
@@ -37,18 +37,18 @@ struct SettingsView: View {
                         Stepper(value: $viewModel.leadDays, in: 1...14) {
                             Text("Remind me \(viewModel.leadDays) days before").font(.app(.subheadline))
                         }
-                        InfoRow("At", symbol: "clock") {
+                        InfoRow(String(localized: "At"), symbol: "clock") {
                             DatePicker("At", selection: $viewModel.notifyTime, displayedComponents: .hourAndMinute)
                                 .labelsHidden()
                         }
-                        ActionRow(title: "Send a test notification", symbol: "bell", tint: Constants.BrandOrange) {
+                        ActionRow(title: String(localized: "Send a test notification"), symbol: "bell", tint: Constants.BrandOrange) {
                             Task { await viewModel.sendTestNotification() }
                         }
                         .disabled(!viewModel.notificationsEnabled)
                         .opacity(viewModel.notificationsEnabled ? 1 : 0.45)
                     }
 
-                    CardSection("Food safety", footer: "Checks the Food Standards Agency for UK recalls and tells you if something in your fridge might be affected.") {
+                    CardSection(String(localized: "Food safety"), footer: String(localized: "Checks the Food Standards Agency for UK recalls and tells you if something in your fridge might be affected.")) {
                         Toggle(isOn: $viewModel.recallChecksEnabled) {
                             Text("Check UK food recalls").font(.app(.subheadline, weight: .medium))
                         }
@@ -79,7 +79,7 @@ struct SettingsView: View {
                     }
 
                     VStack(alignment: .leading, spacing: Spacing.sm) {
-                        Overline("Your allergies")
+                        Overline(String(localized: "Your allergies"))
                         FlowLayout(spacing: 6) {
                             ForEach(Allergen.allCases) { allergen in
                                 let isOn = viewModel.isSelected(allergen)
@@ -101,30 +101,30 @@ struct SettingsView: View {
                             .foregroundStyle(Constants.TextSecondary)
                     }
 
-                    CardSection("Fridge", footer: "Recipes that use food inside this window are ranked higher.") {
+                    CardSection(String(localized: "Fridge"), footer: String(localized: "Recipes that use food inside this window are ranked higher.")) {
                         Stepper(value: $viewModel.soonThresholdDays, in: 1...14) {
                             Text("“Expiring soon” means within \(viewModel.soonThresholdDays) days").font(.app(.subheadline))
                         }
                     }
 
-                    CardSection("Data") {
-                        InfoRow("In your fridge", symbol: "refrigerator", value: "\(viewModel.activeItemCount)")
-                        InfoRow("Used up", symbol: "checkmark", value: "\(viewModel.usedItemCount)")
-                        ActionRow(title: "Add sample food", symbol: "sparkles") { viewModel.loadSampleData() }
-                        ActionRow(title: "Clear used-up history", symbol: "clock.arrow.circlepath") { viewModel.clearUsedHistory() }
+                    CardSection(String(localized: "Data")) {
+                        InfoRow(String(localized: "In your fridge"), symbol: "refrigerator", value: "\(viewModel.activeItemCount)")
+                        InfoRow(String(localized: "Used up"), symbol: "checkmark", value: "\(viewModel.usedItemCount)")
+                        ActionRow(title: String(localized: "Add sample food"), symbol: "sparkles") { viewModel.loadSampleData() }
+                        ActionRow(title: String(localized: "Clear used-up history"), symbol: "clock.arrow.circlepath") { viewModel.clearUsedHistory() }
                             .disabled(viewModel.usedItemCount == 0)
                             .opacity(viewModel.usedItemCount == 0 ? 0.45 : 1)
-                        ActionRow(title: "Delete everything", symbol: "trash", tint: Constants.StatusExpired) { viewModel.deleteEverything() }
+                        ActionRow(title: String(localized: "Delete everything"), symbol: "trash", tint: Constants.StatusExpired) { viewModel.deleteEverything() }
                             .disabled(viewModel.activeItemCount == 0 && viewModel.usedItemCount == 0)
                     }
 
-                    CardSection("About", footer: "Dates and barcodes are read on your device with Apple Vision. Product names come from Open Food Facts. Food alerts come from the Food Standards Agency under the Open Government Licence v3.0.") {
-                        ActionRow(title: "How Zero Bite works", symbol: "book.pages", tint: Constants.BrandOrange) {
+                    CardSection(String(localized: "About"), footer: String(localized: "Dates and barcodes are read on your device with Apple Vision. Product names come from Open Food Facts. Food alerts come from the Food Standards Agency under the Open Government Licence v3.0.")) {
+                        ActionRow(title: String(localized: "How Zero Bite works"), symbol: "book.pages", tint: Constants.BrandOrange) {
                             viewModel.showHowItWorks()
                         }
                         .accessibilityIdentifier("settings.howItWorks")
-                        InfoRow("Version", value: viewModel.appVersion)
-                        InfoRow("Recipes", value: "\(viewModel.recipeCount)")
+                        InfoRow(String(localized: "Version"), value: viewModel.appVersion)
+                        InfoRow(String(localized: "Recipes"), value: "\(viewModel.recipeCount)")
                     }
                 }
                 .padding(.horizontal, Spacing.gutter)
