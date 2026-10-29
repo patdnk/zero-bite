@@ -11,6 +11,7 @@
 
 Each slot in App Store Connect only accepts its own pixel size, and file names start with the size (`6.3in-01-…`) so the sets can't be mixed up.
 | `metadata/en-GB/` | Name, subtitle, keywords, description, promo text, release notes and URLs (fastlane `deliver` layout) |
+| `metadata/pl/` | The same files in Polish for the Polish App Store localisation (`pl`); URLs unchanged |
 | `app-privacy.md` | Answers for App Store Connect's App Privacy questionnaire, and where the URLs come from |
 | `../docs/` | Marketing, support and privacy pages to host for the URLs |
 | `raw/` | Unframed simulator captures the panels are built from |
