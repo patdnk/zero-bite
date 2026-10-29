@@ -7,7 +7,7 @@ WIESZ, CO ZJEŚĆ W PIERWSZEJ KOLEJNOŚCI
 Lodówka, zamrażarka i spiżarnia są posortowane według pilności. Produkt, który trzeba zjeść najpierw, jest na samej górze, z dużym odliczaniem i przyciskami do jednego dotknięcia: zużyte, zamroź lub przepisy.
 
 PRZYPOMNIENIE, ZANIM COŚ SIĘ ZEPSUJE
-Ustal, ile dni wcześniej i o której godzinie chcesz dostawać powiadomienia. Dostaniesz przypomnienie przed upływem daty, drugie w dniu jej upływu i trzecie, gdy coś umknie Twojej uwadze.
+Ustal, ile dni wcześniej i o której godzinie chcesz dostawać powiadomienia. Dostaniesz przypomnienie przed datą, drugie w dniu, w którym mija termin, i trzecie, gdy coś się przeterminuje.
 
 UGOTUJ TO, CO ZARAZ SIĘ PSUJE
 Przepisy są ułożone według tego, co masz w lodówce, a produkty z kończącą się datą liczą się jako pierwsze. Przy każdym przepisie zobaczysz, co już masz, co się kończy i czego brakuje.
