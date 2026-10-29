@@ -40,6 +40,8 @@ struct RecipeMatcher: Sendable {
 
     var soonThresholdDays: Int = 3
     var now: Date = .now
+    /// Polish (and future) names for English ingredient terms; always active, whatever the UI language.
+    var aliases: IngredientAliases = .bundled
 
     // MARK: - Vocabulary
 
@@ -135,20 +137,25 @@ struct RecipeMatcher: Sendable {
     /// Prefers the item that expires soonest when several satisfy the ingredient.
     func bestItem(for ingredient: String, in items: [FoodItem]) -> FoodItem? {
         items
-            .filter { Self.matches(ingredient: ingredient, itemName: $0.name) }
+            .filter { Self.matches(ingredient: ingredient, itemName: $0.name, aliases: aliases) }
             .min { $0.expiresAt < $1.expiresAt }
     }
 
     // MARK: - Name matching
 
-    static func matches(ingredient: String, itemName: String) -> Bool {
+    static func matches(ingredient: String, itemName: String, aliases: IngredientAliases = .bundled) -> Bool {
         let a = normalize(ingredient)
         let b = normalize(itemName)
         guard !a.isEmpty, !b.isEmpty else { return false }
         if a == b { return true }
         if containsWords(a, in: b) || containsWords(b, in: a) { return true }
-        if let ga = synonymGroup(for: a), let gb = synonymGroup(for: b), ga == gb { return true }
-        return false
+        let ga = synonymGroup(for: a)
+        if let ga, let gb = synonymGroup(for: b), ga == gb { return true }
+        // Aliases of the ingredient, or of any term in its synonym group, as whole words of the item.
+        let terms = [a] + (ga.map { synonymGroups[$0] } ?? [])
+        return terms.contains { term in
+            aliases.aliases(forNormalizedTerm: term).contains { containsWords($0, in: b) }
+        }
     }
 
     static func isStaple(_ name: String) -> Bool {
@@ -188,5 +195,39 @@ struct RecipeMatcher: Sendable {
         synonymGroups.firstIndex { group in
             group.contains { $0 == normalizedName || containsWords($0, in: normalizedName) }
         }
+    }
+}
+
+/// Other-language names for English ingredient terms (shared-assets/ingredient-aliases.pl.json):
+/// `{ "egg": ["jajko", "jajka", …] }`. Keys and aliases are stored normalized.
+struct IngredientAliases: Sendable {
+
+    private let byTerm: [String: [String]]
+
+    init(_ raw: [String: [String]]) {
+        var byTerm: [String: [String]] = [:]
+        for (term, aliases) in raw {
+            byTerm[RecipeMatcher.normalize(term), default: []].append(contentsOf: aliases.map(RecipeMatcher.normalize))
+        }
+        self.byTerm = byTerm
+    }
+
+    func aliases(forNormalizedTerm term: String) -> [String] { byTerm[term] ?? [] }
+
+    static let none = IngredientAliases([:])
+
+    /// Every bundled alias file (currently Polish), merged.
+    static let bundled = load(bundle: .main)
+
+    static func load(bundle: Bundle, resources: [String] = ["ingredient-aliases.pl"]) -> IngredientAliases {
+        var merged: [String: [String]] = [:]
+        for resource in resources {
+            guard let url = bundle.url(forResource: resource, withExtension: "json"),
+                  let data = try? Data(contentsOf: url),
+                  let raw = try? JSONDecoder().decode([String: [String]].self, from: data)
+            else { continue }
+            merged.merge(raw) { $0 + $1 }
+        }
+        return IngredientAliases(merged)
     }
 }

@@ -71,8 +71,13 @@ final class ExpiryNotificationService {
     func postRecallNotice(for match: RecallMatch) async {
         guard isAuthorized else { return }
         let content = UNMutableNotificationContent()
-        content.title = match.confidence == .likely ? "Recall: check your \(match.itemName)" : "Possible recall: \(match.itemName)"
-        content.body = "\(match.alert.displayTitle). Check the pack before eating it."
+        content.title = match.confidence == .likely
+            ? String(localized: "Recall: check your \(match.itemName)", table: "Notifications",
+                     comment: "Notification title: a food alert very likely covers this fridge item")
+            : String(localized: "Possible recall: \(match.itemName)", table: "Notifications",
+                     comment: "Notification title: a food alert may cover this fridge item")
+        content.body = String(localized: "\(match.alert.displayTitle). Check the pack before eating it.", table: "Notifications",
+                              comment: "Recall notification body; the placeholder is the FSA alert title, in English")
         content.sound = .default
         content.interruptionLevel = .timeSensitive
         content.userInfo = [Self.itemIDKey: match.itemID.uuidString]
@@ -83,8 +88,8 @@ final class ExpiryNotificationService {
 
     func sendTestNotification() async {
         let content = UNMutableNotificationContent()
-        content.title = "Zero Bite reminders are on"
-        content.body = "This is how you'll hear about food that's about to expire."
+        content.title = String(localized: "Zero Bite reminders are on", table: "Notifications")
+        content.body = String(localized: "This is how you'll hear about food that's about to expire.", table: "Notifications")
         content.sound = .default
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
         let request = UNNotificationRequest(identifier: "zerobite.test", content: content, trigger: trigger)

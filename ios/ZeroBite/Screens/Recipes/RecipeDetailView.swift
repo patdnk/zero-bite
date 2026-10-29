@@ -46,7 +46,7 @@ struct RecipeDetailView: View {
                 if !recipe.tags.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 6) {
-                            ForEach(recipe.tags, id: \.self) { Tag(text: $0) }
+                            ForEach(recipe.displayTags, id: \.self) { Tag(text: $0) }
                         }
                         .padding(.horizontal, Spacing.gutter)
                     }
@@ -112,7 +112,7 @@ struct RecipeDetailView: View {
             Image(systemName: match.canMake ? "checkmark.circle.fill" : "cart.fill")
             Text(match.canMake
                  ? String(localized: "You have everything you need.")
-                 : String(localized: "Missing \(match.missing.map(\.name).joined(separator: ", ")).", comment: "Followed by a list of missing ingredients"))
+                 : String(localized: "Missing \(match.missing.map(\.missingLabel).joined(separator: ", ")).", comment: "Followed by a list of missing ingredients"))
         }
         .font(.app(.subheadline, weight: .medium))
         .foregroundStyle(tint)
@@ -136,7 +136,7 @@ struct IngredientRow: View {
                 .frame(width: 20)
                 .padding(.top, 1)
             VStack(alignment: .leading, spacing: 2) {
-                Text(ingredient.amount.isEmpty ? ingredient.name : "\(ingredient.amount) \(ingredient.name)")
+                Text(ingredient.amount.isEmpty ? ingredient.label : "\(ingredient.amount) \(ingredient.label)")
                     .font(.app(.subheadline, weight: .medium))
                     .foregroundStyle(Constants.TextPrimary)
                 subtitle

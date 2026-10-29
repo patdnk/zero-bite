@@ -20,6 +20,12 @@ targets:
       - path: ZeroBite
       - path: ../shared-assets/recipes.json
         buildPhase: resources
+      - path: ../shared-assets/recipes.pl.json
+        buildPhase: resources
+      - path: ../shared-assets/recipe-tags.json
+        buildPhase: resources
+      - path: ../shared-assets/ingredient-aliases.pl.json
+        buildPhase: resources
     info:
       path: ZeroBite/Info.plist
       properties:

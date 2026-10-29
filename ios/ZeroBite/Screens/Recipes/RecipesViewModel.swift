@@ -80,7 +80,7 @@ final class RecipesViewModel {
             }
             guard !query.isEmpty else { return true }
             return match.recipe.title.lowercased().contains(query)
-                || match.recipe.ingredients.contains { $0.name.lowercased().contains(query) }
+                || match.recipe.ingredients.contains { $0.label.lowercased().contains(query) || $0.name.lowercased().contains(query) }
         }
     }
 

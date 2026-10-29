@@ -22,6 +22,41 @@ struct PlannedNotification: Equatable, Sendable {
     let fireDate: Date
 }
 
+/// Titles and bodies of expiry reminders, from the `Notifications` string table.
+/// The default reads the app's current language; tests inject a specific `.lproj` bundle.
+struct ExpiryNotificationCopy: Sendable {
+    var bundle: Bundle = .main
+    var locale: Locale = .current
+
+    func soonTitle(name: String, leadDays: Int) -> String {
+        leadDays == 1
+            ? String(localized: "\(name) expires tomorrow", table: "Notifications", bundle: bundle, locale: locale,
+                     comment: "Reminder title the day before an item's expiry date")
+            : String(localized: "\(name) expires in \(leadDays) days", table: "Notifications", bundle: bundle, locale: locale,
+                     comment: "Reminder title a few days before an item's expiry date")
+    }
+
+    var soonBody: String {
+        String(localized: "Plan a meal around it — Zero Bite has recipe ideas.", table: "Notifications", bundle: bundle, locale: locale)
+    }
+
+    func todayTitle(name: String) -> String {
+        String(localized: "\(name) expires today", table: "Notifications", bundle: bundle, locale: locale)
+    }
+
+    var todayBody: String {
+        String(localized: "Use it today or freeze it.", table: "Notifications", bundle: bundle, locale: locale)
+    }
+
+    func expiredTitle(name: String) -> String {
+        String(localized: "\(name) has expired", table: "Notifications", bundle: bundle, locale: locale)
+    }
+
+    var expiredBody: String {
+        String(localized: "Check it and update your fridge.", table: "Notifications", bundle: bundle, locale: locale)
+    }
+}
+
 struct ExpiryNotificationPlanner: Sendable {
 
     static let identifierPrefix = "zerobite.item."
@@ -29,6 +64,7 @@ struct ExpiryNotificationPlanner: Sendable {
     /// iOS keeps at most 64 pending local notifications per app; leave headroom.
     var limit = 60
     var calendar: Calendar = .current
+    var copy = ExpiryNotificationCopy()
 
     func plan(items: [ExpiringItemSummary], preferences: NotificationPreferences, now: Date = .now) -> [PlannedNotification] {
         guard preferences.enabled else { return [] }
@@ -47,17 +83,13 @@ struct ExpiryNotificationPlanner: Sendable {
             return calendar.date(bySettingHour: preferences.hour, minute: preferences.minute, second: 0, of: day)
         }
 
-        let leadPhrase = preferences.leadDays == 1 ? "tomorrow" : "in \(preferences.leadDays) days"
         let candidates: [(suffix: String, date: Date?, title: String, body: String)] = [
             ("soon", fireTime(daysFromExpiry: -preferences.leadDays),
-             "\(item.name) expires \(leadPhrase)",
-             "Plan a meal around it — Zero Bite has recipe ideas."),
+             copy.soonTitle(name: item.name, leadDays: preferences.leadDays), copy.soonBody),
             ("today", fireTime(daysFromExpiry: 0),
-             "\(item.name) expires today",
-             "Use it today or freeze it."),
+             copy.todayTitle(name: item.name), copy.todayBody),
             ("expired", fireTime(daysFromExpiry: 1),
-             "\(item.name) has expired",
-             "Check it and update your fridge."),
+             copy.expiredTitle(name: item.name), copy.expiredBody),
         ]
 
         return candidates.compactMap { candidate in

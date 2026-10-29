@@ -11,7 +11,7 @@ extension Recipe {
     /// Placeholder artwork until recipes carry real images.
     var symbol: String {
         // Title only: tags such as "vegetarian" or "quick" say nothing about what the dish looks like.
-        let haystack = title.lowercased()
+        let haystack = (canonicalTitle ?? title).lowercased()
         let rules: [(String, [String])] = [
             ("mug.fill", ["smoothie", "parfait", "oats", "porridge", "granola", "shake"]),
             ("cup.and.saucer.fill", ["soup", "broth", "stew", "chowder"]),
@@ -36,7 +36,7 @@ extension RecipeMatch {
 
     var statusText: String {
         if canMake { return String(localized: "Ready to cook") }
-        let names = missing.prefix(2).map(\.name).joined(separator: ", ")
+        let names = missing.prefix(2).map(\.missingLabel).joined(separator: ", ")
         let more = missing.count > 2 ? " +\(missing.count - 2)" : ""
         return String(localized: "Missing \(names)\(more)")
     }
