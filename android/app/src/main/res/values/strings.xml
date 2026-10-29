@@ -52,6 +52,13 @@
     <string name="unit_pcs">pcs</string>
     <string name="unit_pack">pack</string>
     <string name="unit_slices">slices</string>
+    <!-- "slices" after a whole number -->
+    <plurals name="unit_slices_count">
+        <item quantity="one">slices</item>
+        <item quantity="other">slices</item>
+    </plurals>
+    <!-- "slices" after a fraction ("1.5 slices") -->
+    <string name="unit_slices_fraction">slices</string>
 
     <!-- Expiry -->
     <string name="status_expired">Expired</string>

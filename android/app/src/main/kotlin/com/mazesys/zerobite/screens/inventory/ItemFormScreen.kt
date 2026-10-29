@@ -5,6 +5,7 @@ import androidx.compose.ui.res.stringResource
 import com.mazesys.zerobite.R
 import com.mazesys.zerobite.ui.format.appLocale
 import com.mazesys.zerobite.ui.text.labelRes
+import com.mazesys.zerobite.ui.text.unitCodes
 import com.mazesys.zerobite.ui.text.unitLabel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -115,8 +116,11 @@ fun ItemFormScreen(viewModel: ItemFormViewModel, onCancel: () -> Unit, modifier:
                         Modifier.weight(1f).testTag("itemForm.quantity"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     )
+                    val unitCodes = unitCodes()
                     AppTextField(
-                        unitLabel(draft.unit), { unit -> viewModel.updateDraft { it.copy(unit = unit) } }, stringResource(R.string.form_unit),
+                        unitLabel(draft.unit),
+                        { unit -> viewModel.updateDraft { it.copy(unit = unitCodes[unit.trim()] ?: unit) } },
+                        stringResource(R.string.form_unit),
                         Modifier.width(110.dp).testTag("itemForm.unit"),
                         keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
                     )

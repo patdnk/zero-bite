@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Common actions -->
     <string name="action_cancel">Anuluj</string>
     <string name="action_done">Gotowe</string>
@@ -50,6 +50,13 @@
     <string name="unit_pcs">szt.</string>
     <string name="unit_pack">opak.</string>
     <string name="unit_slices">plastry</string>
+    <plurals name="unit_slices_count">
+        <item quantity="one">plaster</item>
+        <item quantity="few">plastry</item>
+        <item quantity="many">plastrów</item>
+        <item quantity="other">plastra</item>
+    </plurals>
+    <string name="unit_slices_fraction">plastra</string>
 
     <!-- Expiry -->
     <string name="status_expired">Po terminie</string>
@@ -99,7 +106,7 @@
         <item quantity="many">dni po terminie</item>
         <item quantity="other">dnia po terminie</item>
     </plurals>
-    <string name="recall_flag">Wycofany?</string>
+    <string name="recall_flag">Wycofanie?</string>
 
     <!-- Fridge -->
     <string name="fridge_title">Lodówka</string>
@@ -124,7 +131,7 @@
         <item quantity="other">%d produktu</item>
     </plurals>
     <string name="fridge_move_to_freezer">Przenieś do zamrażarki</string>
-    <string name="fridge_tip_title">Dostawaj przypomnienia o terminach</string>
+    <string name="fridge_tip_title">Przypomnimy ci o terminach</string>
     <string name="fridge_tip_message">Damy ci znać kilka dni przed terminem.</string>
     <string name="fridge_tip_turn_on">Włącz</string>
 
@@ -133,7 +140,7 @@
     <string name="detail_removed_message">Tego produktu nie ma już w twojej lodówce.</string>
     <string name="detail_delete_title">Usunąć ten produkt?</string>
     <string name="detail_details">Szczegóły</string>
-    <string name="detail_stored_in">Miejsce</string>
+    <string name="detail_stored_in">Miejsce przechowywania</string>
     <string name="detail_quantity">Ilość</string>
     <string name="detail_expires">Termin</string>
     <string name="detail_added">Dodano</string>
@@ -143,12 +150,13 @@
     <string name="detail_mark_used">Oznacz jako zużyte</string>
     <string name="detail_used_up">Zużyte</string>
     <string name="detail_no_recipes">Żaden przepis w katalogu jeszcze tego nie wykorzystuje.</string>
-    <string name="detail_recipes_using">Przepisy z: %s</string>
+    <!-- Drops the item name: Polish can't inflect it here, and the title above already shows it. -->
+    <string name="detail_recipes_using" tools:ignore="StringFormatCount">Przepisy z tym produktem</string>
 
     <!-- Item form -->
     <string name="form_title_new">Nowy produkt</string>
     <string name="form_title_edit">Edytuj produkt</string>
-    <string name="form_overline_add">Dodaj do lodówki</string>
+    <string name="form_overline_add">Nowy produkt</string>
     <string name="form_overline_edit">Edycja</string>
     <string name="form_save_add">Dodaj do lodówki</string>
     <string name="form_save_edit">Zapisz zmiany</string>
@@ -158,9 +166,9 @@
     <string name="form_brand">Marka (opcjonalnie, pomaga wykryć wycofania)</string>
     <string name="form_brand_placeholder">Piątnica</string>
     <string name="form_category">Kategoria</string>
-    <string name="form_stored_in">Gdzie leży</string>
+    <string name="form_stored_in">Miejsce przechowywania</string>
     <string name="form_quantity">Ilość</string>
-    <string name="form_amount">Ilość</string>
+    <string name="form_amount">Liczba</string>
     <string name="form_unit">Jednostka</string>
     <string name="form_expiry">Termin przydatności</string>
     <string name="form_expiry_footer">Brak daty na etykiecie? Użyj typowego okresu przydatności dla kategorii „%s”.</string>
@@ -195,7 +203,7 @@
     <string name="settings_send_test">Wyślij powiadomienie testowe</string>
     <string name="settings_food_safety">Bezpieczeństwo żywności</string>
     <string name="settings_food_safety_footer">Sprawdza komunikaty brytyjskiej Food Standards Agency o wycofanej żywności i daje ci znać, jeśli może to dotyczyć czegoś w twojej lodówce.</string>
-    <string name="settings_check_recalls">Sprawdzaj wycofania żywności w UK</string>
+    <string name="settings_check_recalls">Sprawdzaj wycofania żywności w Wielkiej Brytanii</string>
     <string name="settings_food_alerts">Alerty żywnościowe</string>
     <string name="settings_next_build">Pojawi się w następnej wersji</string>
     <string name="settings_your_allergies">Twoje alergie</string>
@@ -254,12 +262,12 @@
     <string name="welcome_turn_on_reminders">Włącz przypomnienia</string>
     <string name="welcome_page_indicator">Strona %1$d z %2$d</string>
     <string name="welcome_overline_scan">1 · Skanuj</string>
-    <string name="welcome_overline_remind">2 · Pamiętaj</string>
+    <string name="welcome_overline_remind">2 · Przypomnienia</string>
     <string name="welcome_overline_cook">3 · Gotuj</string>
     <string name="welcome_overline_reminders">Ostatni krok</string>
     <string name="welcome_title_welcome">Mniej marnuj,\nwięcej gotuj.</string>
     <string name="welcome_title_scan">Zeskanuj etykietę, zamiast pisać.</string>
-    <string name="welcome_title_remind">Wiedz, co zużyć najpierw.</string>
+    <string name="welcome_title_remind">Zobacz, co zużyć najpierw.</string>
     <string name="welcome_title_cook">Gotuj z tego, co masz.</string>
     <string name="welcome_title_reminders">Przypomnieć ci, zanim jedzenie się zepsuje?</string>
     <string name="welcome_title_reminders_denied">Przypomnienia są wyłączone.</string>
@@ -317,11 +325,11 @@
         <item quantity="other">%d przepisu</item>
     </plurals>
     <string name="recipes_empty_ready_title">Na razie nic do ugotowania</string>
-    <string name="recipes_empty_nearly_title">Nic nie jest blisko</string>
+    <string name="recipes_empty_nearly_title">Brak prawie gotowych przepisów</string>
     <string name="recipes_empty_all_title">Żaden przepis nie pasuje</string>
     <string name="recipes_empty_search">Spróbuj wyszukać coś innego.</string>
     <string name="recipes_empty_ready_message">Dodaj do lodówki jeszcze kilka rzeczy albo zajrzyj do zakładki „Prawie” – są tam przepisy, którym brakuje jednego składnika.</string>
-    <string name="recipes_empty_nearly_message">Wszystko jest albo gotowe do ugotowania, albo wymaga więcej niż kilku składników.</string>
+    <string name="recipes_empty_nearly_message">Każdy przepis jest albo gotowy do ugotowania, albo brakuje mu więcej niż dwóch składników.</string>
     <string name="recipes_empty_all_message">Katalog przepisów jest pusty.</string>
     <string name="recipe_ready_to_cook">Gotowe do ugotowania</string>
     <string name="recipe_missing">Brakuje: %s</string>

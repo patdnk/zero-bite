@@ -10,6 +10,7 @@ import com.mazesys.zerobite.core.model.Allergen
 import com.mazesys.zerobite.core.model.ExpiryStatus
 import com.mazesys.zerobite.core.model.FoodCategory
 import com.mazesys.zerobite.core.model.FoodItem
+import com.mazesys.zerobite.core.model.ItemDraft
 import com.mazesys.zerobite.core.model.StorageLocation
 import com.mazesys.zerobite.core.model.formatQuantity
 import com.mazesys.zerobite.ui.format.DateText
@@ -17,6 +18,7 @@ import com.mazesys.zerobite.ui.format.appLocale
 import kotlinx.datetime.LocalDate
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import kotlin.math.round
 
 // Display text for core models. Core stays language-free; the app maps its values to resources.
 
@@ -92,10 +94,31 @@ fun formatQuantity(quantity: Double, locale: Locale): String {
     return formatQuantity(quantity).replace('.', separator)
 }
 
-/** "500 g", "2 pcs" / "2 szt.". */
+/** "500 g", "2 pcs" / "2 szt.", "5 plastrów". */
 @Composable
 @ReadOnlyComposable
-fun FoodItem.quantityLabel(): String = "${formatQuantity(quantity, appLocale())} ${unitLabel(unit)}"
+fun FoodItem.quantityLabel(): String = "${formatQuantity(quantity, appLocale())} ${unitLabel(unit, quantity)}"
+
+/** The unit as it reads after [quantity]: slices agree with the number in Polish ("1 plaster", "5 plastrów"). */
+@Composable
+@ReadOnlyComposable
+fun unitLabel(unit: String, quantity: Double): String {
+    if (unit != "slices") return unitLabel(unit)
+    val hundredths = round(quantity * 100).toLong()
+    return if (hundredths % 100 == 0L && hundredths / 100 <= Int.MAX_VALUE) {
+        val whole = (hundredths / 100).toInt()
+        pluralStringResource(R.plurals.unit_slices_count, whole, whole)
+    } else {
+        // Fractions take the plural rules' "other" form, which no whole number selects in Polish.
+        stringResource(R.string.unit_slices_fraction)
+    }
+}
+
+/** Maps a typed unit label back to its stored code ("szt." → "pcs"); anything else is kept as typed. */
+@Composable
+@ReadOnlyComposable
+fun unitCodes(): Map<String, String> =
+    ItemDraft.unitSuggestions.associateBy { unitLabel(it) }
 
 /** "500 g · Fridge". */
 @Composable
