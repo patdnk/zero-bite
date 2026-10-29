@@ -249,7 +249,7 @@ private struct WelcomeIllustration: View {
     }
 
     private static func amount(_ quantity: Int, _ unit: String) -> String {
-        "\(quantity) \(ItemDraft.unitLabel(unit))"
+        ItemDraft.quantityText(Double(quantity), unit: unit)
     }
 
     private static func daysLeft(_ days: Int) -> String {
@@ -325,7 +325,7 @@ private struct RemindIllustration: View {
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Spinach").font(.app(.title3, weight: .semibold)).foregroundStyle(Constants.TextPrimary)
-                        Text(verbatim: "1 \(ItemDraft.unitLabel("bag")) · \(StorageLocation.fridge.label)").font(.app(.caption)).foregroundStyle(Constants.TextSecondary)
+                        Text(verbatim: "\(ItemDraft.quantityText(1, unit: "bag")) · \(StorageLocation.fridge.label)").font(.app(.caption)).foregroundStyle(Constants.TextSecondary)
                     }
                     Spacer()
                     HStack(alignment: .firstTextBaseline, spacing: 3) {

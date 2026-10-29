@@ -161,8 +161,7 @@ final class FoodItem {
     var isConsumed: Bool { consumedAt != nil }
 
     var quantityText: String {
-        let number = quantity.formatted(.number.precision(.fractionLength(0...2)))
-        return "\(number) \(ItemDraft.unitLabel(unit))"
+        ItemDraft.quantityText(quantity, unit: unit)
     }
 
     /// Whole calendar days until expiry. Negative when already expired.

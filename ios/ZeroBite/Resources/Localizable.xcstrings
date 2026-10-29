@@ -1,6 +1,23 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ bulb" : {
+      "comment" : "Quantity with unit: fractional number of garlic bulbs, e.g. 1.5",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ bulb"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ główki"
+          }
+        }
+      }
+    },
     "%@ Compare the details below with your pack." : {
       "localizations" : {
         "en" : {
@@ -13,6 +30,98 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ Porównaj poniższe dane z opakowaniem."
+          }
+        }
+      }
+    },
+    "%@ loaf" : {
+      "comment" : "Quantity with unit: fractional number of loaves, e.g. 1.5",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ loaf"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ bochenka"
+          }
+        }
+      }
+    },
+    "%@ pints" : {
+      "comment" : "Quantity with unit: fractional number of pints, e.g. 1.5",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pints"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pinty"
+          }
+        }
+      }
+    },
+    "%@ slices" : {
+      "comment" : "Quantity with unit: fractional number of slices, e.g. 1.5",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ slices"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ plastra"
+          }
+        }
+      }
+    },
+    "%lld bulb" : {
+      "comment" : "Quantity with unit: whole number of garlic bulbs",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld bulb"
+          }
+        },
+        "pl" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld główka"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld główki"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld główek"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld główki"
+                }
+              }
+            }
           }
         }
       }
@@ -124,6 +233,7 @@
       }
     },
     "%lld in the last %lld days · checked %@" : {
+      "comment" : "The day count is RecallStore.historyDays (a constant, 120); translations may assume it is at least 5",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -205,25 +315,66 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Odczytano %lld linię"
+                  "value" : "Odczytano %lld wiersz"
                 }
               },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Odczytano %lld linie"
+                  "value" : "Odczytano %lld wiersze"
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Odczytano %lld linii"
+                  "value" : "Odczytano %lld wierszy"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Odczytano %lld linii"
+                  "value" : "Odczytano %lld wiersza"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld loaf" : {
+      "comment" : "Quantity with unit: whole number of loaves",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld loaf"
+          }
+        },
+        "pl" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld bochenek"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld bochenki"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld bochenków"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld bochenka"
                 }
               }
             }
@@ -331,6 +482,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld%% składników masz w lodówce"
+          }
+        }
+      }
+    },
+    "%lld pints" : {
+      "comment" : "Quantity with unit: whole number of pints",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld pints"
+          }
+        },
+        "pl" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pinta"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pinty"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pint"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pinty"
+                }
+              }
+            }
           }
         }
       }
@@ -473,6 +665,47 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld porcji"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld slices" : {
+      "comment" : "Quantity with unit: whole number of slices",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld slices"
+          }
+        },
+        "pl" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld plaster"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld plastry"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld plastrów"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld plastra"
                 }
               }
             }
@@ -853,7 +1086,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alerty o tych alergenach znajdziesz w: Alerty żywnościowe → Dla ciebie."
+            "value" : "Alerty o tych alergenach znajdziesz w sekcji Alerty żywnościowe → Dla ciebie."
           }
         }
       }
@@ -1880,7 +2113,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Każdy przepis jest gotowy albo brakuje mu więcej niż dwóch składników."
+            "value" : "Każdy przepis jest albo gotowy do ugotowania, albo brakuje mu więcej niż dwóch składników."
           }
         }
       }
@@ -2329,7 +2562,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Od"
+            "value" : "Firma"
           }
         }
       }
@@ -2492,25 +2725,25 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Ukryj %lld linię"
+                  "value" : "Ukryj %lld wiersz"
                 }
               },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Ukryj %lld linie"
+                  "value" : "Ukryj %lld wiersze"
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Ukryj %lld linii"
+                  "value" : "Ukryj %lld wierszy"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Ukryj %lld linii"
+                  "value" : "Ukryj %lld wiersza"
                 }
               }
             }
@@ -2705,7 +2938,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wiedz, co zużyć najpierw."
+            "value" : "Zobacz, co zużyć najpierw."
           }
         }
       }
@@ -3236,7 +3469,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nic prawie gotowego"
+            "value" : "Brak prawie gotowych przepisów"
           }
         }
       }
@@ -4612,25 +4845,25 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Pokaż %lld linię"
+                  "value" : "Pokaż %lld wiersz"
                 }
               },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Pokaż %lld linie"
+                  "value" : "Pokaż %lld wiersze"
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Pokaż %lld linii"
+                  "value" : "Pokaż %lld wierszy"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Pokaż %lld linii"
+                  "value" : "Pokaż %lld wiersza"
                 }
               }
             }

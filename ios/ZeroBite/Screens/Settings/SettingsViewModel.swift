@@ -102,7 +102,7 @@ final class SettingsViewModel {
         let recalls = dependencies.recalls
         guard let checked = recalls.lastChecked else { return String(localized: "Not checked yet") }
         let count = recalls.alerts.count
-        return String(localized: "\(count) in the last \(RecallStore.historyDays) days · checked \(checked.formatted(.relative(presentation: .named)))")
+        return String(localized: "\(count) in the last \(RecallStore.historyDays) days · checked \(checked.formatted(.relative(presentation: .named)))", comment: "The day count is RecallStore.historyDays (a constant, 120); translations may assume it is at least 5")
     }
 
     func setNotificationsEnabled(_ enabled: Bool) async {
