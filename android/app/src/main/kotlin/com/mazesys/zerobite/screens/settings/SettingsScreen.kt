@@ -42,7 +42,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import com.mazesys.zerobite.core.model.Allergen
+import com.mazesys.zerobite.ui.text.labelRes
 import com.mazesys.zerobite.reminders.LocalPermissionRequester
 import com.mazesys.zerobite.ui.components.ActionRow
 import com.mazesys.zerobite.ui.components.AppStepper
@@ -77,31 +81,31 @@ fun SettingsScreen(viewModel: SettingsViewModel, modifier: Modifier = Modifier) 
             .padding(start = Spacing.gutter, end = Spacing.gutter, bottom = Spacing.xl),
         verticalArrangement = Arrangement.spacedBy(Spacing.xl),
     ) {
-        ScreenHeader(title = "Settings", overline = "Zero Bite ${ui.appVersion}")
+        ScreenHeader(title = stringResource(R.string.settings_title), overline = stringResource(R.string.settings_version_overline, ui.appVersion))
 
         CardSection(
-            title = "Reminders",
-            footer = "You'll get a heads-up before the date, one on the day, and one if it slips past.",
+            title = stringResource(R.string.settings_reminders),
+            footer = stringResource(R.string.settings_reminders_footer),
             rows = buildList<@Composable () -> Unit> {
                 add {
                     SwitchRow(
-                        "Expiry reminders", ui.notificationsEnabled,
+                        stringResource(R.string.settings_expiry_reminders), ui.notificationsEnabled,
                         onCheckedChange = { viewModel.setNotificationsEnabled(it, requester) },
                         enabled = !ui.isUpdatingNotifications, testTag = "settings.notificationsToggle",
                     )
                 }
                 if (ui.reminderState == ReminderState.DENIED) {
                     add {
-                        ActionRow("Allow in system settings", onClick = {
+                        ActionRow(stringResource(R.string.settings_allow_in_system), onClick = {
                             context.startActivity(
                                 Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName),
                             )
                         }, icon = Icons.Rounded.Settings, tint = colors.brandOrange)
                     }
                 }
-                add { AppStepper("Remind me ${s.leadDays} days before", s.leadDays, 1..14, viewModel::setLeadDays) }
+                add { AppStepper(pluralStringResource(R.plurals.settings_remind_days_before, s.leadDays, s.leadDays), s.leadDays, 1..14, viewModel::setLeadDays) }
                 add {
-                    InfoRow("At", icon = Icons.Rounded.Schedule) {
+                    InfoRow(stringResource(R.string.settings_at), icon = Icons.Rounded.Schedule) {
                         Text(
                             ui.notifyTimeText,
                             style = ZeroBiteTheme.type.subheadline.medium(),
@@ -112,61 +116,60 @@ fun SettingsScreen(viewModel: SettingsViewModel, modifier: Modifier = Modifier) 
                     }
                 }
                 add {
-                    ActionRow("Send a test notification", viewModel::sendTest, icon = Icons.Rounded.Notifications,
+                    ActionRow(stringResource(R.string.settings_send_test), viewModel::sendTest, icon = Icons.Rounded.Notifications,
                         tint = colors.brandOrange, enabled = ui.notificationsEnabled)
                 }
             },
         )
 
         CardSection(
-            title = "Food safety",
-            footer = "Checks the Food Standards Agency for UK recalls and tells you if something in your fridge might be affected.",
+            title = stringResource(R.string.settings_food_safety),
+            footer = stringResource(R.string.settings_food_safety_footer),
             rows = listOf<@Composable () -> Unit>(
-                { SwitchRow("Check UK food recalls", s.recallChecksEnabled, viewModel::setRecallChecksEnabled, testTag = "settings.recallsToggle") },
-                { InfoRow("Food alerts", "Arrives in the next build", icon = Icons.Rounded.Warning) },
+                { SwitchRow(stringResource(R.string.settings_check_recalls), s.recallChecksEnabled, viewModel::setRecallChecksEnabled, testTag = "settings.recallsToggle") },
+                { InfoRow(stringResource(R.string.settings_food_alerts), stringResource(R.string.settings_next_build), icon = Icons.Rounded.Warning) },
             ),
         )
 
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            Overline("Your allergies")
+            Overline(stringResource(R.string.settings_your_allergies))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Allergen.entries.forEach { allergen ->
-                    Chip(allergen.label, allergen.raw in s.allergens, onClick = { viewModel.toggleAllergen(allergen) })
+                    Chip(stringResource(allergen.labelRes), allergen.raw in s.allergens, onClick = { viewModel.toggleAllergen(allergen) })
                 }
             }
-            Text("Allergy alerts for these show under Food alerts → For you.", style = ZeroBiteTheme.type.caption, color = colors.textSecondary)
+            Text(stringResource(R.string.settings_allergies_footer), style = ZeroBiteTheme.type.caption, color = colors.textSecondary)
         }
 
         CardSection(
-            title = "Fridge",
-            footer = "Recipes that use food inside this window are ranked higher.",
+            title = stringResource(R.string.settings_fridge),
+            footer = stringResource(R.string.settings_fridge_footer),
             rows = listOf<@Composable () -> Unit>({
-                AppStepper("“Expiring soon” means within ${s.soonThresholdDays} days", s.soonThresholdDays, 1..14, viewModel::setSoonThresholdDays)
+                AppStepper(pluralStringResource(R.plurals.settings_soon_threshold, s.soonThresholdDays, s.soonThresholdDays), s.soonThresholdDays, 1..14, viewModel::setSoonThresholdDays)
             }),
         )
 
         CardSection(
-            title = "Data",
+            title = stringResource(R.string.settings_data),
             rows = listOf<@Composable () -> Unit>(
-                { InfoRow("In your fridge", "${ui.activeCount}", icon = Icons.Rounded.Kitchen) },
-                { InfoRow("Used up", "${ui.usedCount}", icon = Icons.Rounded.Check) },
-                { ActionRow("Add sample food", viewModel::loadSampleData, icon = Icons.Rounded.AutoAwesome) },
-                { ActionRow("Clear used-up history", viewModel::clearUsedHistory, icon = Icons.Rounded.History, enabled = ui.usedCount > 0) },
+                { InfoRow(stringResource(R.string.settings_in_your_fridge), "${ui.activeCount}", icon = Icons.Rounded.Kitchen) },
+                { InfoRow(stringResource(R.string.settings_used_up), "${ui.usedCount}", icon = Icons.Rounded.Check) },
+                { ActionRow(stringResource(R.string.settings_add_sample), viewModel::loadSampleData, icon = Icons.Rounded.AutoAwesome) },
+                { ActionRow(stringResource(R.string.settings_clear_history), viewModel::clearUsedHistory, icon = Icons.Rounded.History, enabled = ui.usedCount > 0) },
                 {
-                    ActionRow("Delete everything", viewModel::deleteEverything, icon = Icons.Rounded.Delete, tint = colors.statusExpired,
+                    ActionRow(stringResource(R.string.settings_delete_everything), viewModel::deleteEverything, icon = Icons.Rounded.Delete, tint = colors.statusExpired,
                         enabled = ui.activeCount + ui.usedCount > 0)
                 },
             ),
         )
 
         CardSection(
-            title = "About",
-            footer = "Dates and barcodes are read on your device. Product names come from Open Food Facts. " +
-                "Food alerts come from the Food Standards Agency under the Open Government Licence v3.0.",
+            title = stringResource(R.string.settings_about),
+            footer = stringResource(R.string.settings_about_footer),
             rows = listOf<@Composable () -> Unit>(
-                { ActionRow("How Zero Bite works", viewModel::showHowItWorks, icon = Icons.AutoMirrored.Rounded.MenuBook, tint = colors.brandOrange) },
-                { InfoRow("Version", ui.appVersion) },
-                { InfoRow("Recipes", "${ui.recipeCount}") },
+                { ActionRow(stringResource(R.string.settings_how_it_works), viewModel::showHowItWorks, icon = Icons.AutoMirrored.Rounded.MenuBook, tint = colors.brandOrange) },
+                { InfoRow(stringResource(R.string.settings_version), ui.appVersion) },
+                { InfoRow(stringResource(R.string.settings_recipes), "${ui.recipeCount}") },
             ),
         )
     }
@@ -184,8 +187,8 @@ private fun ReminderTimeDialog(hour: Int, minute: Int, onDismiss: () -> Unit, on
     val state = rememberTimePickerState(initialHour = hour, initialMinute = minute, is24Hour = true)
     AlertDialog(
         onDismissRequest = onDismiss,
-        confirmButton = { TextButton(onClick = { onPicked(state.hour, state.minute) }) { Text("Done", color = colors.textPrimary) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel", color = colors.textSecondary) } },
+        confirmButton = { TextButton(onClick = { onPicked(state.hour, state.minute) }) { Text(stringResource(R.string.action_done), color = colors.textPrimary) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel), color = colors.textSecondary) } },
         text = {
             TimePicker(
                 state,

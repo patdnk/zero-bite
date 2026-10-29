@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.ui.components
 
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -162,7 +164,7 @@ fun BottomSearchBar(
             if (text.isNotEmpty()) {
                 Icon(
                     Icons.Rounded.Cancel,
-                    contentDescription = "Clear search",
+                    contentDescription = stringResource(R.string.action_clear_search),
                     tint = colors.textMuted,
                     modifier = Modifier.size(18.dp).clickable(role = Role.Button) { onTextChange("") },
                 )
@@ -170,7 +172,7 @@ fun BottomSearchBar(
         }
         if (focused) {
             Text(
-                "Cancel",
+                stringResource(R.string.action_cancel),
                 style = type.subheadline.medium(),
                 color = colors.textPrimary,
                 modifier = Modifier.clickable(role = Role.Button) {

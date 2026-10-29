@@ -29,6 +29,11 @@ android {
         buildConfig = true
     }
 
+    // Per-app language (Android 13+): English (en-GB, the unqualified resources) and Polish.
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true

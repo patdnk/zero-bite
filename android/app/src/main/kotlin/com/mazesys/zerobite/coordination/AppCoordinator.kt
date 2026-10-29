@@ -1,15 +1,18 @@
 package com.mazesys.zerobite.coordination
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.mazesys.zerobite.R
 import com.mazesys.zerobite.core.model.ItemDraft
+import com.mazesys.zerobite.ui.text.UiText
 import kotlinx.datetime.LocalDate
 
-enum class AppTab(val title: String) {
-    FRIDGE("Fridge"),
-    RECIPES("Recipes"),
-    SETTINGS("Settings"),
+enum class AppTab(@StringRes val title: Int) {
+    FRIDGE(R.string.tab_fridge),
+    RECIPES(R.string.tab_recipes),
+    SETTINGS(R.string.tab_settings),
 }
 
 sealed interface SheetDestination {
@@ -24,11 +27,11 @@ sealed interface SheetDestination {
 /** One presentation of a sheet; `id` is unique per presentation so its view models are fresh. */
 data class PresentedSheet(val id: Long, val destination: SheetDestination)
 
-data class AlertButton(val title: String, val isDestructive: Boolean = false, val action: () -> Unit = {})
+data class AlertButton(val title: UiText, val isDestructive: Boolean = false, val action: () -> Unit = {})
 
 data class AlertConfig(
-    val title: String,
-    val message: String? = null,
+    val title: UiText,
+    val message: UiText? = null,
     val primary: AlertButton,
     val secondary: AlertButton? = null,
 )

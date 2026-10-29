@@ -20,6 +20,7 @@ import com.mazesys.zerobite.reminders.NotificationAccess
 import com.mazesys.zerobite.reminders.Notifier
 import com.mazesys.zerobite.reminders.ReminderScheduler
 import com.mazesys.zerobite.reminders.ReminderSync
+import com.mazesys.zerobite.ui.text.Strings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -48,6 +49,8 @@ class AppDependencies(
     val notifications: NotificationAccess,
     val scheduler: ReminderScheduler,
     val notifier: Notifier,
+    /** String resources in the current app language, for text that is stored rather than shown. */
+    val strings: Strings,
 ) {
     val reminders = ReminderSync(inventory, settings, clock, notifications, scheduler)
 
@@ -66,6 +69,7 @@ class AppDependencies(
                 notifications = AndroidNotificationAccess(app, prefs),
                 scheduler = AlarmReminderScheduler(app, prefs),
                 notifier = AndroidNotifier(app),
+                strings = Strings { app.getString(it) },
             )
         }
     }

@@ -1,6 +1,9 @@
 package com.mazesys.zerobite.screens.welcome
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -62,7 +65,7 @@ fun WelcomeScreen(viewModel: WelcomeViewModel, modifier: Modifier = Modifier) {
             Spacer(Modifier.weight(1f))
             if (!ui.isLastPage) {
                 Text(
-                    ui.skipTitle,
+                    stringResource(ui.skipTitle),
                     style = ZeroBiteTheme.type.subheadline.medium(),
                     color = ZeroBiteTheme.colors.textSecondary,
                     modifier = Modifier.testTag("welcome.skip").clickable(role = Role.Button) { viewModel.skipIntro() },
@@ -75,7 +78,7 @@ fun WelcomeScreen(viewModel: WelcomeViewModel, modifier: Modifier = Modifier) {
         Column(Modifier.padding(horizontal = Spacing.xl).padding(bottom = Spacing.lg), verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
             val onReminders = ui.currentPage == WelcomePage.REMINDERS
             AppButton(
-                ui.primaryTitle,
+                stringResource(ui.primaryTitle),
                 { viewModel.primaryAction(requester) },
                 Modifier.testTag("welcome.primary"),
                 kind = if (onReminders) ButtonKind.BRAND else ButtonKind.INK,
@@ -83,7 +86,7 @@ fun WelcomeScreen(viewModel: WelcomeViewModel, modifier: Modifier = Modifier) {
                 loading = ui.isRequesting,
             )
             if (ui.showsNotNow) {
-                AppButton("Not now", viewModel::skip, Modifier.testTag("welcome.notNow"), kind = ButtonKind.PLAIN)
+                AppButton(stringResource(R.string.action_not_now), viewModel::skip, Modifier.testTag("welcome.notNow"), kind = ButtonKind.PLAIN)
             }
         }
     }
@@ -93,8 +96,9 @@ fun WelcomeScreen(viewModel: WelcomeViewModel, modifier: Modifier = Modifier) {
 @Composable
 private fun PageIndicator(count: Int, index: Int) {
     val colors = ZeroBiteTheme.colors
+    val description = stringResource(R.string.welcome_page_indicator, index + 1, count)
     Row(
-        Modifier.semantics { contentDescription = "Page ${index + 1} of $count" },
+        Modifier.semantics { contentDescription = description },
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         repeat(count) { position ->
@@ -118,38 +122,39 @@ private fun OnboardingPage(page: WelcomePage, denied: Boolean) {
             if (page == WelcomePage.WELCOME) {
                 BrandLockup(size = 30.dp, modifier = Modifier.padding(bottom = Spacing.xs))
             } else {
-                Overline(page.overline, tint = colors.brandOrange)
+                Overline(stringResource(page.overline), tint = colors.brandOrange)
             }
-            Text(page.title(denied), style = ZeroBiteTheme.type.largeTitle.semibold(), letterSpacing = (-1).sp, color = colors.textPrimary)
-            Text(page.message(denied), style = ZeroBiteTheme.type.body, color = colors.textSecondary)
+            Text(stringResource(page.title(denied)), style = ZeroBiteTheme.type.largeTitle.semibold(), letterSpacing = (-1).sp, color = colors.textPrimary)
+            Text(stringResource(page.message(denied)), style = ZeroBiteTheme.type.body, color = colors.textSecondary)
         }
         Spacer(Modifier.size(Spacing.xl))
     }
 }
 
-private val WelcomePage.overline: String
+@get:StringRes
+private val WelcomePage.overline: Int
     get() = when (this) {
-        WelcomePage.WELCOME -> "Zero Bite"
-        WelcomePage.SCAN -> "1 · Scan"
-        WelcomePage.REMIND -> "2 · Get reminded"
-        WelcomePage.COOK -> "3 · Cook"
-        WelcomePage.REMINDERS -> "Last step"
+        WelcomePage.WELCOME -> R.string.app_name
+        WelcomePage.SCAN -> R.string.welcome_overline_scan
+        WelcomePage.REMIND -> R.string.welcome_overline_remind
+        WelcomePage.COOK -> R.string.welcome_overline_cook
+        WelcomePage.REMINDERS -> R.string.welcome_overline_reminders
     }
 
-private fun WelcomePage.title(denied: Boolean): String = when (this) {
-    WelcomePage.WELCOME -> "Waste less,\ncook more."
-    WelcomePage.SCAN -> "Scan the label, skip the typing."
-    WelcomePage.REMIND -> "Know what to use first."
-    WelcomePage.COOK -> "Cook with what you have."
-    WelcomePage.REMINDERS -> if (denied) "Reminders are off." else "Want a nudge before food goes off?"
+@StringRes
+private fun WelcomePage.title(denied: Boolean): Int = when (this) {
+    WelcomePage.WELCOME -> R.string.welcome_title_welcome
+    WelcomePage.SCAN -> R.string.welcome_title_scan
+    WelcomePage.REMIND -> R.string.welcome_title_remind
+    WelcomePage.COOK -> R.string.welcome_title_cook
+    WelcomePage.REMINDERS -> if (denied) R.string.welcome_title_reminders_denied else R.string.welcome_title_reminders
 }
 
-private fun WelcomePage.message(denied: Boolean): String = when (this) {
-    WelcomePage.WELCOME -> "Keep track of what's in your fridge, freezer and cupboard, and use it up before the date."
-    WelcomePage.SCAN -> "Point the camera at a best-before or use-by date. A barcode fills in the product name. Everything is read on your phone."
-    WelcomePage.REMIND -> "Your fridge is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze."
-    WelcomePage.COOK -> "Recipes are ranked by what's already in your fridge, with food that's about to expire counted first."
-    WelcomePage.REMINDERS ->
-        if (denied) "You can turn them on any time in Settings."
-        else "We'll remind you a few days before the date, on the day, and if it slips past. You choose when."
+@StringRes
+private fun WelcomePage.message(denied: Boolean): Int = when (this) {
+    WelcomePage.WELCOME -> R.string.welcome_message_welcome
+    WelcomePage.SCAN -> R.string.welcome_message_scan
+    WelcomePage.REMIND -> R.string.welcome_message_remind
+    WelcomePage.COOK -> R.string.welcome_message_cook
+    WelcomePage.REMINDERS -> if (denied) R.string.welcome_message_reminders_denied else R.string.welcome_message_reminders
 }

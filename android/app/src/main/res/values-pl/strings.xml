@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common actions -->
+    <string name="action_cancel">Anuluj</string>
+    <string name="action_done">Gotowe</string>
+    <string name="action_ok">OK</string>
+    <string name="action_edit">Edytuj</string>
+    <string name="action_delete">Usuń</string>
+    <string name="action_back">Wstecz</string>
+    <string name="action_close">Zamknij</string>
+    <string name="action_next">Dalej</string>
+    <string name="action_continue">Kontynuuj</string>
+    <string name="action_skip">Pomiń</string>
+    <string name="action_not_now">Nie teraz</string>
+    <string name="action_more">Więcej</string>
+    <string name="action_used_it">Zużyte</string>
+    <string name="action_freeze">Zamroź</string>
+    <string name="action_recipes">Przepisy</string>
+    <string name="action_add_manually">Dodaj ręcznie</string>
+    <string name="action_scan_label_or_barcode">Zeskanuj etykietę lub kod</string>
+    <string name="action_scan_label">Zeskanuj etykietę</string>
+    <string name="action_decrease">Zmniejsz</string>
+    <string name="action_increase">Zwiększ</string>
+    <string name="action_clear_search">Wyczyść wyszukiwanie</string>
+
+    <!-- Tabs -->
+    <string name="tab_fridge">Lodówka</string>
+    <string name="tab_recipes">Przepisy</string>
+    <string name="tab_settings">Ustawienia</string>
+
+    <!-- Food categories -->
+    <string name="category_dairy">Nabiał i jajka</string>
+    <string name="category_meat">Mięso</string>
+    <string name="category_fish">Ryby i owoce morza</string>
+    <string name="category_vegetables">Warzywa</string>
+    <string name="category_fruit">Owoce</string>
+    <string name="category_bakery">Pieczywo</string>
+    <string name="category_grains">Kasze i makarony</string>
+    <string name="category_condiments">Sosy i przyprawy</string>
+    <string name="category_drinks">Napoje</string>
+    <string name="category_leftovers">Resztki</string>
+    <string name="category_other">Inne</string>
+
+    <!-- Storage -->
+    <string name="storage_fridge">Lodówka</string>
+    <string name="storage_freezer">Zamrażarka</string>
+    <string name="storage_pantry">Szafka</string>
+
+    <!-- Units -->
+    <string name="unit_pcs">szt.</string>
+    <string name="unit_pack">opak.</string>
+    <string name="unit_slices">plastry</string>
+
+    <!-- Expiry -->
+    <string name="status_expired">Po terminie</string>
+    <string name="status_today">Termin mija dziś</string>
+    <string name="status_soon">Termin mija wkrótce</string>
+    <string name="status_fresh">Świeże</string>
+    <plurals name="expiry_expired_days_ago">
+        <item quantity="one">Termin minął %d dzień temu</item>
+        <item quantity="few">Termin minął %d dni temu</item>
+        <item quantity="many">Termin minął %d dni temu</item>
+        <item quantity="other">Termin minął %d dnia temu</item>
+    </plurals>
+    <string name="expiry_expired_yesterday">Termin minął wczoraj</string>
+    <string name="expiry_expires_today">Termin mija dziś</string>
+    <string name="expiry_expires_tomorrow">Termin mija jutro</string>
+    <plurals name="expiry_expires_in_days">
+        <item quantity="one">Termin mija za %d dzień</item>
+        <item quantity="few">Termin mija za %d dni</item>
+        <item quantity="many">Termin mija za %d dni</item>
+        <item quantity="other">Termin mija za %d dnia</item>
+    </plurals>
+    <string name="short_expired">Po terminie</string>
+    <string name="short_today">Dziś</string>
+    <string name="short_tomorrow">Jutro</string>
+    <!-- Only used for 2–14 days, where "dni" is always correct -->
+    <string name="short_days">%d dni</string>
+    <string name="quantity_and_storage">%1$s · %2$s</string>
+
+    <!-- Food cards -->
+    <string name="use_first">Zużyj najpierw</string>
+    <plurals name="use_first_others">
+        <item quantity="one">Jeszcze %d wymaga uwagi</item>
+        <item quantity="few">Jeszcze %d wymagają uwagi</item>
+        <item quantity="many">Jeszcze %d wymaga uwagi</item>
+        <item quantity="other">Jeszcze %d wymaga uwagi</item>
+    </plurals>
+    <string name="countdown_today">Dziś</string>
+    <plurals name="countdown_days">
+        <item quantity="one">dzień</item>
+        <item quantity="few">dni</item>
+        <item quantity="many">dni</item>
+        <item quantity="other">dnia</item>
+    </plurals>
+    <plurals name="countdown_days_over">
+        <item quantity="one">dzień po terminie</item>
+        <item quantity="few">dni po terminie</item>
+        <item quantity="many">dni po terminie</item>
+        <item quantity="other">dnia po terminie</item>
+    </plurals>
+    <string name="recall_flag">Wycofany?</string>
+
+    <!-- Fridge -->
+    <string name="fridge_title">Lodówka</string>
+    <string name="fridge_add_food">Dodaj jedzenie</string>
+    <string name="fridge_empty_title">Twoja lodówka jest pusta</string>
+    <string name="fridge_empty_message">Zeskanuj etykietę albo dodaj coś ręcznie. Przypomnimy ci, zanim się zepsuje, i podpowiemy, co ugotować.</string>
+    <string name="fridge_try_sample">Wypróbuj z przykładowym jedzeniem</string>
+    <string name="fridge_search_placeholder">Szukaj w lodówce</string>
+    <string name="fridge_filter_all">Wszystko</string>
+    <string name="fridge_nothing_stored">Nic tu nie ma.</string>
+    <string name="fridge_nothing_matches">Nic nie pasuje do „%s”.</string>
+    <plurals name="item_count">
+        <item quantity="one">%d produkt</item>
+        <item quantity="few">%d produkty</item>
+        <item quantity="many">%d produktów</item>
+        <item quantity="other">%d produktu</item>
+    </plurals>
+    <plurals name="item_count_badge">
+        <item quantity="one">%d produkt</item>
+        <item quantity="few">%d produkty</item>
+        <item quantity="many">%d produktów</item>
+        <item quantity="other">%d produktu</item>
+    </plurals>
+    <string name="fridge_move_to_freezer">Przenieś do zamrażarki</string>
+    <string name="fridge_tip_title">Dostawaj przypomnienia o terminach</string>
+    <string name="fridge_tip_message">Damy ci znać kilka dni przed terminem.</string>
+    <string name="fridge_tip_turn_on">Włącz</string>
+
+    <!-- Item detail -->
+    <string name="detail_removed_title">Produkt usunięty</string>
+    <string name="detail_removed_message">Tego produktu nie ma już w twojej lodówce.</string>
+    <string name="detail_delete_title">Usunąć ten produkt?</string>
+    <string name="detail_details">Szczegóły</string>
+    <string name="detail_stored_in">Miejsce</string>
+    <string name="detail_quantity">Ilość</string>
+    <string name="detail_expires">Termin</string>
+    <string name="detail_added">Dodano</string>
+    <string name="detail_barcode">Kod kreskowy</string>
+    <string name="detail_notes">Notatki</string>
+    <string name="detail_put_back">Odłóż z powrotem do lodówki</string>
+    <string name="detail_mark_used">Oznacz jako zużyte</string>
+    <string name="detail_used_up">Zużyte</string>
+    <string name="detail_no_recipes">Żaden przepis w katalogu jeszcze tego nie wykorzystuje.</string>
+    <string name="detail_recipes_using">Przepisy z: %s</string>
+
+    <!-- Item form -->
+    <string name="form_title_new">Nowy produkt</string>
+    <string name="form_title_edit">Edytuj produkt</string>
+    <string name="form_overline_add">Dodaj do lodówki</string>
+    <string name="form_overline_edit">Edycja</string>
+    <string name="form_save_add">Dodaj do lodówki</string>
+    <string name="form_save_edit">Zapisz zmiany</string>
+    <string name="form_missing">Ten produkt już nie istnieje.</string>
+    <string name="form_name">Nazwa</string>
+    <string name="form_name_placeholder">Jogurt grecki</string>
+    <string name="form_brand">Marka (opcjonalnie, pomaga wykryć wycofania)</string>
+    <string name="form_brand_placeholder">Piątnica</string>
+    <string name="form_category">Kategoria</string>
+    <string name="form_stored_in">Gdzie leży</string>
+    <string name="form_quantity">Ilość</string>
+    <string name="form_amount">Ilość</string>
+    <string name="form_unit">Jednostka</string>
+    <string name="form_expiry">Termin przydatności</string>
+    <string name="form_expiry_footer">Brak daty na etykiecie? Użyj typowego okresu przydatności dla kategorii „%s”.</string>
+    <string name="form_expires_on">Termin</string>
+    <plurals name="form_typical_shelf_life">
+        <item quantity="one">Użyj typowego okresu (%d dzień)</item>
+        <item quantity="few">Użyj typowego okresu (%d dni)</item>
+        <item quantity="many">Użyj typowego okresu (%d dni)</item>
+        <item quantity="other">Użyj typowego okresu (%d dnia)</item>
+    </plurals>
+    <string name="form_notes">Notatki</string>
+    <string name="form_notes_placeholder">Otwarte w poniedziałek, została połowa</string>
+
+    <!-- Scan placeholder -->
+    <string name="scan_coming_soon">Już wkrótce</string>
+    <string name="scan_coming_soon_message">Skanowanie etykiet i kodów kreskowych pojawi się w następnej wersji. Na razie dodawaj jedzenie ręcznie.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Ustawienia</string>
+    <string name="settings_version_overline">Zero Bite %s</string>
+    <string name="settings_reminders">Przypomnienia</string>
+    <string name="settings_reminders_footer">Dostaniesz przypomnienie przed terminem, w dniu terminu i wtedy, gdy termin minie.</string>
+    <string name="settings_expiry_reminders">Przypomnienia o terminach</string>
+    <string name="settings_allow_in_system">Zezwól w ustawieniach systemu</string>
+    <plurals name="settings_remind_days_before">
+        <item quantity="one">Przypomnij %d dzień przed</item>
+        <item quantity="few">Przypomnij %d dni przed</item>
+        <item quantity="many">Przypomnij %d dni przed</item>
+        <item quantity="other">Przypomnij %d dnia przed</item>
+    </plurals>
+    <string name="settings_at">O godzinie</string>
+    <string name="settings_send_test">Wyślij powiadomienie testowe</string>
+    <string name="settings_food_safety">Bezpieczeństwo żywności</string>
+    <string name="settings_food_safety_footer">Sprawdza komunikaty brytyjskiej Food Standards Agency o wycofanej żywności i daje ci znać, jeśli może to dotyczyć czegoś w twojej lodówce.</string>
+    <string name="settings_check_recalls">Sprawdzaj wycofania żywności w UK</string>
+    <string name="settings_food_alerts">Alerty żywnościowe</string>
+    <string name="settings_next_build">Pojawi się w następnej wersji</string>
+    <string name="settings_your_allergies">Twoje alergie</string>
+    <string name="settings_allergies_footer">Alerty dotyczące tych alergenów znajdziesz w sekcji Alerty żywnościowe → Dla ciebie.</string>
+    <string name="settings_fridge">Lodówka</string>
+    <string name="settings_fridge_footer">Przepisy wykorzystujące jedzenie z tego okresu są wyżej na liście.</string>
+    <plurals name="settings_soon_threshold">
+        <item quantity="one">„Termin mija wkrótce” to do %d dnia</item>
+        <item quantity="few">„Termin mija wkrótce” to do %d dni</item>
+        <item quantity="many">„Termin mija wkrótce” to do %d dni</item>
+        <item quantity="other">„Termin mija wkrótce” to do %d dnia</item>
+    </plurals>
+    <string name="settings_data">Dane</string>
+    <string name="settings_in_your_fridge">W lodówce</string>
+    <string name="settings_used_up">Zużyte</string>
+    <string name="settings_add_sample">Dodaj przykładowe jedzenie</string>
+    <string name="settings_clear_history">Wyczyść historię zużytych</string>
+    <string name="settings_delete_everything">Usuń wszystko</string>
+    <string name="settings_about">O aplikacji</string>
+    <string name="settings_about_footer">Daty i kody kreskowe są odczytywane na twoim urządzeniu. Nazwy produktów pochodzą z Open Food Facts. Alerty żywnościowe pochodzą od Food Standards Agency na licencji Open Government Licence v3.0.</string>
+    <string name="settings_how_it_works">Jak działa Zero Bite</string>
+    <string name="settings_version">Wersja</string>
+    <string name="settings_recipes">Przepisy</string>
+    <string name="alert_notifications_off_title">Powiadomienia są wyłączone</string>
+    <string name="alert_notifications_off_message">Zezwól aplikacji Zero Bite na powiadomienia w ustawieniach telefonu, żeby dostawać przypomnienia o terminach.</string>
+    <string name="alert_clear_history_title">Wyczyścić historię zużytych?</string>
+    <plurals name="alert_clear_history_message">
+        <item quantity="one">Usuwa %d produkt oznaczony już jako zużyty.</item>
+        <item quantity="few">Usuwa %d produkty oznaczone już jako zużyte.</item>
+        <item quantity="many">Usuwa %d produktów oznaczonych już jako zużyte.</item>
+        <item quantity="other">Usuwa %d produktu oznaczonego już jako zużyty.</item>
+    </plurals>
+    <string name="alert_clear_history_action">Wyczyść</string>
+    <string name="alert_delete_everything_title">Usunąć wszystko?</string>
+    <string name="alert_delete_everything_message">Usuwa wszystkie produkty z twojej lodówki. Tego nie da się cofnąć.</string>
+    <string name="alert_delete_everything_action">Usuń wszystko</string>
+
+    <!-- Allergens -->
+    <string name="allergen_celery">Seler</string>
+    <string name="allergen_gluten">Gluten</string>
+    <string name="allergen_crustaceans">Skorupiaki</string>
+    <string name="allergen_egg">Jaja</string>
+    <string name="allergen_fish">Ryby</string>
+    <string name="allergen_lupin">Łubin</string>
+    <string name="allergen_milk">Mleko</string>
+    <string name="allergen_molluscs">Mięczaki</string>
+    <string name="allergen_mustard">Gorczyca</string>
+    <string name="allergen_nuts">Orzechy</string>
+    <string name="allergen_peanuts">Orzeszki ziemne</string>
+    <string name="allergen_sesame">Sezam</string>
+    <string name="allergen_soya">Soja</string>
+    <string name="allergen_sulphites">Siarczyny</string>
+
+    <!-- Welcome -->
+    <string name="welcome_show_me_how">Pokaż, jak to działa</string>
+    <string name="welcome_turn_on_reminders">Włącz przypomnienia</string>
+    <string name="welcome_page_indicator">Strona %1$d z %2$d</string>
+    <string name="welcome_overline_scan">1 · Skanuj</string>
+    <string name="welcome_overline_remind">2 · Pamiętaj</string>
+    <string name="welcome_overline_cook">3 · Gotuj</string>
+    <string name="welcome_overline_reminders">Ostatni krok</string>
+    <string name="welcome_title_welcome">Mniej marnuj,\nwięcej gotuj.</string>
+    <string name="welcome_title_scan">Zeskanuj etykietę, zamiast pisać.</string>
+    <string name="welcome_title_remind">Wiedz, co zużyć najpierw.</string>
+    <string name="welcome_title_cook">Gotuj z tego, co masz.</string>
+    <string name="welcome_title_reminders">Przypomnieć ci, zanim jedzenie się zepsuje?</string>
+    <string name="welcome_title_reminders_denied">Przypomnienia są wyłączone.</string>
+    <string name="welcome_message_welcome">Miej pod kontrolą to, co masz w lodówce, zamrażarce i szafce, i zużywaj wszystko przed terminem.</string>
+    <string name="welcome_message_scan">Skieruj aparat na datę przydatności. Kod kreskowy uzupełni nazwę produktu. Wszystko jest odczytywane na twoim telefonie.</string>
+    <string name="welcome_message_remind">Lodówka jest posortowana według pilności. Najpilniejszy produkt jest na górze, a Zużyte i Zamroź masz pod jednym dotknięciem.</string>
+    <string name="welcome_message_cook">Przepisy są ułożone według tego, co już masz w lodówce – najwyżej te z jedzeniem, któremu kończy się termin.</string>
+    <string name="welcome_message_reminders">Przypomnimy ci kilka dni przed terminem, w dniu terminu i wtedy, gdy termin minie. Ty decydujesz, o której.</string>
+    <string name="welcome_message_reminders_denied">Możesz je włączyć w każdej chwili w Ustawieniach.</string>
+    <!-- Welcome illustrations (mock app screens) -->
+    <string name="welcome_art_yogurt">Jogurt grecki</string>
+    <string name="welcome_art_spinach">Szpinak</string>
+    <string name="welcome_art_salmon">Łosoś</string>
+    <string name="welcome_art_spaghetti">Spaghetti</string>
+    <string name="welcome_art_sourdough">Chleb na zakwasie</string>
+    <string name="welcome_art_lemons">Cytryny</string>
+    <string name="welcome_art_eggs">Jajka</string>
+    <string name="welcome_art_one_bag">1 opak.</string>
+    <string name="welcome_art_two_pcs">2 szt.</string>
+    <string name="welcome_art_three_pcs">3 szt.</string>
+    <string name="welcome_art_one_loaf">1 bochenek</string>
+    <string name="welcome_art_date_nov">3 lis</string>
+    <string name="welcome_art_date_jun">cze</string>
+    <string name="welcome_art_label_product" formatted="false">MLEKO 2% TŁUSZCZU</string>
+    <string name="welcome_art_label_size">BUTELKA · 1 L</string>
+    <string name="welcome_art_label_date">SPOŻYĆ DO 12.10</string>
+    <string name="welcome_art_spinach_detail">1 opak. · Lodówka</string>
+    <string name="welcome_art_now">teraz</string>
+    <string name="welcome_art_notification_title">Szpinak: termin mija jutro</string>
+    <string name="welcome_art_notification_body">Jest w 3 przepisach na dzisiejszą kolację.</string>
+    <string name="welcome_art_recipe">Frittata ze szpinakiem i jajkami</string>
+    <string name="welcome_art_recipe_meta">20 min · dla 2 os. · 2 do zużycia</string>
+    <string name="welcome_art_when_before">3 dni przed</string>
+    <string name="welcome_art_text_before">Jogurt grecki: termin w piątek</string>
+    <string name="welcome_art_when_day">W dniu terminu</string>
+    <string name="welcome_art_text_day">Zużyj dziś szpinak</string>
+    <string name="welcome_art_when_after">Dzień po</string>
+    <string name="welcome_art_text_after">Mleku wczoraj minął termin</string>
+
+    <!-- Recipes -->
+    <string name="recipes_title">Przepisy</string>
+    <string name="recipes_overline">Z twojej lodówki</string>
+    <string name="recipes_use_these_first">Zużyj najpierw</string>
+    <string name="recipes_search_placeholder">Szukaj przepisów lub składników</string>
+    <string name="recipes_scope_ready">Gotowe</string>
+    <string name="recipes_scope_nearly">Prawie</string>
+    <string name="recipes_scope_all">Wszystkie</string>
+    <string name="recipes_section_ready">Możesz je zrobić teraz</string>
+    <string name="recipes_section_nearly">Brakuje jednej lub dwóch rzeczy</string>
+    <string name="recipes_section_all">Wszystkie przepisy</string>
+    <plurals name="recipe_count">
+        <item quantity="one">%d przepis</item>
+        <item quantity="few">%d przepisy</item>
+        <item quantity="many">%d przepisów</item>
+        <item quantity="other">%d przepisu</item>
+    </plurals>
+    <string name="recipes_empty_ready_title">Na razie nic do ugotowania</string>
+    <string name="recipes_empty_nearly_title">Nic nie jest blisko</string>
+    <string name="recipes_empty_all_title">Żaden przepis nie pasuje</string>
+    <string name="recipes_empty_search">Spróbuj wyszukać coś innego.</string>
+    <string name="recipes_empty_ready_message">Dodaj do lodówki jeszcze kilka rzeczy albo zajrzyj do zakładki „Prawie” – są tam przepisy, którym brakuje jednego składnika.</string>
+    <string name="recipes_empty_nearly_message">Wszystko jest albo gotowe do ugotowania, albo wymaga więcej niż kilku składników.</string>
+    <string name="recipes_empty_all_message">Katalog przepisów jest pusty.</string>
+    <string name="recipe_ready_to_cook">Gotowe do ugotowania</string>
+    <string name="recipe_missing">Brakuje: %s</string>
+    <string name="recipe_missing_more">Brakuje: %1$s +%2$d</string>
+    <string name="recipe_minutes">%d min</string>
+    <string name="recipe_serves">dla %d os.</string>
+    <string name="recipe_uses_expiring">%d do zużycia</string>
+    <string name="recipe_match_percent">%d%%</string>
+    <string name="recipe_match_percent_description">%d procent składników jest w twojej lodówce</string>
+    <string name="recipe_card_meta">%1$d min · %2$d%% w lodówce</string>
+    <string name="recipe_row_meta">%1$d min · %2$s</string>
+    <string name="recipe_not_found_title">Nie znaleziono przepisu</string>
+    <string name="recipe_not_found_message">Mógł zostać usunięty z katalogu.</string>
+    <string name="recipe_percent_in_fridge">%d%% w twojej lodówce</string>
+    <string name="recipe_stat_minutes">min</string>
+    <plurals name="recipe_stat_servings">
+        <item quantity="one">porcja</item>
+        <item quantity="few">porcje</item>
+        <item quantity="many">porcji</item>
+        <item quantity="other">porcji</item>
+    </plurals>
+    <string name="recipe_stat_expiring">do zużycia</string>
+    <string name="recipe_ingredients">Składniki</string>
+    <string name="recipe_method">Przygotowanie</string>
+    <string name="recipe_cooked_button">Ugotowane – zaktualizuj lodówkę</string>
+    <string name="recipe_have_everything">Masz wszystko, czego potrzebujesz.</string>
+    <string name="recipe_missing_sentence">Brakuje: %s.</string>
+    <string name="recipe_you_have">Masz: %1$s · %2$s</string>
+    <string name="recipe_store_cupboard">Z domowych zapasów</string>
+    <string name="recipe_optional">Opcjonalnie – możesz pominąć</string>
+    <string name="recipe_not_in_fridge">Nie ma w twojej lodówce</string>
+    <string name="cooked_title">Brawo! Co udało się zużyć?</string>
+    <string name="cooked_overline">Ugotowane</string>
+    <string name="cooked_footer">Zaznaczone produkty zostaną oznaczone jako zużyte. Niezaznaczone zostają w lodówce – zmień ich ilość, jeśli zużyto tylko część.</string>
+    <string name="cooked_update_fridge">Zaktualizuj lodówkę</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_expiry_name">Przypomnienia o terminach</string>
+    <string name="notification_channel_expiry_description">Przypomnienie przed końcem terminu, w dniu terminu i wtedy, gdy termin minie.</string>
+    <string name="notification_test_title">Przypomnienia Zero Bite są włączone</string>
+    <string name="notification_test_body">Tak dowiesz się o jedzeniu, któremu kończy się termin.</string>
+
+    <!-- Sample fridge -->
+    <string name="sample_greek_yogurt">Jogurt grecki</string>
+    <string name="sample_spinach">Szpinak</string>
+    <string name="sample_chicken_breast">Pierś z kurczaka</string>
+    <string name="sample_milk" formatted="false">Mleko 2%</string>
+    <string name="sample_mushrooms">Pieczarki</string>
+    <string name="sample_sourdough">Chleb na zakwasie</string>
+    <string name="sample_cherry_tomatoes">Pomidorki koktajlowe</string>
+    <string name="sample_red_pepper">Czerwona papryka</string>
+    <string name="sample_bacon">Boczek</string>
+    <string name="sample_lemon">Cytryna</string>
+    <string name="sample_bananas">Banany</string>
+    <string name="sample_carrots">Marchew</string>
+    <string name="sample_onion">Cebula</string>
+    <string name="sample_eggs">Jajka</string>
+    <string name="sample_cheddar">Ser cheddar</string>
+    <string name="sample_potatoes">Ziemniaki</string>
+    <string name="sample_garlic">Czosnek</string>
+    <string name="sample_butter">Masło</string>
+    <string name="sample_salmon">Filety z łososia</string>
+    <string name="sample_rice">Ryż basmati</string>
+    <string name="sample_spaghetti">Spaghetti</string>
+    <string name="sample_unit_bag">opak.</string>
+    <string name="sample_unit_pints">butelki</string>
+    <string name="sample_unit_loaf">bochenek</string>
+    <string name="sample_unit_punnet">opak.</string>
+    <string name="sample_unit_bulb">główka</string>
+</resources>

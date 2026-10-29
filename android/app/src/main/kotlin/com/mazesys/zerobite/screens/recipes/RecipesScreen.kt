@@ -1,5 +1,8 @@
 package com.mazesys.zerobite.screens.recipes
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,11 +48,11 @@ fun RecipesScreen(viewModel: RecipesViewModel, modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
-            fullWidth("header") { ScreenHeader(title = "Recipes", overline = "From your fridge") }
+            fullWidth("header") { ScreenHeader(title = stringResource(R.string.recipes_title), overline = stringResource(R.string.recipes_overline)) }
             if (state.showsExpiringStrip) {
                 fullWidth("strip") {
                     Column(Modifier.padding(top = Spacing.sm), verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                        SectionHeading(title = "Use these first", tint = ZeroBiteTheme.colors.brandOrange, icon = Icons.Rounded.Schedule)
+                        SectionHeading(title = stringResource(R.string.recipes_use_these_first), tint = ZeroBiteTheme.colors.brandOrange, icon = Icons.Rounded.Schedule)
                         LazyRow(
                             Modifier.bleed(Spacing.gutter),
                             contentPadding = PaddingValues(horizontal = Spacing.gutter),
@@ -67,7 +70,7 @@ fun RecipesScreen(viewModel: RecipesViewModel, modifier: Modifier = Modifier) {
                     options = RecipeScope.entries,
                     selected = state.scope,
                     onSelect = viewModel::setScope,
-                    label = { it.title },
+                    label = { stringResource(it.title) },
                     modifier = Modifier.bleed(Spacing.gutter).padding(vertical = Spacing.xs),
                 )
             }
@@ -76,7 +79,7 @@ fun RecipesScreen(viewModel: RecipesViewModel, modifier: Modifier = Modifier) {
         BottomSearchBar(
             text = state.searchText,
             onTextChange = viewModel::setSearchText,
-            placeholder = "Search recipes or ingredients",
+            placeholder = stringResource(R.string.recipes_search_placeholder),
             testTag = "recipes.search",
         )
     }
@@ -90,9 +93,9 @@ private fun LazyGridScope.results(state: RecipesUiState, viewModel: RecipesViewM
     if (matches.isEmpty()) {
         fullWidth("empty") {
             AppCard(padding = Spacing.lg) {
-                Text(state.emptyTitle, style = ZeroBiteTheme.type.headline, color = ZeroBiteTheme.colors.textPrimary)
+                Text(stringResource(state.emptyTitle), style = ZeroBiteTheme.type.headline, color = ZeroBiteTheme.colors.textPrimary)
                 Text(
-                    state.emptyMessage,
+                    stringResource(state.emptyMessage),
                     style = ZeroBiteTheme.type.subheadline,
                     color = ZeroBiteTheme.colors.textSecondary,
                     modifier = Modifier.padding(top = 6.dp),
@@ -103,8 +106,8 @@ private fun LazyGridScope.results(state: RecipesUiState, viewModel: RecipesViewM
     }
     fullWidth("section") {
         SectionHeading(
-            title = state.scope.sectionTitle,
-            detail = if (matches.size == 1) "1 recipe" else "${matches.size} recipes",
+            title = stringResource(state.scope.sectionTitle),
+            detail = pluralStringResource(R.plurals.recipe_count, matches.size, matches.size),
             modifier = Modifier.padding(top = Spacing.sm),
         )
     }

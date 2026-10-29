@@ -1,5 +1,11 @@
 package com.mazesys.zerobite.ui.components
 
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
+import com.mazesys.zerobite.ui.text.UiText
+import com.mazesys.zerobite.ui.text.resolve
+import com.mazesys.zerobite.ui.text.shortExpiryText
+import com.mazesys.zerobite.ui.text.uiText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -74,12 +80,12 @@ val Recipe.icon: ImageVector
 val RecipeMatch.matchPercent: Int
     get() = if (requiredCount == 0) 100 else (requiredMatchedCount.toDouble() / requiredCount * 100).roundToInt()
 
-val RecipeMatch.statusText: String
+/** "Ready to cook", "Missing milk", "Missing a, b +2". */
+val RecipeMatch.statusText: UiText
     get() {
-        if (canMake) return "Ready to cook"
+        if (canMake) return uiText(R.string.recipe_ready_to_cook)
         val names = missing.take(2).joinToString(", ") { it.name }
-        val more = if (missing.size > 2) " +${missing.size - 2}" else ""
-        return "Missing $names$more"
+        return if (missing.size > 2) uiText(R.string.recipe_missing_more, names, missing.size - 2) else uiText(R.string.recipe_missing, names)
     }
 
 fun RecipeMatch.accent(colors: ZeroBiteColors): Color = when {
@@ -106,10 +112,11 @@ fun FeaturedRecipeCard(match: RecipeMatch, onClick: () -> Unit, modifier: Modifi
     val type = ZeroBiteTheme.type
     val accent = match.accent(colors)
     val recipe = match.recipe
+    val percentDescription = stringResource(R.string.recipe_match_percent_description, match.matchPercent)
     val meta = buildList {
-        add("${recipe.prepMinutes} min")
-        add("serves ${recipe.servings}")
-        if (match.expiringItems.isNotEmpty()) add("uses ${match.expiringItems.size} expiring")
+        add(stringResource(R.string.recipe_minutes, recipe.prepMinutes))
+        add(stringResource(R.string.recipe_serves, recipe.servings))
+        if (match.expiringItems.isNotEmpty()) add(stringResource(R.string.recipe_uses_expiring, match.expiringItems.size))
     }.joinToString(" · ")
 
     AppCard(modifier.clip(RoundedCornerShape(Radius.card)).clickable(role = Role.Button, onClick = onClick), padding = 0.dp) {
@@ -118,11 +125,11 @@ fun FeaturedRecipeCard(match: RecipeMatch, onClick: () -> Unit, modifier: Modifi
             Row(verticalAlignment = Alignment.Top) {
                 Text(recipe.title, style = type.headline, color = colors.textPrimary, modifier = Modifier.weight(1f))
                 Text(
-                    "${match.matchPercent}%",
+                    stringResource(R.string.recipe_match_percent, match.matchPercent),
                     style = type.headline,
                     color = accent,
                     modifier = Modifier.padding(start = Spacing.sm).semantics {
-                        contentDescription = "${match.matchPercent} percent of ingredients in your fridge"
+                        contentDescription = percentDescription
                     },
                 )
             }
@@ -134,7 +141,7 @@ fun FeaturedRecipeCard(match: RecipeMatch, onClick: () -> Unit, modifier: Modifi
                 }
             } else {
                 Text(
-                    match.statusText,
+                    match.statusText.resolve(),
                     style = type.caption.semibold(),
                     color = if (match.canMake) colors.statusFresh else colors.textSecondary,
                     modifier = Modifier.padding(top = 2.dp),
@@ -161,7 +168,7 @@ fun RecipeCard(match: RecipeMatch, onClick: () -> Unit, modifier: Modifier = Mod
             modifier = Modifier.padding(top = 10.dp),
         )
         Text(
-            match.statusText,
+            match.statusText.resolve(),
             style = type.caption,
             color = if (match.canMake) colors.statusFresh else colors.textSecondary,
             maxLines = 1,
@@ -169,7 +176,7 @@ fun RecipeCard(match: RecipeMatch, onClick: () -> Unit, modifier: Modifier = Mod
             modifier = Modifier.padding(top = 2.dp),
         )
         Text(
-            "${match.recipe.prepMinutes} min · ${match.matchPercent}% in fridge",
+            stringResource(R.string.recipe_card_meta, match.recipe.prepMinutes, match.matchPercent),
             style = type.caption2,
             color = colors.textMuted,
             modifier = Modifier.padding(top = 2.dp),
@@ -186,7 +193,7 @@ fun RecipeRow(match: RecipeMatch, modifier: Modifier = Modifier) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(match.recipe.title, style = ZeroBiteTheme.type.subheadline.semibold(), color = colors.textPrimary)
             Text(
-                "${match.recipe.prepMinutes} min · ${match.statusText}",
+                stringResource(R.string.recipe_row_meta, match.recipe.prepMinutes, match.statusText.resolve()),
                 style = ZeroBiteTheme.type.caption,
                 color = if (match.canMake) colors.statusFresh else colors.textSecondary,
                 maxLines = 1,
@@ -215,6 +222,6 @@ fun ExpiringChip(item: FoodItem, today: LocalDate, soonThresholdDays: Int, onCli
     ) {
         Icon(item.category.icon, contentDescription = null, tint = tint, modifier = Modifier.size(14.dp))
         Text(item.name, style = ZeroBiteTheme.type.caption, color = colors.textPrimary, maxLines = 1)
-        Text(item.shortExpiryLabel(today), style = ZeroBiteTheme.type.caption.semibold(), color = tint)
+        Text(item.shortExpiryText(today), style = ZeroBiteTheme.type.caption.semibold(), color = tint)
     }
 }

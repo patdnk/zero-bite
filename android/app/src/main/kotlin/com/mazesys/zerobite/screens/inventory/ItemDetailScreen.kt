@@ -35,7 +35,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
+import com.mazesys.zerobite.core.model.ExpiryStatus
 import com.mazesys.zerobite.core.model.FoodItem
+import com.mazesys.zerobite.ui.format.appLocale
+import com.mazesys.zerobite.ui.text.expiryText
+import com.mazesys.zerobite.ui.text.labelRes
+import com.mazesys.zerobite.ui.text.quantityAndStorage
+import com.mazesys.zerobite.ui.text.quantityLabel
+import com.mazesys.zerobite.ui.text.titleRes
 import com.mazesys.zerobite.ui.components.AppButton
 import com.mazesys.zerobite.ui.components.AppCard
 import com.mazesys.zerobite.ui.components.AppDropdownMenu
@@ -69,10 +78,10 @@ fun ItemDetailScreen(viewModel: ItemDetailViewModel, onBack: () -> Unit, modifie
         TopBar(TopBarLeading.Back(onBack)) {
             if (ui.state == DetailState.ACTIVE || ui.state == DetailState.USED) {
                 Box {
-                    HeaderIconButton(Icons.Rounded.MoreHoriz, "More", onClick = { menuOpen = true })
+                    HeaderIconButton(Icons.Rounded.MoreHoriz, stringResource(R.string.action_more), onClick = { menuOpen = true })
                     AppDropdownMenu(expanded = menuOpen, onDismiss = { menuOpen = false }) {
-                        AppMenuItem("Edit", Icons.Rounded.Edit, onClick = { menuOpen = false; viewModel.edit() })
-                        AppMenuItem("Delete", Icons.Rounded.Delete, onClick = { menuOpen = false; confirmDelete = true }, destructive = true)
+                        AppMenuItem(stringResource(R.string.action_edit), Icons.Rounded.Edit, onClick = { menuOpen = false; viewModel.edit() })
+                        AppMenuItem(stringResource(R.string.action_delete), Icons.Rounded.Delete, onClick = { menuOpen = false; confirmDelete = true }, destructive = true)
                     }
                 }
             }
@@ -81,8 +90,8 @@ fun ItemDetailScreen(viewModel: ItemDetailViewModel, onBack: () -> Unit, modifie
         when {
             ui.state == DetailState.LOADING -> Unit
             item == null -> EmptyStateView(
-                title = "Item removed",
-                message = "This item is no longer in your fridge.",
+                title = stringResource(R.string.detail_removed_title),
+                message = stringResource(R.string.detail_removed_message),
                 icon = Icons.Rounded.Delete,
                 modifier = Modifier.padding(Spacing.gutter),
             )
@@ -93,15 +102,15 @@ fun ItemDetailScreen(viewModel: ItemDetailViewModel, onBack: () -> Unit, modifie
     if (confirmDelete) {
         AlertDialog(
             onDismissRequest = { confirmDelete = false },
-            title = { Text("Delete this item?", style = ZeroBiteTheme.type.headline) },
+            title = { Text(stringResource(R.string.detail_delete_title), style = ZeroBiteTheme.type.headline) },
             confirmButton = {
                 TextButton(onClick = { confirmDelete = false; viewModel.delete() }) {
-                    Text("Delete", color = colors.statusExpired, style = ZeroBiteTheme.type.subheadline.semibold())
+                    Text(stringResource(R.string.action_delete), color = colors.statusExpired, style = ZeroBiteTheme.type.subheadline.semibold())
                 }
             },
             dismissButton = {
                 TextButton(onClick = { confirmDelete = false }) {
-                    Text("Cancel", color = colors.textPrimary, style = ZeroBiteTheme.type.subheadline)
+                    Text(stringResource(R.string.action_cancel), color = colors.textPrimary, style = ZeroBiteTheme.type.subheadline)
                 }
             },
             containerColor = colors.backgroundPrimary,
@@ -116,30 +125,30 @@ private fun DetailContent(item: FoodItem, ui: ItemDetailUiState, viewModel: Item
         Modifier.verticalScroll(rememberScrollState()).padding(start = Spacing.gutter, end = Spacing.gutter, bottom = Spacing.xl),
         verticalArrangement = Arrangement.spacedBy(Spacing.lg),
     ) {
-        DetailTitle(title = item.name, overline = item.category.label)
+        DetailTitle(title = item.name, overline = stringResource(item.category.labelRes))
         StatusCard(item, ui)
         CardSection(
-            title = "Details",
+            title = stringResource(R.string.detail_details),
             rows = buildList<@Composable () -> Unit> {
-                add { InfoRow("Stored in", item.storage.label, icon = item.storage.icon) }
-                add { InfoRow("Quantity", item.quantityText, icon = Icons.Rounded.Scale) }
-                add { InfoRow("Expires", DateText.long(item.expiresOn), icon = Icons.Rounded.Event) }
-                ui.addedOn?.let { added -> add { InfoRow("Added", DateText.abbreviated(added), icon = Icons.Rounded.AddCircle) } }
-                item.barcode?.takeIf { it.isNotEmpty() }?.let { code -> add { InfoRow("Barcode", code, icon = Icons.Rounded.QrCode) } }
+                add { InfoRow(stringResource(R.string.detail_stored_in), stringResource(item.storage.labelRes), icon = item.storage.icon) }
+                add { InfoRow(stringResource(R.string.detail_quantity), item.quantityLabel(), icon = Icons.Rounded.Scale) }
+                add { InfoRow(stringResource(R.string.detail_expires), DateText.long(item.expiresOn, appLocale()), icon = Icons.Rounded.Event) }
+                ui.addedOn?.let { added -> add { InfoRow(stringResource(R.string.detail_added), DateText.abbreviated(added, appLocale()), icon = Icons.Rounded.AddCircle) } }
+                item.barcode?.takeIf { it.isNotEmpty() }?.let { code -> add { InfoRow(stringResource(R.string.detail_barcode), code, icon = Icons.Rounded.QrCode) } }
             },
         )
         if (item.notes.isNotEmpty()) {
-            CardSection(title = "Notes", rows = listOf<@Composable () -> Unit>({
+            CardSection(title = stringResource(R.string.detail_notes), rows = listOf<@Composable () -> Unit>({
                 Text(item.notes, style = ZeroBiteTheme.type.subheadline, color = ZeroBiteTheme.colors.textPrimary)
             }))
         }
         if (ui.state == DetailState.ACTIVE) RecipesUsing(item, ui, viewModel)
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
             if (ui.state == DetailState.USED) {
-                AppButton("Put it back in the fridge", viewModel::restore, kind = ButtonKind.TONAL, icon = Icons.AutoMirrored.Rounded.Undo)
+                AppButton(stringResource(R.string.detail_put_back), viewModel::restore, kind = ButtonKind.TONAL, icon = Icons.AutoMirrored.Rounded.Undo)
             } else {
-                AppButton("Mark as used up", viewModel::markUsed, icon = Icons.Rounded.Check)
-                AppButton("Edit", viewModel::edit, kind = ButtonKind.TONAL, icon = Icons.Rounded.Edit)
+                AppButton(stringResource(R.string.detail_mark_used), viewModel::markUsed, icon = Icons.Rounded.Check)
+                AppButton(stringResource(R.string.action_edit), viewModel::edit, kind = ButtonKind.TONAL, icon = Icons.Rounded.Edit)
             }
         }
     }
@@ -157,16 +166,16 @@ private fun StatusCard(item: FoodItem, ui: ItemDetailUiState) {
             IconTile(item.category.icon, tint = if (used) colors.textSecondary else tint, size = 44.dp)
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 if (used) {
-                    Text("Used up", style = type.headline, color = colors.textPrimary)
+                    Text(stringResource(R.string.detail_used_up), style = type.headline, color = colors.textPrimary)
                     ui.consumedOn?.let { day ->
-                        Text(DateText.abbreviated(day), style = type.caption, color = colors.textSecondary)
+                        Text(DateText.abbreviated(day, appLocale()), style = type.caption, color = colors.textSecondary)
                     }
                 } else {
-                    val description = item.expiryDescription(ui.today)
+                    val description = item.expiryText(ui.today)
                     Text(description, style = type.headline, color = tint)
                     // "Expires today" would just repeat the headline, so show what's left instead.
                     Text(
-                        if (description == status.sectionTitle) "${item.quantityText} · ${item.storage.label}" else status.sectionTitle,
+                        if (status == ExpiryStatus.TODAY) item.quantityAndStorage() else stringResource(status.titleRes),
                         style = type.caption,
                         color = colors.textSecondary,
                     )
@@ -181,12 +190,12 @@ private fun StatusCard(item: FoodItem, ui: ItemDetailUiState) {
 private fun RecipesUsing(item: FoodItem, ui: ItemDetailUiState, viewModel: ItemDetailViewModel) {
     val rows: List<@Composable () -> Unit> = if (ui.recipeMatches.isEmpty()) {
         listOf {
-            Text("No recipe in the catalogue uses this yet.", style = ZeroBiteTheme.type.subheadline, color = ZeroBiteTheme.colors.textSecondary)
+            Text(stringResource(R.string.detail_no_recipes), style = ZeroBiteTheme.type.subheadline, color = ZeroBiteTheme.colors.textSecondary)
         }
     } else {
         ui.recipeMatches.map { match ->
             { RecipeRow(match, Modifier.clickable(role = Role.Button) { viewModel.showRecipe(match) }) }
         }
     }
-    CardSection(title = "Recipes using ${item.name.lowercase()}", rows = rows)
+    CardSection(title = stringResource(R.string.detail_recipes_using, item.name.lowercase()), rows = rows)
 }

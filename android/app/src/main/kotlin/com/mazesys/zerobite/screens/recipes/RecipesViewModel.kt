@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.screens.recipes
 
+import androidx.annotation.StringRes
+import com.mazesys.zerobite.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mazesys.zerobite.coordination.RecipesCoordinator
@@ -19,10 +21,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.LocalDate
 
-enum class RecipeScope(val title: String, val sectionTitle: String) {
-    READY("Ready", "You can make these now"),
-    NEARLY("Nearly", "Missing one or two things"),
-    ALL("All", "All recipes"),
+enum class RecipeScope(@StringRes val title: Int, @StringRes val sectionTitle: Int) {
+    READY(R.string.recipes_scope_ready, R.string.recipes_section_ready),
+    NEARLY(R.string.recipes_scope_nearly, R.string.recipes_section_nearly),
+    ALL(R.string.recipes_scope_all, R.string.recipes_section_all),
 }
 
 data class RecipesUiState(
@@ -37,21 +39,21 @@ data class RecipesUiState(
 ) {
     val showsExpiringStrip: Boolean get() = expiringItems.isNotEmpty() && searchText.isEmpty()
 
-    val emptyTitle: String
+    @get:StringRes
+    val emptyTitle: Int
         get() = when (scope) {
-            RecipeScope.READY -> "Nothing to cook yet"
-            RecipeScope.NEARLY -> "No near-misses"
-            RecipeScope.ALL -> "No recipes match"
+            RecipeScope.READY -> R.string.recipes_empty_ready_title
+            RecipeScope.NEARLY -> R.string.recipes_empty_nearly_title
+            RecipeScope.ALL -> R.string.recipes_empty_all_title
         }
 
-    val emptyMessage: String
+    @get:StringRes
+    val emptyMessage: Int
         get() = when {
-            searchText.isNotEmpty() -> "Try a different search."
-            scope == RecipeScope.READY ->
-                "Add a few more things to your fridge, or check the “Nearly” tab for recipes that need one more ingredient."
-            scope == RecipeScope.NEARLY ->
-                "Everything is either ready to cook or needs more than a couple of ingredients."
-            else -> "The recipe catalogue is empty."
+            searchText.isNotEmpty() -> R.string.recipes_empty_search
+            scope == RecipeScope.READY -> R.string.recipes_empty_ready_message
+            scope == RecipeScope.NEARLY -> R.string.recipes_empty_nearly_message
+            else -> R.string.recipes_empty_all_message
         }
 
     companion object {

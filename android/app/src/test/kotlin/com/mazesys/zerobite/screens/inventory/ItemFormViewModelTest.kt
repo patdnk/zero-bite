@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.screens.inventory
 
+import com.mazesys.zerobite.testing.english
 import com.mazesys.zerobite.core.model.FoodCategory
 import com.mazesys.zerobite.core.model.FoodItem
 import com.mazesys.zerobite.core.model.ItemDraft
@@ -32,7 +33,7 @@ class ItemFormViewModelTest {
     fun `a new item needs a name`() {
         val vm = add()
         assertFalse(vm.state.value.canSave)
-        assertEquals("New item", vm.state.value.title)
+        assertEquals("New item", english(vm.state.value.title))
         vm.updateDraft { it.copy(name = "  ") }
         assertFalse(vm.state.value.canSave)
         vm.updateDraft { it.copy(name = "Oat milk") }
@@ -57,7 +58,7 @@ class ItemFormViewModelTest {
         val milk = inventory.current.first { it.name == "Semi-skimmed milk" }
         val vm = edit(milk.id)
         assertTrue(vm.state.value.isLoaded)
-        assertEquals("Edit item", vm.state.value.title)
+        assertEquals("Edit item", english(vm.state.value.title))
         assertEquals("Semi-skimmed milk", vm.state.value.draft.name)
         assertEquals("2", vm.state.value.quantityText)
         vm.updateDraft { it.copy(name = "Whole milk") }
@@ -70,13 +71,13 @@ class ItemFormViewModelTest {
 
     @Test
     fun `editing an item that no longer exists explains why`() = runBlocking {
-        assertEquals("This item no longer exists.", edit("gone").state.value.errorMessage)
+        assertEquals("This item no longer exists.", english(edit("gone").state.value.errorMessage!!))
 
         val milk = inventory.current.first { it.name == "Semi-skimmed milk" }
         val vm = edit(milk.id)
         inventory.delete(milk.id)
         vm.save()
-        assertEquals("This item no longer exists.", vm.state.value.errorMessage)
+        assertEquals("This item no longer exists.", english(vm.state.value.errorMessage!!))
         assertTrue(saved.isEmpty())
     }
 

@@ -1,6 +1,7 @@
 package com.mazesys.zerobite.reminders
 
 import android.content.Context
+import com.mazesys.zerobite.R
 
 interface Notifier {
     fun sendTest()
@@ -10,8 +11,8 @@ class AndroidNotifier(private val context: Context) : Notifier {
     override fun sendTest() = Notifications.post(
         context,
         tag = "zerobite.test",
-        title = "Zero Bite reminders are on",
-        body = "This is how you'll hear about food that's about to expire.",
+        title = context.getString(R.string.notification_test_title),
+        body = context.getString(R.string.notification_test_body),
         itemId = null,
     )
 }

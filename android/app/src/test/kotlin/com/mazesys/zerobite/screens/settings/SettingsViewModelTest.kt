@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.screens.settings
 
+import com.mazesys.zerobite.testing.english
 import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.coordination.SheetDestination
 import com.mazesys.zerobite.core.model.Allergen
@@ -64,7 +65,7 @@ class SettingsViewModelTest {
         access.current = NotificationPermission.DENIED
         vm.setNotificationsEnabled(true) { false }
         assertFalse(settings.state.value.notificationsEnabled)
-        assertEquals("Notifications are off", app.alert?.title)
+        assertEquals("Notifications are off", app.alert?.title?.english())
     }
 
     @Test
@@ -105,14 +106,14 @@ class SettingsViewModelTest {
         assertEquals(1, vm.state.value.usedCount)
 
         vm.clearUsedHistory()
-        assertEquals("Clear used-up history?", app.alert?.title)
-        assertEquals("Removes 1 items you've already marked as used.", app.alert?.message)
+        assertEquals("Clear used-up history?", app.alert?.title?.english())
+        assertEquals("Removes 1 items you've already marked as used.", app.alert?.message?.english())
         app.alert!!.primary.action()
         assertEquals(0, vm.state.value.usedCount)
         assertEquals(20, vm.state.value.activeCount)
 
         vm.deleteEverything()
-        assertEquals("Delete everything?", app.alert?.title)
+        assertEquals("Delete everything?", app.alert?.title?.english())
         app.alert!!.primary.action()
         assertEquals(0, vm.state.value.activeCount)
     }

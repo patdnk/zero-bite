@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import com.mazesys.zerobite.coordination.AlertConfig
+import com.mazesys.zerobite.ui.text.resolve
 import com.mazesys.zerobite.ui.theme.Radius
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 import com.mazesys.zerobite.ui.theme.semibold
@@ -16,12 +17,12 @@ fun AppAlert(config: AlertConfig, onDismiss: () -> Unit) {
     val colors = ZeroBiteTheme.colors
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(config.title, style = ZeroBiteTheme.type.headline) },
-        text = config.message?.let { message -> { Text(message, style = ZeroBiteTheme.type.subheadline, color = colors.textSecondary) } },
+        title = { Text(config.title.resolve(), style = ZeroBiteTheme.type.headline) },
+        text = config.message?.let { message -> { Text(message.resolve(), style = ZeroBiteTheme.type.subheadline, color = colors.textSecondary) } },
         confirmButton = {
             TextButton(onClick = { config.primary.action(); onDismiss() }) {
                 Text(
-                    config.primary.title,
+                    config.primary.title.resolve(),
                     style = ZeroBiteTheme.type.subheadline.semibold(),
                     color = if (config.primary.isDestructive) colors.statusExpired else colors.textPrimary,
                 )
@@ -30,7 +31,7 @@ fun AppAlert(config: AlertConfig, onDismiss: () -> Unit) {
         dismissButton = config.secondary?.let { secondary ->
             {
                 TextButton(onClick = { secondary.action(); onDismiss() }) {
-                    Text(secondary.title, style = ZeroBiteTheme.type.subheadline, color = colors.textSecondary)
+                    Text(secondary.title.resolve(), style = ZeroBiteTheme.type.subheadline, color = colors.textSecondary)
                 }
             }
         },

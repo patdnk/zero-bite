@@ -1,6 +1,13 @@
 package com.mazesys.zerobite.screens.inventory
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
+import com.mazesys.zerobite.ui.format.DateText
+import com.mazesys.zerobite.ui.format.appLocale
+import com.mazesys.zerobite.ui.text.resolve
+import com.mazesys.zerobite.ui.text.titleRes
 import androidx.compose.material.icons.rounded.NotificationsActive
 import com.mazesys.zerobite.reminders.LocalPermissionRequester
 import com.mazesys.zerobite.ui.components.AppButton
@@ -72,8 +79,8 @@ fun InventoryScreen(viewModel: InventoryViewModel, modifier: Modifier = Modifier
         ) {
             fullWidth("header") {
                 ScreenHeader(
-                    title = "Fridge",
-                    overline = state.headerDate,
+                    title = stringResource(R.string.fridge_title),
+                    overline = DateText.header(state.today, appLocale()),
                     count = if (state.isLoading || state.isEmpty) null else state.activeItems.size,
                 ) {
                     AddMenu(onScan = viewModel::showScan, onAddManually = viewModel::showAddItem)
@@ -83,14 +90,14 @@ fun InventoryScreen(viewModel: InventoryViewModel, modifier: Modifier = Modifier
                 state.isLoading -> Unit
                 state.isEmpty -> fullWidth("empty") {
                     EmptyStateView(
-                        title = "Your fridge is empty",
-                        message = "Scan a label or add something by hand. We'll remind you before it goes off and suggest what to cook.",
+                        title = stringResource(R.string.fridge_empty_title),
+                        message = stringResource(R.string.fridge_empty_message),
                         icon = Icons.Rounded.Kitchen,
                         modifier = Modifier.padding(top = 40.dp),
-                        primaryTitle = "Scan a label",
+                        primaryTitle = stringResource(R.string.action_scan_label),
                         primaryIcon = Icons.Rounded.QrCodeScanner,
                         onPrimary = viewModel::showScan,
-                        secondaryTitle = "Try it with sample food",
+                        secondaryTitle = stringResource(R.string.fridge_try_sample),
                         onSecondary = viewModel::loadSampleData,
                     )
                 }
@@ -101,8 +108,8 @@ fun InventoryScreen(viewModel: InventoryViewModel, modifier: Modifier = Modifier
             BottomSearchBar(
                 text = state.searchText,
                 onTextChange = viewModel::setSearchText,
-                placeholder = "Search your food",
-                accessory = SearchAccessory(Icons.Rounded.QrCodeScanner, "Scan label or barcode", viewModel::showScan),
+                placeholder = stringResource(R.string.fridge_search_placeholder),
+                accessory = SearchAccessory(Icons.Rounded.QrCodeScanner, stringResource(R.string.action_scan_label_or_barcode), viewModel::showScan),
                 testTag = "inventory.search",
             )
         }
@@ -138,14 +145,14 @@ private fun LazyGridScope.fridgeContent(state: InventoryUiState, viewModel: Inve
             options = StorageFilter.entries,
             selected = state.storageFilter,
             onSelect = viewModel::setStorageFilter,
-            label = { it.title },
+            label = { stringResource(it.title) },
             modifier = Modifier.bleed(Spacing.gutter).padding(vertical = Spacing.xs),
         )
     }
     if (state.gridSections.isEmpty()) {
         fullWidth("nothing") {
             Text(
-                state.emptyGridMessage,
+                state.emptyGridMessage.resolve(),
                 style = ZeroBiteTheme.type.subheadline,
                 color = ZeroBiteTheme.colors.textSecondary,
                 textAlign = TextAlign.Center,
@@ -157,8 +164,8 @@ private fun LazyGridScope.fridgeContent(state: InventoryUiState, viewModel: Inve
         fullWidth("heading-${section.status}") {
             val count = section.items.size
             SectionHeading(
-                title = section.status.sectionTitle,
-                detail = if (count == 1) "1 item" else "$count items",
+                title = stringResource(section.status.titleRes),
+                detail = pluralStringResource(R.plurals.item_count, count, count),
                 tint = if (section.status == ExpiryStatus.FRESH) ZeroBiteTheme.colors.textPrimary else section.status.tint(ZeroBiteTheme.colors),
                 modifier = Modifier.padding(top = Spacing.sm),
             )
@@ -179,12 +186,12 @@ private fun CardWithMenu(item: FoodItem, state: InventoryUiState, viewModel: Inv
             onLongClick = { menuOpen = true },
         )
         AppDropdownMenu(expanded = menuOpen, onDismiss = { menuOpen = false }) {
-            AppMenuItem("Used it", Icons.Rounded.Check, onClick = { menuOpen = false; viewModel.markUsed(item) })
+            AppMenuItem(stringResource(R.string.action_used_it), Icons.Rounded.Check, onClick = { menuOpen = false; viewModel.markUsed(item) })
             if (state.canFreeze(item)) {
-                AppMenuItem("Move to freezer", Icons.Rounded.AcUnit, onClick = { menuOpen = false; viewModel.freeze(item) })
+                AppMenuItem(stringResource(R.string.fridge_move_to_freezer), Icons.Rounded.AcUnit, onClick = { menuOpen = false; viewModel.freeze(item) })
             }
-            AppMenuItem("Edit", Icons.Rounded.Edit, onClick = { menuOpen = false; viewModel.showEditItem(item) })
-            AppMenuItem("Delete", Icons.Rounded.Delete, onClick = { menuOpen = false; viewModel.delete(item) }, destructive = true)
+            AppMenuItem(stringResource(R.string.action_edit), Icons.Rounded.Edit, onClick = { menuOpen = false; viewModel.showEditItem(item) })
+            AppMenuItem(stringResource(R.string.action_delete), Icons.Rounded.Delete, onClick = { menuOpen = false; viewModel.delete(item) }, destructive = true)
         }
     }
 }
@@ -193,10 +200,10 @@ private fun CardWithMenu(item: FoodItem, state: InventoryUiState, viewModel: Inv
 private fun AddMenu(onScan: () -> Unit, onAddManually: () -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        HeaderIconButton(Icons.Rounded.Add, "Add food", onClick = { open = true }, modifier = Modifier.testTag("inventory.addButton"))
+        HeaderIconButton(Icons.Rounded.Add, stringResource(R.string.fridge_add_food), onClick = { open = true }, modifier = Modifier.testTag("inventory.addButton"))
         AppDropdownMenu(expanded = open, onDismiss = { open = false }) {
-            AppMenuItem("Scan label or barcode", Icons.Rounded.QrCodeScanner, onClick = { open = false; onScan() })
-            AppMenuItem("Add manually", Icons.Rounded.EditNote, onClick = { open = false; onAddManually() })
+            AppMenuItem(stringResource(R.string.action_scan_label_or_barcode), Icons.Rounded.QrCodeScanner, onClick = { open = false; onScan() })
+            AppMenuItem(stringResource(R.string.action_add_manually), Icons.Rounded.EditNote, onClick = { open = false; onAddManually() })
         }
     }
 }
@@ -209,11 +216,11 @@ private fun NotificationTip(viewModel: InventoryViewModel) {
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
             IconTile(Icons.Rounded.NotificationsActive, tint = colors.brandOrange)
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                Text("Get reminded before food expires", style = ZeroBiteTheme.type.subheadline.semibold(), color = colors.textPrimary)
-                Text("We'll nudge you a few days before the date.", style = ZeroBiteTheme.type.caption, color = colors.textSecondary)
+                Text(stringResource(R.string.fridge_tip_title), style = ZeroBiteTheme.type.subheadline.semibold(), color = colors.textPrimary)
+                Text(stringResource(R.string.fridge_tip_message), style = ZeroBiteTheme.type.caption, color = colors.textSecondary)
                 Row(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    AppButton("Turn on", { viewModel.enableNotifications(requester) }, Modifier.weight(1f), compact = true)
-                    AppButton("Not now", viewModel::dismissNotificationTip, Modifier.weight(1f), kind = ButtonKind.TONAL, compact = true)
+                    AppButton(stringResource(R.string.fridge_tip_turn_on), { viewModel.enableNotifications(requester) }, Modifier.weight(1f), compact = true)
+                    AppButton(stringResource(R.string.action_not_now), viewModel::dismissNotificationTip, Modifier.weight(1f), kind = ButtonKind.TONAL, compact = true)
                 }
             }
         }

@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.ui.components
 
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,8 +34,8 @@ import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 fun AppStepper(label: String, value: Int, range: IntRange, onChange: (Int) -> Unit, modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
         Text(label, style = ZeroBiteTheme.type.subheadline, color = ZeroBiteTheme.colors.textPrimary, modifier = Modifier.weight(1f))
-        StepButton(Icons.Rounded.Remove, "Decrease", enabled = value > range.first) { onChange(value - 1) }
-        StepButton(Icons.Rounded.Add, "Increase", enabled = value < range.last) { onChange(value + 1) }
+        StepButton(Icons.Rounded.Remove, stringResource(R.string.action_decrease), enabled = value > range.first) { onChange(value - 1) }
+        StepButton(Icons.Rounded.Add, stringResource(R.string.action_increase), enabled = value < range.last) { onChange(value + 1) }
     }
 }
 

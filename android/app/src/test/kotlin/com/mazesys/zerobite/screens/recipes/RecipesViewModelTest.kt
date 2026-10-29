@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.screens.recipes
 
+import com.mazesys.zerobite.testing.english
 import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.coordination.RecipesRoute
 import com.mazesys.zerobite.testing.FakeInventoryRepository
@@ -27,7 +28,7 @@ class RecipesViewModelTest {
     @Test
     fun `ready shows only what can be made now`() {
         assertEquals(listOf("omelette"), ids())
-        assertEquals("You can make these now", vm.state.value.scope.sectionTitle)
+        assertEquals("You can make these now", english(vm.state.value.scope.sectionTitle))
     }
 
     @Test
@@ -59,14 +60,14 @@ class RecipesViewModelTest {
     fun `empty states explain themselves`() {
         vm.setSearchText("caviar")
         assertEquals(emptyList(), ids())
-        assertEquals("Nothing to cook yet", vm.state.value.emptyTitle)
-        assertEquals("Try a different search.", vm.state.value.emptyMessage)
+        assertEquals("Nothing to cook yet", english(vm.state.value.emptyTitle))
+        assertEquals("Try a different search.", english(vm.state.value.emptyMessage))
         val empty = RecipesViewModel(FakeInventoryRepository(), FakeSettings(), FakeRecipes(), TestClock.fixed(), app.recipes)
         empty.setScope(RecipeScope.NEARLY)
-        assertEquals("No near-misses", empty.state.value.emptyTitle)
+        assertEquals("No near-misses", english(empty.state.value.emptyTitle))
         assertEquals(
             "Everything is either ready to cook or needs more than a couple of ingredients.",
-            empty.state.value.emptyMessage,
+            english(empty.state.value.emptyMessage),
         )
     }
 

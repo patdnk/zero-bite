@@ -1,5 +1,8 @@
 package com.mazesys.zerobite.screens.recipes
 
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
+import com.mazesys.zerobite.ui.text.quantityLabel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,9 +47,9 @@ fun CookedScreen(viewModel: CookedViewModel, modifier: Modifier = Modifier) {
             Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = Spacing.gutter, end = Spacing.gutter, bottom = Spacing.xl),
             verticalArrangement = Arrangement.spacedBy(Spacing.lg),
         ) {
-            DetailTitle(title = "Nice one! What did you use up?", overline = ui.recipeTitle ?: "Cooked")
+            DetailTitle(title = stringResource(R.string.cooked_title), overline = ui.recipeTitle ?: stringResource(R.string.cooked_overline))
             CardSection(
-                footer = "Ticked items are marked as used. Anything unticked stays in your fridge — edit its quantity if you only used some.",
+                footer = stringResource(R.string.cooked_footer),
                 rows = ui.usableItems.map { item ->
                     {
                         val selected = item.id in ui.selectedIds
@@ -62,14 +65,14 @@ fun CookedScreen(viewModel: CookedViewModel, modifier: Modifier = Modifier) {
                                 modifier = Modifier.size(22.dp),
                             )
                             Text(item.name, style = ZeroBiteTheme.type.subheadline.medium(), color = colors.textPrimary, modifier = Modifier.weight(1f))
-                            Text(item.quantityText, style = ZeroBiteTheme.type.caption, color = colors.textSecondary)
+                            Text(item.quantityLabel(), style = ZeroBiteTheme.type.caption, color = colors.textSecondary)
                         }
                     }
                 },
             )
         }
         AppButton(
-            ui.confirmTitle,
+            stringResource(ui.confirmTitle),
             viewModel::confirm,
             Modifier.padding(horizontal = Spacing.gutter, vertical = Spacing.sm).testTag("cooked.confirm"),
         )

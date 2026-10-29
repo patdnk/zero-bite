@@ -36,7 +36,7 @@ class InventoryTabTest {
     fun `opens detail from the grid and comes back`() {
         val dependencies = testDependencies(inventory = FakeInventoryRepository(sampleFridge()))
         val app = AppCoordinator { TestClock.today }
-        val list = InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, app.inventory, FakeAccess())
+        val list = InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, app.inventory, FakeAccess(), dependencies.strings)
         compose.setContent { ZeroBiteTheme { InventoryTab(app.inventory, list, dependencies) } }
 
         compose.onNodeWithText("Spinach").performClick()

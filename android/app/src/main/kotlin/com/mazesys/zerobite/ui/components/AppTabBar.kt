@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.ui.components
 
+
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -51,7 +52,7 @@ fun <T> AppTabBar(tabs: List<TabItem<T>>, selected: T, onSelect: (T) -> Unit, mo
                 Column(
                     Modifier
                         .weight(1f)
-                        .testTag("tab.${tab.title.lowercase()}")
+                        .testTag("tab.${tab.key.toString().lowercase()}")
                         .selectable(selected = isSelected, role = Role.Tab, onClick = { onSelect(tab.key) })
                         .padding(top = 10.dp, bottom = 2.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,

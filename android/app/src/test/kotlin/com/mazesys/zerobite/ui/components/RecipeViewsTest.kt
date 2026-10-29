@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.ui.components
 
+import com.mazesys.zerobite.testing.english
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -75,11 +76,11 @@ class RecipeViewsTest {
     @Test
     fun `status text and match percent read like iOS`() {
         val omelette = recipe("Omelette", "eggs", "butter", "milk")
-        assertEquals("Ready to cook", match(omelette, 3).statusText)
+        assertEquals("Ready to cook", match(omelette, 3).statusText.english())
         assertEquals(100, match(omelette, 3).matchPercent)
-        assertEquals("Missing milk", match(omelette, 2, listOf("milk")).statusText)
+        assertEquals("Missing milk", match(omelette, 2, listOf("milk")).statusText.english())
         assertEquals(67, match(omelette, 2, listOf("milk")).matchPercent)
-        assertEquals("Missing a, b +2", match(omelette, 0, listOf("a", "b", "c", "d")).statusText)
+        assertEquals("Missing a, b +2", match(omelette, 0, listOf("a", "b", "c", "d")).statusText.english())
     }
 
     @Test

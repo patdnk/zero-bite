@@ -47,7 +47,7 @@ class SequentialIds(private val prefix: String = "id") : IdGenerator {
     override fun next(): String = "$prefix-${++n}"
 }
 
-fun sampleFridge(): List<FoodItem> = SampleData.items(TestClock.today, TestClock.now, SequentialIds("sample")::next)
+fun sampleFridge(): List<FoodItem> = SampleData.items(TestClock.today, TestClock.now, SequentialIds("sample")::next, EnglishStrings)
 
 class FakeInventoryRepository(initial: List<FoodItem> = emptyList()) : InventoryRepository {
     private val state = MutableStateFlow(sorted(initial))
@@ -87,7 +87,7 @@ fun testDependencies(
     access: FakeAccess = FakeAccess(),
     scheduler: FakeScheduler = FakeScheduler(),
     notifier: FakeNotifier = FakeNotifier(),
-) = AppDependencies(clock, settings, inventory, recipes, ids, CoroutineScope(Dispatchers.Unconfined), access, scheduler, notifier)
+) = AppDependencies(clock, settings, inventory, recipes, ids, CoroutineScope(Dispatchers.Unconfined), access, scheduler, notifier, EnglishStrings)
 
 /** Runs `viewModelScope` work immediately on the test thread. */
 @OptIn(ExperimentalCoroutinesApi::class)

@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.screens.root
 
+import androidx.compose.ui.res.stringResource
 import com.mazesys.zerobite.BuildConfig
 import com.mazesys.zerobite.screens.settings.SettingsScreen
 import com.mazesys.zerobite.screens.settings.SettingsViewModel
@@ -38,10 +39,11 @@ import com.mazesys.zerobite.ui.components.AppTabBar
 import com.mazesys.zerobite.ui.components.TabItem
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 
-private val MAIN_TABS = listOf(
-    TabItem(AppTab.FRIDGE, AppTab.FRIDGE.title, Icons.Outlined.Kitchen, Icons.Rounded.Kitchen),
-    TabItem(AppTab.RECIPES, AppTab.RECIPES.title, Icons.Outlined.SoupKitchen, Icons.Rounded.SoupKitchen),
-    TabItem(AppTab.SETTINGS, AppTab.SETTINGS.title, Icons.Outlined.Settings, Icons.Rounded.Settings),
+@Composable
+private fun mainTabs() = listOf(
+    TabItem(AppTab.FRIDGE, stringResource(AppTab.FRIDGE.title), Icons.Outlined.Kitchen, Icons.Rounded.Kitchen),
+    TabItem(AppTab.RECIPES, stringResource(AppTab.RECIPES.title), Icons.Outlined.SoupKitchen, Icons.Rounded.SoupKitchen),
+    TabItem(AppTab.SETTINGS, stringResource(AppTab.SETTINGS.title), Icons.Outlined.Settings, Icons.Rounded.Settings),
 )
 
 /** Tabs bound to AppCoordinator, plus app-level sheets and alerts. */
@@ -50,7 +52,7 @@ private val MAIN_TABS = listOf(
 fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, dependencies: AppDependencies) {
     // Tab roots live in the activity's store so they survive switching tabs.
     val inventoryList = viewModel(key = "inventory") {
-        InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, coordinator.inventory, dependencies.notifications)
+        InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, coordinator.inventory, dependencies.notifications, dependencies.strings)
     }
     val recipesList = viewModel(key = "recipes") {
         RecipesViewModel(dependencies.inventory, dependencies.settings, dependencies.recipes, dependencies.clock, coordinator.recipes)
@@ -78,7 +80,7 @@ fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, d
             }
             // Hidden while typing so the bottom search field sits directly on the keyboard.
             if (!WindowInsets.isImeVisible) {
-                AppTabBar(MAIN_TABS, coordinator.selectedTab, coordinator::selectTab, Modifier.navigationBarsPadding())
+                AppTabBar(mainTabs(), coordinator.selectedTab, coordinator::selectTab, Modifier.navigationBarsPadding())
             }
         }
         SheetHost(coordinator, sheetStores, dependencies)

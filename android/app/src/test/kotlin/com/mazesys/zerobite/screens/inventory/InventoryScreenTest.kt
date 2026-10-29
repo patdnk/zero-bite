@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.screens.inventory
 
+import com.mazesys.zerobite.testing.EnglishStrings
 import com.mazesys.zerobite.data.SettingsSnapshot
 import com.mazesys.zerobite.testing.FakeAccess
 import androidx.compose.runtime.CompositionLocalProvider
@@ -46,7 +47,7 @@ class InventoryScreenTest {
     private val app = AppCoordinator { TestClock.today }
 
     private fun show(inventory: FakeInventoryRepository, dark: Boolean = false, fontScale: Float? = null) {
-        val vm = InventoryViewModel(inventory, FakeSettings(SettingsSnapshot(dismissedNotificationTip = true)), TestClock.fixed(), SequentialIds(), app.inventory, FakeAccess())
+        val vm = InventoryViewModel(inventory, FakeSettings(SettingsSnapshot(dismissedNotificationTip = true)), TestClock.fixed(), SequentialIds(), app.inventory, FakeAccess(), EnglishStrings)
         compose.setContent {
             ZeroBiteTheme(darkTheme = dark) {
                 if (fontScale == null) {

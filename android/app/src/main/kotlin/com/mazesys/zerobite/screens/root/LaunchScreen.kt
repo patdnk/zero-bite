@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.screens.root
 
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +27,7 @@ fun LaunchScreen(onFinish: () -> Unit) {
     Box(Modifier.fillMaxSize().background(ZeroBiteTheme.colors.backgroundPrimary), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Spacing.lg)) {
             BrandMark(Modifier.size(112.dp))
-            Text("Zero Bite", style = ZeroBiteTheme.type.largeTitle.semibold(), letterSpacing = (-1).sp, color = ZeroBiteTheme.colors.textPrimary)
+            Text(stringResource(R.string.app_name), style = ZeroBiteTheme.type.largeTitle.semibold(), letterSpacing = (-1).sp, color = ZeroBiteTheme.colors.textPrimary)
         }
     }
     LaunchedEffect(Unit) {

@@ -1,5 +1,8 @@
 package com.mazesys.zerobite.screens.welcome
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -83,16 +86,16 @@ private fun WelcomeArt() {
     val c = ZeroBiteTheme.colors
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            MockTile(Icons.Rounded.WaterDrop, "Greek yogurt", "500 g", "Today", c.statusToday, Modifier.weight(1f))
-            MockTile(Icons.Rounded.Eco, "Spinach", "1 bag", "2d", c.statusSoon, Modifier.weight(1f))
+            MockTile(Icons.Rounded.WaterDrop, stringResource(R.string.welcome_art_yogurt), "500 g", stringResource(R.string.short_today), c.statusToday, Modifier.weight(1f))
+            MockTile(Icons.Rounded.Eco, stringResource(R.string.welcome_art_spinach), stringResource(R.string.welcome_art_one_bag), stringResource(R.string.short_days, 2), c.statusSoon, Modifier.weight(1f))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            MockTile(Icons.Rounded.SetMeal, "Salmon", "2 pcs", "3 Nov", c.statusFresh, Modifier.weight(1f), accent = false)
-            MockTile(Icons.Rounded.RiceBowl, "Spaghetti", "500 g", "Jun", c.statusFresh, Modifier.weight(1f), accent = false)
+            MockTile(Icons.Rounded.SetMeal, stringResource(R.string.welcome_art_salmon), stringResource(R.string.welcome_art_two_pcs), stringResource(R.string.welcome_art_date_nov), c.statusFresh, Modifier.weight(1f), accent = false)
+            MockTile(Icons.Rounded.RiceBowl, stringResource(R.string.welcome_art_spaghetti), "500 g", stringResource(R.string.welcome_art_date_jun), c.statusFresh, Modifier.weight(1f), accent = false)
         }
         Row(Modifier.alpha(0.5f), horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            MockTile(Icons.Rounded.BakeryDining, "Sourdough", "1 loaf", "4d", c.statusFresh, Modifier.weight(1f), accent = false)
-            MockTile(Icons.Rounded.Spa, "Lemons", "3 pcs", "9d", c.statusFresh, Modifier.weight(1f), accent = false)
+            MockTile(Icons.Rounded.BakeryDining, stringResource(R.string.welcome_art_sourdough), stringResource(R.string.welcome_art_one_loaf), stringResource(R.string.short_days, 4), c.statusFresh, Modifier.weight(1f), accent = false)
+            MockTile(Icons.Rounded.Spa, stringResource(R.string.welcome_art_lemons), stringResource(R.string.welcome_art_three_pcs), stringResource(R.string.short_days, 9), c.statusFresh, Modifier.weight(1f), accent = false)
         }
     }
 }
@@ -103,10 +106,10 @@ private fun ScanArt() {
     Box(contentAlignment = Alignment.Center) {
         AppCard(Modifier.width(250.dp), padding = Spacing.xl) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("SEMI SKIMMED MILK", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = c.textSecondary)
-                Text("2 PINTS · 1.136 L", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Medium, fontSize = 12.sp, color = c.textMuted)
+                Text(stringResource(R.string.welcome_art_label_product), fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = c.textSecondary)
+                Text(stringResource(R.string.welcome_art_label_size), fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Medium, fontSize = 12.sp, color = c.textMuted)
                 Text(
-                    "USE BY 12 OCT",
+                    stringResource(R.string.welcome_art_label_date),
                     fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = c.textPrimary,
                     modifier = Modifier.background(c.brandOrange.copy(alpha = 0.15f)).border(2.dp, c.brandOrange).padding(horizontal = 8.dp, vertical = 6.dp),
                 )
@@ -144,21 +147,21 @@ private fun RemindArt() {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         AppCard {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Overline("Use first", Modifier.weight(1f))
-                Text("2 more need attention", style = type.caption, color = c.textSecondary)
+                Overline(stringResource(R.string.use_first), Modifier.weight(1f))
+                Text(pluralStringResource(R.plurals.use_first_others, 2, 2), style = type.caption, color = c.textSecondary)
             }
             Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = Alignment.Bottom) {
                 Column(Modifier.weight(1f)) {
-                    Text("Spinach", style = type.title3.semibold(), color = c.textPrimary)
-                    Text("1 bag · Fridge", style = type.caption, color = c.textSecondary)
+                    Text(stringResource(R.string.welcome_art_spinach), style = type.title3.semibold(), color = c.textPrimary)
+                    Text(stringResource(R.string.welcome_art_spinach_detail), style = type.caption, color = c.textSecondary)
                 }
                 Text("1", style = type.largeTitle.semibold().copy(fontSize = 40.sp), color = c.statusToday, modifier = Modifier.alignByBaseline())
-                Text(" day", style = type.subheadline, color = c.statusToday, modifier = Modifier.alignByBaseline())
+                Text(" " + pluralStringResource(R.plurals.countdown_days, 1), style = type.subheadline, color = c.statusToday, modifier = Modifier.alignByBaseline())
             }
             ShelfLifeBar(0.86f, c.statusToday)
             Row(Modifier.padding(top = Spacing.md), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                MockButton("Used it", c.textPrimary, c.onInk, Modifier.weight(1f))
-                MockButton("Freeze", c.chipFill, c.textPrimary, Modifier.weight(1f))
+                MockButton(stringResource(R.string.action_used_it), c.textPrimary, c.onInk, Modifier.weight(1f))
+                MockButton(stringResource(R.string.action_freeze), c.chipFill, c.textPrimary, Modifier.weight(1f))
             }
         }
         AppCard(Modifier.padding(horizontal = Spacing.md)) {
@@ -166,11 +169,11 @@ private fun RemindArt() {
                 AppIconTile()
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Row {
-                        Text("Zero Bite", style = type.caption.semibold(), color = c.textSecondary, modifier = Modifier.weight(1f))
-                        Text("now", style = type.caption2, color = c.textSecondary)
+                        Text(stringResource(R.string.app_name), style = type.caption.semibold(), color = c.textSecondary, modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.welcome_art_now), style = type.caption2, color = c.textSecondary)
                     }
-                    Text("Spinach goes off tomorrow", style = type.subheadline.semibold(), color = c.textPrimary)
-                    Text("It's in 3 recipes you can make tonight.", style = type.caption, color = c.textSecondary)
+                    Text(stringResource(R.string.welcome_art_notification_title), style = type.subheadline.semibold(), color = c.textPrimary)
+                    Text(stringResource(R.string.welcome_art_notification_body), style = type.caption, color = c.textSecondary)
                 }
             }
         }
@@ -198,13 +201,13 @@ private fun CookArt() {
         }
         Column(Modifier.padding(Spacing.md), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row {
-                Text("Spinach and egg frittata", style = type.headline, color = c.textPrimary, modifier = Modifier.weight(1f))
-                Text("92%", style = type.headline, color = c.brandOrange)
+                Text(stringResource(R.string.welcome_art_recipe), style = type.headline, color = c.textPrimary, modifier = Modifier.weight(1f))
+                Text(stringResource(R.string.recipe_match_percent, 92), style = type.headline, color = c.brandOrange)
             }
-            Text("20 min · serves 2 · uses 2 expiring", style = type.caption, color = c.textSecondary)
+            Text(stringResource(R.string.welcome_art_recipe_meta), style = type.caption, color = c.textSecondary)
             Row(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Tag("Spinach", tint = c.brandOrange)
-                Tag("Eggs", tint = c.brandOrange)
+                Tag(stringResource(R.string.welcome_art_spinach), tint = c.brandOrange)
+                Tag(stringResource(R.string.welcome_art_eggs), tint = c.brandOrange)
                 Tag("+3")
             }
         }
@@ -215,9 +218,9 @@ private fun CookArt() {
 private fun RemindersArt() {
     val c = ZeroBiteTheme.colors
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-        ReminderRow("3 days before", "Greek yogurt is due on Friday", c.statusSoon)
-        ReminderRow("On the day", "Use your spinach today", c.statusToday)
-        ReminderRow("Day after", "Milk went past its date yesterday", c.statusExpired)
+        ReminderRow(stringResource(R.string.welcome_art_when_before), stringResource(R.string.welcome_art_text_before), c.statusSoon)
+        ReminderRow(stringResource(R.string.welcome_art_when_day), stringResource(R.string.welcome_art_text_day), c.statusToday)
+        ReminderRow(stringResource(R.string.welcome_art_when_after), stringResource(R.string.welcome_art_text_after), c.statusExpired)
     }
 }
 

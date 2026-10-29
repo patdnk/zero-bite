@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.ui.components
 
+import androidx.compose.ui.res.pluralStringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -58,6 +60,7 @@ fun ScreenHeader(
                     modifier = Modifier.semantics { heading() },
                 )
                 if (count != null) {
+                    val countDescription = pluralStringResource(R.plurals.item_count_badge, count, count)
                     Text(
                         "$count",
                         style = type.caption.semibold(),
@@ -66,7 +69,7 @@ fun ScreenHeader(
                             .padding(top = 6.dp)
                             .background(colors.chipFill, RoundedCornerShape(Radius.control))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
-                            .semantics { contentDescription = "$count items" },
+                            .semantics { contentDescription = countDescription },
                     )
                 }
             }

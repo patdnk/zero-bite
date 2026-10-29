@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.ui.components
 
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -19,12 +21,13 @@ import com.mazesys.zerobite.ui.theme.semibold
 /** The mark next to the "Zero Bite" name, in the app typeface. */
 @Composable
 fun BrandLockup(size: Dp = 28.dp, modifier: Modifier = Modifier) {
+    val name = stringResource(R.string.app_name)
     Row(
-        modifier.clearAndSetSemantics { contentDescription = "Zero Bite" },
+        modifier.clearAndSetSemantics { contentDescription = name },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(size * 0.32f),
     ) {
         BrandMark(Modifier.size(size))
-        Text("Zero Bite", style = ZeroBiteTheme.type.title3.semibold(), letterSpacing = (-0.4).sp, color = ZeroBiteTheme.colors.textPrimary)
+        Text(name, style = ZeroBiteTheme.type.title3.semibold(), letterSpacing = (-0.4).sp, color = ZeroBiteTheme.colors.textPrimary)
     }
 }

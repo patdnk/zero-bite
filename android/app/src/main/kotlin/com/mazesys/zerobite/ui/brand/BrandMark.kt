@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.ui.brand
 
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
@@ -42,12 +44,13 @@ object BrandMarkColors {
 fun BrandMark(modifier: Modifier = Modifier, style: BrandMarkStyle = BrandMarkStyle.COLOR) {
     val disc = if (style == BrandMarkStyle.COLOR) BrandMarkColors.red else Color(0xFF6B6B6B)
     val ink = if (style == BrandMarkStyle.COLOR) BrandMarkColors.cream else Color.White
+    val name = stringResource(R.string.app_name)
     Canvas(
         modifier
             .aspectRatio(1f)
             // Offscreen so the bite can punch through to whatever is behind the mark.
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-            .semantics { contentDescription = "Zero Bite" },
+            .semantics { contentDescription = name },
     ) {
         drawBrandMark(disc, ink)
     }

@@ -43,6 +43,8 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        // Renames the channel in the system settings after an app-language change (which recreates the activity).
+        Notifications.createChannels(this)
         if (savedInstanceState == null) handleIntent(intent)
         setContent {
             ZeroBiteTheme {

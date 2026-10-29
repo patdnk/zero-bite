@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.screens.recipes
 
+import androidx.annotation.StringRes
+import com.mazesys.zerobite.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mazesys.zerobite.core.inventory.InventoryRepository
@@ -21,7 +23,7 @@ data class CookedUiState(
     val usableItems: List<FoodItem> = emptyList(),
     val selectedIds: Set<String> = emptySet(),
 ) {
-    val confirmTitle: String get() = if (selectedIds.isEmpty()) "Done" else "Update fridge"
+    @get:StringRes val confirmTitle: Int get() = if (selectedIds.isEmpty()) R.string.action_done else R.string.cooked_update_fridge
 }
 
 /** After cooking: choose which matched fridge items were used up. */

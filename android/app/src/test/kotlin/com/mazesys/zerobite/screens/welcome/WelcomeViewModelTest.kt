@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.screens.welcome
 
+import com.mazesys.zerobite.testing.english
 import com.mazesys.zerobite.reminders.NotificationPermission
 import com.mazesys.zerobite.testing.FakeAccess
 import com.mazesys.zerobite.testing.FakeSettings
@@ -25,11 +26,11 @@ class WelcomeViewModelTest {
     fun `first run pages through to the reminders step`() {
         val model = vm()
         assertEquals(WelcomePage.REMINDERS, model.state.value.pages.last())
-        assertEquals("Show me how", model.state.value.primaryTitle)
+        assertEquals("Show me how", english(model.state.value.primaryTitle))
         repeat(model.state.value.pages.size - 1) { model.primaryAction(never) }
         assertEquals(WelcomePage.REMINDERS, model.state.value.currentPage)
         assertTrue(model.state.value.isLastPage)
-        assertEquals("Turn on reminders", model.state.value.primaryTitle)
+        assertEquals("Turn on reminders", english(model.state.value.primaryTitle))
         assertEquals(0, completed)
     }
 
@@ -44,7 +45,7 @@ class WelcomeViewModelTest {
     fun `replay has no permission step and finishes on the last page`() {
         val model = vm(WelcomeMode.REPLAY)
         assertFalse(WelcomePage.REMINDERS in model.state.value.pages)
-        assertEquals("Close", model.state.value.skipTitle)
+        assertEquals("Close", english(model.state.value.skipTitle))
         repeat(model.state.value.pages.size) { model.primaryAction(never) }
         assertEquals(1, completed)
     }
@@ -65,7 +66,7 @@ class WelcomeViewModelTest {
         model.skipIntro()
         model.primaryAction(never)
         assertEquals(WelcomeStep.DENIED, model.state.value.step)
-        assertEquals("Continue", model.state.value.primaryTitle)
+        assertEquals("Continue", english(model.state.value.primaryTitle))
         assertFalse(model.state.value.showsNotNow)
         model.primaryAction(never)
         assertEquals(1, completed)

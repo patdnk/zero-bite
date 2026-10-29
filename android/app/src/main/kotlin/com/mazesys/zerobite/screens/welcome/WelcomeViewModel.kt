@@ -1,6 +1,8 @@
 package com.mazesys.zerobite.screens.welcome
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
+import com.mazesys.zerobite.R
 import androidx.lifecycle.viewModelScope
 import com.mazesys.zerobite.data.SettingsRepository
 import com.mazesys.zerobite.reminders.NotificationAccess
@@ -31,15 +33,16 @@ data class WelcomeUiState(
     val pageIndex: Int get() = pages.indexOf(currentPage).coerceAtLeast(0)
     val isLastPage: Boolean get() = currentPage == pages.last()
     val isRequesting: Boolean get() = step == WelcomeStep.REQUESTING
-    val skipTitle: String get() = if (mode == WelcomeMode.REPLAY) "Close" else "Skip"
+    @get:StringRes val skipTitle: Int get() = if (mode == WelcomeMode.REPLAY) R.string.action_close else R.string.action_skip
     val showsNotNow: Boolean get() = currentPage == WelcomePage.REMINDERS && step != WelcomeStep.DENIED
 
-    val primaryTitle: String
+    @get:StringRes
+    val primaryTitle: Int
         get() = when (currentPage) {
-            WelcomePage.REMINDERS -> if (step == WelcomeStep.DENIED) "Continue" else "Turn on reminders"
-            WelcomePage.COOK -> if (mode == WelcomeMode.REPLAY) "Done" else "Next"
-            WelcomePage.WELCOME -> "Show me how"
-            else -> "Next"
+            WelcomePage.REMINDERS -> if (step == WelcomeStep.DENIED) R.string.action_continue else R.string.welcome_turn_on_reminders
+            WelcomePage.COOK -> if (mode == WelcomeMode.REPLAY) R.string.action_done else R.string.action_next
+            WelcomePage.WELCOME -> R.string.welcome_show_me_how
+            else -> R.string.action_next
         }
 }
 

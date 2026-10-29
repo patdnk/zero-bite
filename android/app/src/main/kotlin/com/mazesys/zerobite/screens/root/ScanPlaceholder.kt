@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.screens.root
 
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -22,13 +24,13 @@ fun ScanPlaceholder(onClose: () -> Unit, onAddManually: () -> Unit) {
     Column {
         TopBar(TopBarLeading.Close(onClose))
         Column(Modifier.padding(horizontal = Spacing.gutter), verticalArrangement = Arrangement.spacedBy(Spacing.lg)) {
-            DetailTitle(title = "Scan a label", overline = "Coming soon")
+            DetailTitle(title = stringResource(R.string.action_scan_label), overline = stringResource(R.string.scan_coming_soon))
             Text(
-                "Label and barcode scanning arrives in the next build. Add food by hand for now.",
+                stringResource(R.string.scan_coming_soon_message),
                 style = ZeroBiteTheme.type.body,
                 color = ZeroBiteTheme.colors.textSecondary,
             )
-            AppButton("Add manually", onAddManually, kind = ButtonKind.TONAL, icon = Icons.Rounded.EditNote)
+            AppButton(stringResource(R.string.action_add_manually), onAddManually, kind = ButtonKind.TONAL, icon = Icons.Rounded.EditNote)
         }
     }
 }

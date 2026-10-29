@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.ui.components
 
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -37,8 +39,8 @@ fun TopBar(leading: TopBarLeading, modifier: Modifier = Modifier, trailing: @Com
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         when (leading) {
-            is TopBarLeading.Back -> HeaderIconButton(Icons.Rounded.ChevronLeft, "Back", leading.onClick, Modifier.testTag("topBar.back"))
-            is TopBarLeading.Close -> HeaderIconButton(Icons.Rounded.Close, "Close", leading.onClick, Modifier.testTag("topBar.close"), bordered = false)
+            is TopBarLeading.Back -> HeaderIconButton(Icons.Rounded.ChevronLeft, stringResource(R.string.action_back), leading.onClick, Modifier.testTag("topBar.back"))
+            is TopBarLeading.Close -> HeaderIconButton(Icons.Rounded.Close, stringResource(R.string.action_close), leading.onClick, Modifier.testTag("topBar.close"), bordered = false)
             TopBarLeading.None -> Unit
         }
         Spacer(Modifier.weight(1f))

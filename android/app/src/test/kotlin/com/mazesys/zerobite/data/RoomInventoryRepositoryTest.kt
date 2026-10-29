@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.data
 
+import com.mazesys.zerobite.testing.EnglishStrings
 import androidx.test.core.app.ApplicationProvider
 import com.mazesys.zerobite.core.model.FoodCategory
 import com.mazesys.zerobite.core.model.FoodItem
@@ -74,7 +75,7 @@ class RoomInventoryRepositoryTest {
     fun `sample fridge matches iOS`() {
         var n = 0
         val today = LocalDate(2026, 9, 7)
-        val items = SampleData.items(today, added) { "id-${++n}" }
+        val items = SampleData.items(today, added, { "id-${++n}" }, EnglishStrings)
         assertEquals(21, items.size)
         assertEquals(21, items.map { it.id }.toSet().size)
         val yogurt = items.first { it.name == "Greek yogurt" }

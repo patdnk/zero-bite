@@ -1,13 +1,15 @@
 package com.mazesys.zerobite.screens.inventory
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
+import com.mazesys.zerobite.R
 import androidx.lifecycle.viewModelScope
 import com.mazesys.zerobite.IdGenerator
 import com.mazesys.zerobite.core.inventory.InventoryRepository
 import com.mazesys.zerobite.core.model.FoodItem
 import com.mazesys.zerobite.core.model.ItemDraft
-import com.mazesys.zerobite.core.model.formatQuantity
 import com.mazesys.zerobite.core.time.AppClock
+import com.mazesys.zerobite.ui.text.formatQuantity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.plus
+import java.util.Locale
 
 sealed interface ItemFormMode {
     data object Add : ItemFormMode
@@ -27,12 +30,12 @@ data class ItemFormUiState(
     val quantityText: String,
     val isEditing: Boolean,
     val isLoaded: Boolean = true,
-    val errorMessage: String? = null,
+    @StringRes val errorMessage: Int? = null,
     val isSaving: Boolean = false,
 ) {
-    val title: String get() = if (isEditing) "Edit item" else "New item"
-    val overline: String get() = if (isEditing) "Edit" else "Add to your fridge"
-    val saveTitle: String get() = if (isEditing) "Save changes" else "Add to fridge"
+    @get:StringRes val title: Int get() = if (isEditing) R.string.form_title_edit else R.string.form_title_new
+    @get:StringRes val overline: Int get() = if (isEditing) R.string.form_overline_edit else R.string.form_overline_add
+    @get:StringRes val saveTitle: Int get() = if (isEditing) R.string.form_save_edit else R.string.form_save_add
     val canSave: Boolean get() = isLoaded && draft.isValid && !isSaving
     val defaultShelfLifeDays: Int get() = draft.category.defaultShelfLifeDays
 }
@@ -50,7 +53,7 @@ class ItemFormViewModel(
         (initialDraft ?: ItemDraft.new(clock.today())).let { draft ->
             ItemFormUiState(
                 draft = draft,
-                quantityText = formatQuantity(draft.quantity),
+                quantityText = formatQuantity(draft.quantity, Locale.getDefault()),
                 isEditing = mode is ItemFormMode.Edit,
                 isLoaded = initialDraft != null || mode is ItemFormMode.Add,
             )
@@ -67,7 +70,7 @@ class ItemFormViewModel(
                         it.copy(isLoaded = true, errorMessage = MISSING)
                     } else {
                         val draft = ItemDraft.from(existing)
-                        it.copy(draft = draft, quantityText = formatQuantity(draft.quantity), isLoaded = true)
+                        it.copy(draft = draft, quantityText = formatQuantity(draft.quantity, Locale.getDefault()), isLoaded = true)
                     }
                 }
             }
@@ -119,7 +122,7 @@ class ItemFormViewModel(
     }
 
     private companion object {
-        const val MISSING = "This item no longer exists."
+        val MISSING = R.string.form_missing
         val QUANTITY = Regex("""\d{1,6}([.,]\d{1,2})?""")
     }
 }

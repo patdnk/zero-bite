@@ -3,12 +3,15 @@ package com.mazesys.zerobite.screens.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mazesys.zerobite.AppDependencies
+import com.mazesys.zerobite.R
 import com.mazesys.zerobite.coordination.SettingsCoordinator
 import com.mazesys.zerobite.core.model.Allergen
 import com.mazesys.zerobite.data.SampleData
 import com.mazesys.zerobite.data.SettingsSnapshot
 import com.mazesys.zerobite.reminders.NotificationPermission
 import com.mazesys.zerobite.reminders.PermissionRequester
+import com.mazesys.zerobite.ui.text.uiPlural
+import com.mazesys.zerobite.ui.text.uiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -85,8 +88,8 @@ class SettingsViewModel(
                 settings.update { it.copy(notificationsEnabled = granted) }
                 if (!granted) {
                     coordinator.showInfo(
-                        "Notifications are off",
-                        "Allow notifications for Zero Bite in your phone's settings to get expiry reminders.",
+                        uiText(R.string.alert_notifications_off_title),
+                        uiText(R.string.alert_notifications_off_message),
                     )
                 }
             } else {
@@ -113,7 +116,7 @@ class SettingsViewModel(
     fun loadSampleData() {
         viewModelScope.launch {
             val clock = dependencies.clock
-            SampleData.items(clock.today(), clock.now(), dependencies.ids::next).forEach { inventory.add(it) }
+            SampleData.items(clock.today(), clock.now(), dependencies.ids::next, dependencies.strings).forEach { inventory.add(it) }
         }
     }
 
@@ -121,14 +124,22 @@ class SettingsViewModel(
         viewModelScope.launch {
             val used = inventory.items.first().filter { it.isConsumed }
             if (used.isEmpty()) return@launch
-            coordinator.confirm("Clear used-up history?", "Removes ${used.size} items you've already marked as used.", "Clear") {
+            coordinator.confirm(
+                uiText(R.string.alert_clear_history_title),
+                uiPlural(R.plurals.alert_clear_history_message, used.size),
+                uiText(R.string.alert_clear_history_action),
+            ) {
                 viewModelScope.launch { used.forEach { inventory.delete(it.id) } }
             }
         }
     }
 
     fun deleteEverything() {
-        coordinator.confirm("Delete everything?", "This removes every item from your fridge. It can't be undone.", "Delete all") {
+        coordinator.confirm(
+            uiText(R.string.alert_delete_everything_title),
+            uiText(R.string.alert_delete_everything_message),
+            uiText(R.string.alert_delete_everything_action),
+        ) {
             viewModelScope.launch { inventory.deleteAll() }
         }
     }

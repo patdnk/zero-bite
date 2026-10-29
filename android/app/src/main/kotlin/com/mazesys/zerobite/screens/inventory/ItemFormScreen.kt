@@ -1,5 +1,11 @@
 package com.mazesys.zerobite.screens.inventory
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
+import com.mazesys.zerobite.ui.format.appLocale
+import com.mazesys.zerobite.ui.text.labelRes
+import com.mazesys.zerobite.ui.text.unitLabel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -76,55 +82,55 @@ fun ItemFormScreen(viewModel: ItemFormViewModel, onCancel: () -> Unit, modifier:
             Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = Spacing.gutter, end = Spacing.gutter, bottom = Spacing.xl),
             verticalArrangement = Arrangement.spacedBy(Spacing.xl),
         ) {
-            DetailTitle(title = ui.title, overline = ui.overline)
+            DetailTitle(title = stringResource(ui.title), overline = stringResource(ui.overline))
             LabeledInput(
-                label = "Name",
+                label = stringResource(R.string.form_name),
                 value = draft.name,
                 onValueChange = { name -> viewModel.updateDraft { it.copy(name = name) } },
-                placeholder = "Greek yogurt",
+                placeholder = stringResource(R.string.form_name_placeholder),
                 testTag = "itemForm.name",
                 autoFocus = draft.name.isEmpty(),
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             )
             LabeledInput(
-                label = "Brand (optional, helps spot recalls)",
+                label = stringResource(R.string.form_brand),
                 value = draft.brand.orEmpty(),
                 onValueChange = { brand -> viewModel.updateDraft { it.copy(brand = brand.takeIf { b -> b.isNotBlank() }) } },
-                placeholder = "Yeo Valley",
+                placeholder = stringResource(R.string.form_brand_placeholder),
                 testTag = "itemForm.brand",
             )
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                Overline("Category")
-                ChipFilter(FoodCategory.entries, draft.category, { c -> viewModel.updateDraft { it.copy(category = c) } }, { it.label }, Modifier.bleed(Spacing.gutter))
+                Overline(stringResource(R.string.form_category))
+                ChipFilter(FoodCategory.entries, draft.category, { c -> viewModel.updateDraft { it.copy(category = c) } }, { stringResource(it.labelRes) }, Modifier.bleed(Spacing.gutter))
             }
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                Overline("Stored in")
-                ChipFilter(StorageLocation.entries, draft.storage, { s -> viewModel.updateDraft { it.copy(storage = s) } }, { it.label }, Modifier.bleed(Spacing.gutter))
+                Overline(stringResource(R.string.form_stored_in))
+                ChipFilter(StorageLocation.entries, draft.storage, { s -> viewModel.updateDraft { it.copy(storage = s) } }, { stringResource(it.labelRes) }, Modifier.bleed(Spacing.gutter))
             }
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                Overline("Quantity")
+                Overline(stringResource(R.string.form_quantity))
                 Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                     AppTextField(
-                        ui.quantityText, viewModel::setQuantityText, "Amount",
+                        ui.quantityText, viewModel::setQuantityText, stringResource(R.string.form_amount),
                         Modifier.weight(1f).testTag("itemForm.quantity"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     )
                     AppTextField(
-                        draft.unit, { unit -> viewModel.updateDraft { it.copy(unit = unit) } }, "Unit",
+                        unitLabel(draft.unit), { unit -> viewModel.updateDraft { it.copy(unit = unit) } }, stringResource(R.string.form_unit),
                         Modifier.width(110.dp).testTag("itemForm.unit"),
                         keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
                     )
                 }
-                ChipFilter(ItemDraft.unitSuggestions, draft.unit, { u -> viewModel.updateDraft { it.copy(unit = u) } }, { it }, Modifier.bleed(Spacing.gutter))
+                ChipFilter(ItemDraft.unitSuggestions, draft.unit, { u -> viewModel.updateDraft { it.copy(unit = u) } }, { unitLabel(it) }, Modifier.bleed(Spacing.gutter))
             }
             CardSection(
-                title = "Expiry",
-                footer = "No date on the label? Use the typical shelf life for ${draft.category.label.lowercase()}.",
+                title = stringResource(R.string.form_expiry),
+                footer = stringResource(R.string.form_expiry_footer, stringResource(draft.category.labelRes).lowercase(appLocale())),
                 rows = listOf<@Composable () -> Unit>(
                     {
-                        InfoRow("Expires on", icon = Icons.Rounded.Event) {
+                        InfoRow(stringResource(R.string.form_expires_on), icon = Icons.Rounded.Event) {
                             Text(
-                                DateText.abbreviated(draft.expiresOn),
+                                DateText.abbreviated(draft.expiresOn, appLocale()),
                                 style = ZeroBiteTheme.type.subheadline.medium(),
                                 color = colors.textPrimary,
                                 modifier = Modifier
@@ -137,7 +143,7 @@ fun ItemFormScreen(viewModel: ItemFormViewModel, onCancel: () -> Unit, modifier:
                     },
                     {
                         ActionRow(
-                            "Use typical shelf life (${ui.defaultShelfLifeDays} days)",
+                            pluralStringResource(R.plurals.form_typical_shelf_life, ui.defaultShelfLifeDays, ui.defaultShelfLifeDays),
                             onClick = viewModel::applyDefaultShelfLife,
                             icon = Icons.Rounded.AutoAwesome,
                             tint = colors.brandOrange,
@@ -146,17 +152,17 @@ fun ItemFormScreen(viewModel: ItemFormViewModel, onCancel: () -> Unit, modifier:
                 ),
             )
             LabeledInput(
-                label = "Notes",
+                label = stringResource(R.string.form_notes),
                 value = draft.notes,
                 onValueChange = { notes -> viewModel.updateDraft { it.copy(notes = notes) } },
-                placeholder = "Opened on Monday, half left",
+                placeholder = stringResource(R.string.form_notes_placeholder),
                 singleLine = false,
             )
-            draft.barcode?.let { code -> CardSection(rows = listOf<@Composable () -> Unit>({ InfoRow("Barcode", code, icon = Icons.Rounded.QrCode) })) }
-            ui.errorMessage?.let { Text(it, style = ZeroBiteTheme.type.subheadline.medium(), color = colors.statusExpired) }
+            draft.barcode?.let { code -> CardSection(rows = listOf<@Composable () -> Unit>({ InfoRow(stringResource(R.string.detail_barcode), code, icon = Icons.Rounded.QrCode) })) }
+            ui.errorMessage?.let { Text(stringResource(it), style = ZeroBiteTheme.type.subheadline.medium(), color = colors.statusExpired) }
         }
         AppButton(
-            text = ui.saveTitle,
+            text = stringResource(ui.saveTitle),
             onClick = viewModel::save,
             enabled = ui.canSave,
             loading = ui.isSaving,
@@ -197,9 +203,9 @@ private fun ExpiryDatePicker(initial: LocalDate, onPicked: (LocalDate) -> Unit, 
                 state.selectedDateMillis?.let { millis ->
                     onPicked(Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.UTC).date)
                 } ?: onDismiss()
-            }) { Text("Done", color = colors.textPrimary) }
+            }) { Text(stringResource(R.string.action_done), color = colors.textPrimary) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel", color = colors.textSecondary) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel), color = colors.textSecondary) } },
         colors = pickerColors,
     ) {
         DatePicker(state, colors = pickerColors, showModeToggle = false)

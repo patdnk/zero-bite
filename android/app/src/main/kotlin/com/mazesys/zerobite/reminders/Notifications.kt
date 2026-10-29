@@ -24,8 +24,8 @@ object Notifications {
     fun createChannels(context: Context) {
         NotificationManagerCompat.from(context).createNotificationChannel(
             NotificationChannelCompat.Builder(CHANNEL_EXPIRY, NotificationManagerCompat.IMPORTANCE_DEFAULT)
-                .setName("Expiry reminders")
-                .setDescription("A heads-up before food expires, on the day, and if it slips past.")
+                .setName(context.getString(R.string.notification_channel_expiry_name))
+                .setDescription(context.getString(R.string.notification_channel_expiry_description))
                 .build(),
         )
     }

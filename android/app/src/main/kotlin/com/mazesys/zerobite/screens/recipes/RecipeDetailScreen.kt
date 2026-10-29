@@ -1,5 +1,9 @@
 package com.mazesys.zerobite.screens.recipes
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.mazesys.zerobite.R
+import com.mazesys.zerobite.ui.text.shortExpiryText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -73,8 +77,8 @@ fun RecipeDetailScreen(viewModel: RecipeDetailViewModel, onBack: () -> Unit, mod
         when {
             ui.isLoading -> Unit
             recipe == null || match == null -> EmptyStateView(
-                title = "Recipe not found",
-                message = "It may have been removed from the catalogue.",
+                title = stringResource(R.string.recipe_not_found_title),
+                message = stringResource(R.string.recipe_not_found_message),
                 icon = Icons.Rounded.QuestionMark,
                 modifier = Modifier.padding(Spacing.gutter),
             )
@@ -93,14 +97,14 @@ private fun RecipeContent(recipe: Recipe, match: RecipeMatch, ui: RecipeDetailUi
     ) {
         RecipeArtwork(recipe, accent, 150.dp, Modifier.clip(RoundedCornerShape(Radius.card)))
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            DetailTitle(title = recipe.title, overline = "${match.matchPercent}% in your fridge", overlineTint = accent)
+            DetailTitle(title = recipe.title, overline = stringResource(R.string.recipe_percent_in_fridge, match.matchPercent), overlineTint = accent)
             Text(recipe.summary, style = ZeroBiteTheme.type.body, color = colors.textSecondary)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            Stat("${recipe.prepMinutes}", "min", Icons.Rounded.Schedule, Modifier.weight(1f))
-            Stat("${recipe.servings}", if (recipe.servings == 1) "serving" else "servings", Icons.Rounded.People, Modifier.weight(1f))
+            Stat("${recipe.prepMinutes}", stringResource(R.string.recipe_stat_minutes), Icons.Rounded.Schedule, Modifier.weight(1f))
+            Stat("${recipe.servings}", pluralStringResource(R.plurals.recipe_stat_servings, recipe.servings), Icons.Rounded.People, Modifier.weight(1f))
             Stat(
-                "${match.expiringItems.size}", "expiring", Icons.Rounded.Schedule, Modifier.weight(1f),
+                "${match.expiringItems.size}", stringResource(R.string.recipe_stat_expiring), Icons.Rounded.Schedule, Modifier.weight(1f),
                 tint = if (match.expiringItems.isEmpty()) null else colors.brandOrange,
             )
         }
@@ -115,13 +119,13 @@ private fun RecipeContent(recipe: Recipe, match: RecipeMatch, ui: RecipeDetailUi
             }
         }
         CardSection(
-            title = "Ingredients",
+            title = stringResource(R.string.recipe_ingredients),
             rows = recipe.ingredients.map { ingredient ->
                 { IngredientRow(ingredient, ui.matched(ingredient), ui.today, ui.soonThresholdDays, onTapItem = viewModel::showItem) }
             },
         )
         CardSection(
-            title = "Method",
+            title = stringResource(R.string.recipe_method),
             rows = recipe.steps.mapIndexed { index, step ->
                 {
                     Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
@@ -137,7 +141,7 @@ private fun RecipeContent(recipe: Recipe, match: RecipeMatch, ui: RecipeDetailUi
             },
         )
         AppButton(
-            "I cooked this — update my fridge",
+            stringResource(R.string.recipe_cooked_button),
             viewModel::cooked,
             Modifier.testTag("recipe.cooked"),
             icon = Icons.Rounded.Verified,
@@ -168,7 +172,7 @@ private fun StatusBanner(match: RecipeMatch) {
     ) {
         Icon(if (match.canMake) Icons.Rounded.CheckCircle else Icons.Rounded.ShoppingCart, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
         Text(
-            if (match.canMake) "You have everything you need." else "Missing ${match.missing.joinToString(", ") { it.name }}.",
+            if (match.canMake) stringResource(R.string.recipe_have_everything) else stringResource(R.string.recipe_missing_sentence, match.missing.joinToString(", ") { it.name }),
             style = ZeroBiteTheme.type.subheadline.medium(),
             color = tint,
         )
@@ -206,14 +210,14 @@ private fun IngredientRow(
             val caption = ZeroBiteTheme.type.caption
             when {
                 item != null -> Text(
-                    "You have ${item.name} · ${item.shortExpiryLabel(today)}",
+                    stringResource(R.string.recipe_you_have, item.name, item.shortExpiryText(today)),
                     style = caption,
                     color = tint,
                     modifier = Modifier.clickable(role = Role.Button) { onTapItem(item) },
                 )
-                matched?.isStaple == true -> Text("Store cupboard", style = caption, color = colors.textSecondary)
-                ingredient.optional -> Text("Optional — skip it", style = caption, color = colors.textSecondary)
-                else -> Text("Not in your fridge", style = caption, color = colors.textSecondary)
+                matched?.isStaple == true -> Text(stringResource(R.string.recipe_store_cupboard), style = caption, color = colors.textSecondary)
+                ingredient.optional -> Text(stringResource(R.string.recipe_optional), style = caption, color = colors.textSecondary)
+                else -> Text(stringResource(R.string.recipe_not_in_fridge), style = caption, color = colors.textSecondary)
             }
         }
     }

@@ -3,7 +3,9 @@ package com.mazesys.zerobite.screens.inventory
 import com.mazesys.zerobite.reminders.NotificationAccess
 import com.mazesys.zerobite.reminders.NotificationPermission
 import com.mazesys.zerobite.reminders.PermissionRequester
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
+import com.mazesys.zerobite.R
 import androidx.lifecycle.viewModelScope
 import com.mazesys.zerobite.IdGenerator
 import com.mazesys.zerobite.coordination.InventoryCoordinator
@@ -15,7 +17,9 @@ import com.mazesys.zerobite.core.time.AppClock
 import com.mazesys.zerobite.data.SampleData
 import com.mazesys.zerobite.data.SettingsRepository
 import com.mazesys.zerobite.ui.components.shelfLifeProgress
-import com.mazesys.zerobite.ui.format.DateText
+import com.mazesys.zerobite.ui.text.Strings
+import com.mazesys.zerobite.ui.text.UiText
+import com.mazesys.zerobite.ui.text.uiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,11 +30,11 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 
-enum class StorageFilter(val title: String, val location: StorageLocation?) {
-    ALL("All", null),
-    FRIDGE("Fridge", StorageLocation.FRIDGE),
-    FREEZER("Freezer", StorageLocation.FREEZER),
-    PANTRY("Cupboard", StorageLocation.PANTRY),
+enum class StorageFilter(@StringRes val title: Int, val location: StorageLocation?) {
+    ALL(R.string.fridge_filter_all, null),
+    FRIDGE(R.string.storage_fridge, StorageLocation.FRIDGE),
+    FREEZER(R.string.storage_freezer, StorageLocation.FREEZER),
+    PANTRY(R.string.storage_pantry, StorageLocation.PANTRY),
 }
 
 data class InventorySection(val status: ExpiryStatus, val items: List<FoodItem>)
@@ -38,7 +42,6 @@ data class InventorySection(val status: ExpiryStatus, val items: List<FoodItem>)
 data class InventoryUiState(
     val today: LocalDate,
     val isLoading: Boolean = true,
-    val headerDate: String = DateText.header(today),
     /** Items not yet used up, soonest expiry first. */
     val activeItems: List<FoodItem> = emptyList(),
     val searchText: String = "",
@@ -57,8 +60,8 @@ data class InventoryUiState(
     /** Items needing attention other than the highlighted one. */
     val othersNeedingAttention: Int get() = maxOf(attentionCount - if (useFirstItem == null) 0 else 1, 0)
 
-    val emptyGridMessage: String
-        get() = if (searchText.isBlank()) "Nothing stored here." else "Nothing matches “$searchText”."
+    val emptyGridMessage: UiText
+        get() = if (searchText.isBlank()) uiText(R.string.fridge_nothing_stored) else uiText(R.string.fridge_nothing_matches, searchText)
 
     /** Freezing only makes sense for food that hasn't gone off and isn't frozen already. */
     fun canFreeze(item: FoodItem): Boolean =
@@ -108,6 +111,7 @@ class InventoryViewModel(
     private val ids: IdGenerator,
     private val coordinator: InventoryCoordinator,
     private val notifications: NotificationAccess,
+    private val strings: Strings,
 ) : ViewModel() {
 
     private val searchText = MutableStateFlow("")
@@ -171,7 +175,7 @@ class InventoryViewModel(
 
     fun loadSampleData() {
         viewModelScope.launch {
-            SampleData.items(clock.today(), clock.now(), ids::next).forEach { inventory.add(it) }
+            SampleData.items(clock.today(), clock.now(), ids::next, strings).forEach { inventory.add(it) }
         }
     }
 }

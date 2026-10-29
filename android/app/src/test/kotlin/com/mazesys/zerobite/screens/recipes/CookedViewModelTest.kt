@@ -1,5 +1,6 @@
 package com.mazesys.zerobite.screens.recipes
 
+import com.mazesys.zerobite.testing.english
 import com.mazesys.zerobite.testing.FakeInventoryRepository
 import com.mazesys.zerobite.testing.FakeRecipes
 import com.mazesys.zerobite.testing.FakeSettings
@@ -29,7 +30,7 @@ class CookedViewModelTest {
         assertEquals("Omelette", state.recipeTitle)
         assertEquals(listOf("eggs", "butter"), state.usableItems.map { it.id })
         assertEquals(setOf("eggs", "butter"), state.selectedIds)
-        assertEquals("Update fridge", state.confirmTitle)
+        assertEquals("Update fridge", english(state.confirmTitle))
     }
 
     @Test
@@ -46,7 +47,7 @@ class CookedViewModelTest {
     fun `nothing ticked just closes`() {
         val model = vm()
         model.state.value.usableItems.forEach(model::toggle)
-        assertEquals("Done", model.state.value.confirmTitle)
+        assertEquals("Done", english(model.state.value.confirmTitle))
         model.confirm()
         assertEquals(emptyList(), inventory.current.filter { it.isConsumed })
         assertEquals(1, done)

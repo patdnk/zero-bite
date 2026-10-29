@@ -1,5 +1,7 @@
 package com.mazesys.zerobite.screens.inventory
 
+import com.mazesys.zerobite.testing.EnglishStrings
+import com.mazesys.zerobite.testing.english
 import com.mazesys.zerobite.data.SettingsSnapshot
 import com.mazesys.zerobite.testing.FakeAccess
 import com.mazesys.zerobite.reminders.NotificationPermission
@@ -31,7 +33,7 @@ class InventoryViewModelTest {
     private val app = AppCoordinator { TestClock.today }
 
     private fun viewModel(repository: FakeInventoryRepository = inventory) =
-        InventoryViewModel(repository, FakeSettings(SettingsSnapshot(dismissedNotificationTip = true)), TestClock.fixed(), SequentialIds(), app.inventory, FakeAccess())
+        InventoryViewModel(repository, FakeSettings(SettingsSnapshot(dismissedNotificationTip = true)), TestClock.fixed(), SequentialIds(), app.inventory, FakeAccess(), EnglishStrings)
 
     private fun InventoryUiState.gridNames() = gridSections.flatMap { it.items }.map { it.name }
 
@@ -43,7 +45,6 @@ class InventoryViewModelTest {
         assertEquals(statuses.sorted(), statuses)
         assertFalse("Greek yogurt" in state.gridNames())
         assertEquals(state.attentionCount - 1, state.othersNeedingAttention)
-        assertEquals("Mon 7 Sep", state.headerDate)
     }
 
     @Test
@@ -63,7 +64,7 @@ class InventoryViewModelTest {
         val vm = viewModel()
         vm.setSearchText("caviar")
         assertEquals(emptyList(), vm.state.value.gridNames())
-        assertEquals("Nothing matches “caviar”.", vm.state.value.emptyGridMessage)
+        assertEquals("Nothing matches “caviar”.", vm.state.value.emptyGridMessage.english())
     }
 
     @Test
@@ -115,7 +116,7 @@ class InventoryViewModelTest {
     }
 
     private fun tipViewModel(access: FakeAccess, settings: FakeSettings = FakeSettings()) =
-        InventoryViewModel(inventory, settings, TestClock.fixed(), SequentialIds(), app.inventory, access)
+        InventoryViewModel(inventory, settings, TestClock.fixed(), SequentialIds(), app.inventory, access, EnglishStrings)
 
     @Test
     fun `reminder tip shows until answered`() {

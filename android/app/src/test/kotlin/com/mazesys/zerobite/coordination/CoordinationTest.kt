@@ -1,5 +1,8 @@
 package com.mazesys.zerobite.coordination
 
+import com.mazesys.zerobite.R
+import com.mazesys.zerobite.testing.english
+import com.mazesys.zerobite.ui.text.uiText
 import com.mazesys.zerobite.data.SettingsSnapshot
 import com.mazesys.zerobite.testing.FakeSettings
 import com.mazesys.zerobite.testing.TestClock
@@ -70,8 +73,8 @@ class CoordinationTest {
     @Test
     fun `alerts show and dismiss`() {
         val app = AppCoordinator { TestClock.today }
-        app.showAlert(AlertConfig("Delete this item?", primary = AlertButton("Delete", isDestructive = true)))
-        assertEquals("Delete this item?", app.alert?.title)
+        app.showAlert(AlertConfig(uiText(R.string.detail_delete_title), primary = AlertButton(uiText(R.string.action_delete), isDestructive = true)))
+        assertEquals("Delete this item?", app.alert?.title?.english())
         app.dismissAlert()
         assertNull(app.alert)
     }
@@ -79,7 +82,7 @@ class CoordinationTest {
     @Test
     fun `deep link closes any open alert`() {
         val app = AppCoordinator { TestClock.today }
-        app.showAlert(AlertConfig("Delete everything?", primary = AlertButton("Delete all", isDestructive = true)))
+        app.showAlert(AlertConfig(uiText(R.string.alert_delete_everything_title), primary = AlertButton(uiText(R.string.alert_delete_everything_action), isDestructive = true)))
         app.showItem("milk")
         assertNull(app.alert)
     }
