@@ -66,10 +66,15 @@ same count as the English recipe:
     "title": "Klasyczny omlet z serem",
     "summary": "…",
     "steps": ["…", "…"],
-    "ingredients": { "eggs": { "name": "jajka", "amount": "3" }, "milk": { "name": "mleko", "amount": "odrobina" } }
+    "ingredients": { "eggs": { "name": "jajka", "amount": "3", "missing": "jajek" }, "milk": { "name": "mleka", "amount": "odrobina", "missing": "mleka" } }
   }
 }
 ```
+
+`name` is the label shown after the amount in the ingredient list (it agrees with the amount: "3 jajka",
+"30 g sera"). `missing` (required on every ingredient) is the genitive form used in lists of missing
+ingredients after "Brakuje: …" ("Brakuje: jajek, sera."); it never contains a comma. Apps show `missing`
+wherever they list missing ingredient names, and `name` everywhere else.
 
 `shared-assets/recipe-tags.json` — display names for every tag used in recipes.json:
 `{ "en": { "breakfast": "Breakfast", … }, "pl": { "breakfast": "Śniadanie", … } }`. (English display names
