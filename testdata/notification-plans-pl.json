@@ -1,0 +1,73 @@
+{
+  "timeZone": "Europe/London",
+  "now": "2026-09-07T08:00",
+  "cases": [
+    {
+      "name": "lead, today and expired reminders",
+      "preferences": { "enabled": true, "leadDays": 3, "hour": 9, "minute": 30 },
+      "items": [{ "id": "milk", "name": "Mleko", "expiresOn": "2026-09-12" }],
+      "expected": [
+        { "itemId": "milk", "suffix": "soon", "title": "Mleko: termin mija za 3 dni", "body": "Zaplanuj z tym posiłek – Zero Bite podpowie przepisy.", "fireAt": "2026-09-09T09:30" },
+        { "itemId": "milk", "suffix": "today", "title": "Mleko: termin mija dziś", "body": "Zużyj to dziś albo zamroź.", "fireAt": "2026-09-12T09:30" },
+        { "itemId": "milk", "suffix": "expired", "title": "Mleko: termin minął", "body": "Sprawdź produkt i zaktualizuj lodówkę.", "fireAt": "2026-09-13T09:30" }
+      ]
+    },
+    {
+      "name": "reminders already in the past are dropped",
+      "preferences": { "enabled": true, "leadDays": 3, "hour": 9, "minute": 30 },
+      "items": [{ "id": "yogurt", "name": "Jogurt", "expiresOn": "2026-09-07" }],
+      "expected": [
+        { "itemId": "yogurt", "suffix": "today", "title": "Jogurt: termin mija dziś", "body": "Zużyj to dziś albo zamroź.", "fireAt": "2026-09-07T09:30" },
+        { "itemId": "yogurt", "suffix": "expired", "title": "Jogurt: termin minął", "body": "Sprawdź produkt i zaktualizuj lodówkę.", "fireAt": "2026-09-08T09:30" }
+      ]
+    },
+    {
+      "name": "long-expired item plans nothing",
+      "preferences": { "enabled": true, "leadDays": 3, "hour": 9, "minute": 30 },
+      "items": [{ "id": "old", "name": "Stary ser", "expiresOn": "2026-08-01" }],
+      "expected": []
+    },
+    {
+      "name": "single-day lead says tomorrow",
+      "preferences": { "enabled": true, "leadDays": 1, "hour": 9, "minute": 0 },
+      "items": [{ "id": "bread", "name": "Chleb", "expiresOn": "2026-09-12" }],
+      "expected": [
+        { "itemId": "bread", "suffix": "soon", "title": "Chleb: termin mija jutro", "body": "Zaplanuj z tym posiłek – Zero Bite podpowie przepisy.", "fireAt": "2026-09-11T09:00" },
+        { "itemId": "bread", "suffix": "today", "title": "Chleb: termin mija dziś", "body": "Zużyj to dziś albo zamroź.", "fireAt": "2026-09-12T09:00" },
+        { "itemId": "bread", "suffix": "expired", "title": "Chleb: termin minął", "body": "Sprawdź produkt i zaktualizuj lodówkę.", "fireAt": "2026-09-13T09:00" }
+      ]
+    },
+    {
+      "name": "five-day lead uses dni",
+      "preferences": { "enabled": true, "leadDays": 5, "hour": 18, "minute": 0 },
+      "items": [{ "id": "chicken", "name": "Pierś z kurczaka", "expiresOn": "2026-09-15" }],
+      "expected": [
+        { "itemId": "chicken", "suffix": "soon", "title": "Pierś z kurczaka: termin mija za 5 dni", "body": "Zaplanuj z tym posiłek – Zero Bite podpowie przepisy.", "fireAt": "2026-09-10T18:00" },
+        { "itemId": "chicken", "suffix": "today", "title": "Pierś z kurczaka: termin mija dziś", "body": "Zużyj to dziś albo zamroź.", "fireAt": "2026-09-15T18:00" },
+        { "itemId": "chicken", "suffix": "expired", "title": "Pierś z kurczaka: termin minął", "body": "Sprawdź produkt i zaktualizuj lodówkę.", "fireAt": "2026-09-16T18:00" }
+      ]
+    },
+    {
+      "name": "disabled preferences plan nothing",
+      "preferences": { "enabled": false, "leadDays": 3, "hour": 9, "minute": 0 },
+      "items": [{ "id": "milk", "name": "Mleko", "expiresOn": "2026-09-12" }],
+      "expected": []
+    },
+    {
+      "name": "reminders from several items are sorted by fire time",
+      "preferences": { "enabled": true, "leadDays": 3, "hour": 9, "minute": 30 },
+      "items": [
+        { "id": "cheese", "name": "Ser", "expiresOn": "2026-09-20" },
+        { "id": "ham", "name": "Szynka", "expiresOn": "2026-09-10" }
+      ],
+      "expected": [
+        { "itemId": "ham", "suffix": "soon", "title": "Szynka: termin mija za 3 dni", "body": "Zaplanuj z tym posiłek – Zero Bite podpowie przepisy.", "fireAt": "2026-09-07T09:30" },
+        { "itemId": "ham", "suffix": "today", "title": "Szynka: termin mija dziś", "body": "Zużyj to dziś albo zamroź.", "fireAt": "2026-09-10T09:30" },
+        { "itemId": "ham", "suffix": "expired", "title": "Szynka: termin minął", "body": "Sprawdź produkt i zaktualizuj lodówkę.", "fireAt": "2026-09-11T09:30" },
+        { "itemId": "cheese", "suffix": "soon", "title": "Ser: termin mija za 3 dni", "body": "Zaplanuj z tym posiłek – Zero Bite podpowie przepisy.", "fireAt": "2026-09-17T09:30" },
+        { "itemId": "cheese", "suffix": "today", "title": "Ser: termin mija dziś", "body": "Zużyj to dziś albo zamroź.", "fireAt": "2026-09-20T09:30" },
+        { "itemId": "cheese", "suffix": "expired", "title": "Ser: termin minął", "body": "Sprawdź produkt i zaktualizuj lodówkę.", "fireAt": "2026-09-21T09:30" }
+      ]
+    }
+  ]
+}
