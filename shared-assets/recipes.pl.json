@@ -3,12 +3,12 @@
     "title": "Klasyczny omlet z serem",
     "summary": "Trzy jajka, garść sera i dwie minuty na patelni. Najszybszy sposób na zużycie jajek.",
     "ingredients": {
-      "eggs": { "name": "jajka", "amount": "3" },
-      "cheese": { "name": "sera", "amount": "30 g" },
-      "butter": { "name": "masła", "amount": "1 łyżka" },
-      "milk": { "name": "mleka", "amount": "odrobina" },
-      "salt": { "name": "soli", "amount": "szczypta" },
-      "black pepper": { "name": "pieprzu", "amount": "szczypta" }
+      "eggs": { "name": "jajka", "amount": "3", "missing": "jajek" },
+      "cheese": { "name": "sera", "amount": "30 g", "missing": "sera" },
+      "butter": { "name": "masła", "amount": "1 łyżka", "missing": "masła" },
+      "milk": { "name": "mleka", "amount": "odrobina", "missing": "mleka" },
+      "salt": { "name": "soli", "amount": "szczypta", "missing": "soli" },
+      "black pepper": { "name": "pieprzu", "amount": "szczypta", "missing": "pieprzu" }
     },
     "steps": [
       "Roztrzep jajka z odrobiną mleka, solą i pieprzem.",
@@ -19,13 +19,13 @@
   },
   "spinach-scramble": {
     "title": "Jajecznica ze szpinakiem i serem",
-    "summary": "Więdnący szpinak znika w miękkiej jajecznicy.",
+    "summary": "Szpinak zwiędnięty na maśle niknie w kremowej jajecznicy.",
     "ingredients": {
-      "eggs": { "name": "jajka", "amount": "2" },
-      "spinach": { "name": "szpinaku", "amount": "duża garść" },
-      "cheese": { "name": "sera", "amount": "20 g" },
-      "butter": { "name": "masła", "amount": "1 łyżeczka" },
-      "bread": { "name": "opieczonego chleba", "amount": "1 kromka" }
+      "eggs": { "name": "jajka", "amount": "2", "missing": "jajek" },
+      "spinach": { "name": "szpinaku", "amount": "duża garść", "missing": "szpinaku" },
+      "cheese": { "name": "sera", "amount": "20 g", "missing": "sera" },
+      "butter": { "name": "masła", "amount": "1 łyżeczka", "missing": "masła" },
+      "bread": { "name": "opieczonego chleba", "amount": "1 kromka", "missing": "chleba" }
     },
     "steps": [
       "Podduś szpinak na maśle przez minutę, aż zwiędnie, a potem odciśnij z niego wodę.",
@@ -37,13 +37,13 @@
     "title": "Kremowy makaron z pieczarkami",
     "summary": "Pieczarki z czosnkiem w jedwabistym sosie. Najlepsza jest śmietanka, ale mleko z odrobiną sera też się sprawdzi.",
     "ingredients": {
-      "pasta": { "name": "makaronu", "amount": "200 g" },
-      "mushrooms": { "name": "pieczarek", "amount": "250 g" },
-      "garlic": { "name": "czosnku", "amount": "2 ząbki" },
-      "cream": { "name": "śmietanki", "amount": "150 ml" },
-      "cheese": { "name": "tartego sera", "amount": "30 g" },
-      "butter": { "name": "masła", "amount": "1 łyżka" },
-      "olive oil": { "name": "oliwy", "amount": "1 łyżka" }
+      "pasta": { "name": "makaronu", "amount": "200 g", "missing": "makaronu" },
+      "mushrooms": { "name": "pieczarek", "amount": "250 g", "missing": "pieczarek" },
+      "garlic": { "name": "czosnku", "amount": "2 ząbki", "missing": "czosnku" },
+      "cream": { "name": "śmietanki", "amount": "150 ml", "missing": "śmietanki" },
+      "cheese": { "name": "tartego sera", "amount": "30 g", "missing": "sera" },
+      "butter": { "name": "masła", "amount": "1 łyżka", "missing": "masła" },
+      "olive oil": { "name": "oliwy", "amount": "1 łyżka", "missing": "oliwy" }
     },
     "steps": [
       "Ugotuj makaron w osolonej wodzie; odlej kubek wody z gotowania.",
@@ -56,19 +56,19 @@
     "title": "Kurczak z papryką z woka",
     "summary": "Szybki obiad z woka – dobry sposób na warzywa, które zaczynają mięknąć.",
     "ingredients": {
-      "chicken": { "name": "kurczaka", "amount": "2 piersi" },
-      "bell pepper": { "name": "papryka", "amount": "1" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "garlic": { "name": "czosnku", "amount": "2 ząbki" },
-      "soy sauce": { "name": "sosu sojowego", "amount": "2 łyżki" },
-      "rice": { "name": "ryżu do podania", "amount": "150 g" },
-      "vegetable oil": { "name": "oleju", "amount": "1 łyżka" },
-      "carrots": { "name": "marchewka", "amount": "1" }
+      "chicken": { "name": "kurczaka", "amount": "2 piersi", "missing": "kurczaka" },
+      "bell pepper": { "name": "papryka", "amount": "1", "missing": "papryki" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "garlic": { "name": "czosnku", "amount": "2 ząbki", "missing": "czosnku" },
+      "soy sauce": { "name": "sosu sojowego", "amount": "2 łyżki", "missing": "sosu sojowego" },
+      "rice": { "name": "ryżu do podania", "amount": "150 g", "missing": "ryżu" },
+      "vegetable oil": { "name": "oleju", "amount": "1 łyżka", "missing": "oleju" },
+      "carrots": { "name": "marchewka", "amount": "1", "missing": "marchewki" }
     },
     "steps": [
       "Najpierw nastaw ryż.",
       "Pokrój kurczaka w paski i smaż na bardzo gorącym oleju, aż się zrumieni, a potem odłóż.",
-      "Przez 3 minuty smaż cebulę i paprykę pokrojone w paski oraz marchewkę w słupkach, potem dodaj czosnek.",
+      "Przez 3 minuty smaż cebulę i paprykę pokrojone w paski oraz marchewkę pokrojoną w słupki, potem dodaj czosnek.",
       "Włóż z powrotem kurczaka, dolej sos sojowy i mieszaj przez minutę. Podawaj z ryżem."
     ]
   },
@@ -76,12 +76,12 @@
     "title": "Makaron z pękającymi pomidorkami",
     "summary": "Miękkie pomidorki koktajlowe rozpadają się w sos z czosnkiem i oliwą.",
     "ingredients": {
-      "pasta": { "name": "makaronu", "amount": "200 g" },
-      "tomatoes": { "name": "pomidorków koktajlowych", "amount": "300 g" },
-      "garlic": { "name": "czosnku", "amount": "2 ząbki" },
-      "olive oil": { "name": "oliwy", "amount": "3 łyżki" },
-      "cheese": { "name": "sera do posypania", "amount": "trochę" },
-      "basil": { "name": "bazylii", "amount": "kilka listków" }
+      "pasta": { "name": "makaronu", "amount": "200 g", "missing": "makaronu" },
+      "tomatoes": { "name": "pomidorków koktajlowych", "amount": "300 g", "missing": "pomidorów" },
+      "garlic": { "name": "czosnku", "amount": "2 ząbki", "missing": "czosnku" },
+      "olive oil": { "name": "oliwy", "amount": "3 łyżki", "missing": "oliwy" },
+      "cheese": { "name": "sera do posypania", "amount": "trochę", "missing": "sera" },
+      "basil": { "name": "bazylii", "amount": "kilka listków", "missing": "bazylii" }
     },
     "steps": [
       "Ugotuj makaron.",
@@ -94,10 +94,10 @@
     "title": "Tost z serem",
     "summary": "Czerstwiejący chleb i kawałek sera: klasyczny ratunek.",
     "ingredients": {
-      "bread": { "name": "chleba", "amount": "2 kromki" },
-      "cheese": { "name": "sera", "amount": "50 g" },
-      "butter": { "name": "masła do smarowania", "amount": "trochę" },
-      "onion": { "name": "cebuli", "amount": "kilka cienkich plasterków" }
+      "bread": { "name": "chleba", "amount": "2 kromki", "missing": "chleba" },
+      "cheese": { "name": "sera", "amount": "50 g", "missing": "sera" },
+      "butter": { "name": "masła do smarowania", "amount": "trochę", "missing": "masła" },
+      "onion": { "name": "cebuli", "amount": "kilka cienkich plasterków", "missing": "cebuli" }
     },
     "steps": [
       "Posmaruj masłem zewnętrzne strony obu kromek.",
@@ -109,12 +109,12 @@
     "title": "Tosty francuskie",
     "summary": "Czerstwy chleb sprawdza się tu nawet lepiej. Nasiąka jajkami i mlekiem, a potem smaży się na złoto.",
     "ingredients": {
-      "bread": { "name": "chleba", "amount": "4 kromki" },
-      "eggs": { "name": "jajka", "amount": "2" },
-      "milk": { "name": "mleka", "amount": "100 ml" },
-      "butter": { "name": "masła", "amount": "1 łyżka" },
-      "sugar": { "name": "cukru", "amount": "1 łyżeczka" },
-      "bananas": { "name": "banan do podania", "amount": "1" }
+      "bread": { "name": "chleba", "amount": "4 kromki", "missing": "chleba" },
+      "eggs": { "name": "jajka", "amount": "2", "missing": "jajek" },
+      "milk": { "name": "mleka", "amount": "100 ml", "missing": "mleka" },
+      "butter": { "name": "masła", "amount": "1 łyżka", "missing": "masła" },
+      "sugar": { "name": "cukru", "amount": "1 łyżeczka", "missing": "cukru" },
+      "bananas": { "name": "banan do podania", "amount": "1", "missing": "banana" }
     },
     "steps": [
       "Roztrzep jajka z mlekiem i cukrem w płaskim naczyniu.",
@@ -126,11 +126,11 @@
     "title": "Placuszki bananowe",
     "summary": "Przejrzałe banany rozgniecione w szybkim cieście.",
     "ingredients": {
-      "bananas": { "name": "banany", "amount": "2 bardzo dojrzałe" },
-      "eggs": { "name": "jajka", "amount": "2" },
-      "flour": { "name": "mąki", "amount": "100 g" },
-      "milk": { "name": "mleka", "amount": "100 ml" },
-      "butter": { "name": "masła do smażenia", "amount": "trochę" }
+      "bananas": { "name": "banany", "amount": "2 bardzo dojrzałe", "missing": "bananów" },
+      "eggs": { "name": "jajka", "amount": "2", "missing": "jajek" },
+      "flour": { "name": "mąki", "amount": "100 g", "missing": "mąki" },
+      "milk": { "name": "mleka", "amount": "100 ml", "missing": "mleka" },
+      "butter": { "name": "masła do smażenia", "amount": "trochę", "missing": "masła" }
     },
     "steps": [
       "Rozgnieć banany, wmieszaj jajka i mleko, a na koniec delikatnie dodaj mąkę.",
@@ -142,15 +142,15 @@
     "title": "Frittata z resztek warzyw",
     "summary": "Omlet z piekarnika, do którego pasują wszelkie ugotowane albo miękkie warzywa.",
     "ingredients": {
-      "eggs": { "name": "jajek", "amount": "6" },
-      "potatoes": { "name": "ziemniaki", "amount": "2 ugotowane" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "bell pepper": { "name": "papryka", "amount": "1" },
-      "cheese": { "name": "sera", "amount": "50 g" },
-      "olive oil": { "name": "oliwy", "amount": "2 łyżki" }
+      "eggs": { "name": "jajek", "amount": "6", "missing": "jajek" },
+      "potatoes": { "name": "ziemniaki", "amount": "2 ugotowane", "missing": "ziemniaków" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "bell pepper": { "name": "papryka", "amount": "1", "missing": "papryki" },
+      "cheese": { "name": "sera", "amount": "50 g", "missing": "sera" },
+      "olive oil": { "name": "oliwy", "amount": "2 łyżki", "missing": "oliwy" }
     },
     "steps": [
-      "Zeszklij cebulę i paprykę na oliwie na patelni, którą można wstawić do piekarnika, a potem dodaj ziemniaki pokrojone w plasterki.",
+      "Podsmaż cebulę i paprykę na oliwie na patelni, którą można wstawić do piekarnika, aż zmiękną, a potem dodaj ziemniaki pokrojone w plasterki.",
       "Zalej roztrzepanymi, doprawionymi jajkami i posyp serem.",
       "Smaż na kuchence przez 5 minut, a potem dopiecz pod grillem, aż frittata się zetnie i zrumieni."
     ]
@@ -159,13 +159,13 @@
     "title": "Zupa z kurczakiem i ryżem",
     "summary": "Duży gar rozgrzewającej zupy – mało kurczaka, a starczy na długo.",
     "ingredients": {
-      "chicken": { "name": "kurczaka", "amount": "2 piersi lub udka" },
-      "rice": { "name": "ryżu", "amount": "100 g" },
-      "carrots": { "name": "marchewki", "amount": "2" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "garlic": { "name": "czosnku", "amount": "2 ząbki" },
-      "stock": { "name": "bulionu", "amount": "1,2 l" },
-      "lemon": { "name": "cytryny", "amount": "sok z połowy" }
+      "chicken": { "name": "kurczaka", "amount": "2 piersi lub udka", "missing": "kurczaka" },
+      "rice": { "name": "ryżu", "amount": "100 g", "missing": "ryżu" },
+      "carrots": { "name": "marchewki", "amount": "2", "missing": "marchewki" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "garlic": { "name": "czosnku", "amount": "2 ząbki", "missing": "czosnku" },
+      "stock": { "name": "bulionu", "amount": "1,2 l", "missing": "bulionu" },
+      "lemon": { "name": "cytryny", "amount": "sok z połowy", "missing": "cytryny" }
     },
     "steps": [
       "Pokrój cebulę i marchewki w kostkę i duś je z czosnkiem na odrobinie oleju przez 8 minut.",
@@ -177,12 +177,12 @@
     "title": "Łosoś z cytryną i czosnkiem",
     "summary": "Filety z łososia w sosie z masła, czosnku i cytryny, z podduszonym szpinakiem.",
     "ingredients": {
-      "salmon": { "name": "łososia", "amount": "2 filety" },
-      "lemon": { "name": "cytryna", "amount": "1" },
-      "garlic": { "name": "czosnku", "amount": "2 ząbki" },
-      "butter": { "name": "masła", "amount": "2 łyżki" },
-      "spinach": { "name": "szpinaku", "amount": "2 garście" },
-      "potatoes": { "name": "ziemniaków do podania", "amount": "kilka" }
+      "salmon": { "name": "łososia", "amount": "2 filety", "missing": "łososia" },
+      "lemon": { "name": "cytryna", "amount": "1", "missing": "cytryny" },
+      "garlic": { "name": "czosnku", "amount": "2 ząbki", "missing": "czosnku" },
+      "butter": { "name": "masła", "amount": "2 łyżki", "missing": "masła" },
+      "spinach": { "name": "szpinaku", "amount": "2 garście", "missing": "szpinaku" },
+      "potatoes": { "name": "ziemniaków do podania", "amount": "kilka", "missing": "ziemniaków" }
     },
     "steps": [
       "Dopraw łososia i smaż skórą do dołu na odrobinie oleju przez 4 minuty.",
@@ -194,11 +194,11 @@
     "title": "Spaghetti carbonara",
     "summary": "Sos to boczek, jajka i ser. Śmietana niepotrzebna.",
     "ingredients": {
-      "spaghetti": { "name": "spaghetti", "amount": "200 g" },
-      "bacon": { "name": "boczku", "amount": "100 g" },
-      "eggs": { "name": "jajka i 1 żółtko", "amount": "2" },
-      "cheese": { "name": "drobno startego sera", "amount": "50 g" },
-      "black pepper": { "name": "pieprzu", "amount": "dużo" }
+      "spaghetti": { "name": "spaghetti", "amount": "200 g", "missing": "spaghetti" },
+      "bacon": { "name": "boczku", "amount": "100 g", "missing": "boczku" },
+      "eggs": { "name": "jajka i 1 żółtko", "amount": "2", "missing": "jajek" },
+      "cheese": { "name": "drobno startego sera", "amount": "50 g", "missing": "sera" },
+      "black pepper": { "name": "pieprzu", "amount": "dużo", "missing": "pieprzu" }
     },
     "steps": [
       "Ugotuj spaghetti; odlej kubek wody z gotowania.",
@@ -211,13 +211,13 @@
     "title": "Risotto z pieczarkami",
     "summary": "Powoli mieszany ryż z przysmażonymi pieczarkami i dużą ilością sera.",
     "ingredients": {
-      "rice": { "name": "ryżu", "amount": "200 g" },
-      "mushrooms": { "name": "pieczarek", "amount": "250 g" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "butter": { "name": "masła", "amount": "2 łyżki" },
-      "cheese": { "name": "tartego sera", "amount": "40 g" },
-      "stock": { "name": "gorącego bulionu", "amount": "800 ml" },
-      "garlic": { "name": "czosnku", "amount": "1 ząbek" }
+      "rice": { "name": "ryżu", "amount": "200 g", "missing": "ryżu" },
+      "mushrooms": { "name": "pieczarek", "amount": "250 g", "missing": "pieczarek" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "butter": { "name": "masła", "amount": "2 łyżki", "missing": "masła" },
+      "cheese": { "name": "tartego sera", "amount": "40 g", "missing": "sera" },
+      "stock": { "name": "gorącego bulionu", "amount": "800 ml", "missing": "bulionu" },
+      "garlic": { "name": "czosnku", "amount": "1 ząbek", "missing": "czosnku" }
     },
     "steps": [
       "Usmaż pieczarki na połowie masła na złoto i odłóż.",
@@ -228,12 +228,12 @@
   },
   "bacon-egg-roll": {
     "title": "Bułka z boczkiem i jajkiem",
-    "summary": "Chrupiący boczek, jajko sadzone i jakiekolwiek pieczywo masz pod ręką.",
+    "summary": "Chrupiący boczek, jajko sadzone i dowolne pieczywo, jakie masz pod ręką.",
     "ingredients": {
-      "bread": { "name": "chleba", "amount": "1 bułka lub 2 kromki" },
-      "bacon": { "name": "boczku", "amount": "2 plastry" },
-      "eggs": { "name": "jajko", "amount": "1" },
-      "butter": { "name": "masła do smarowania", "amount": "trochę" }
+      "bread": { "name": "chleba", "amount": "1 bułka lub 2 kromki", "missing": "chleba" },
+      "bacon": { "name": "boczku", "amount": "2 plastry", "missing": "boczku" },
+      "eggs": { "name": "jajko", "amount": "1", "missing": "jajek" },
+      "butter": { "name": "masła do smarowania", "amount": "trochę", "missing": "masła" }
     },
     "steps": [
       "Usmaż boczek na chrupko, a potem na wytopionym tłuszczu usmaż jajko sadzone.",
@@ -244,13 +244,13 @@
     "title": "Zupa z pieczonych pomidorów",
     "summary": "Miękkie pomidory upieczone z cebulą i czosnkiem, a potem zmiksowane.",
     "ingredients": {
-      "tomatoes": { "name": "pomidorów", "amount": "800 g" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "garlic": { "name": "czosnku", "amount": "3 ząbki" },
-      "olive oil": { "name": "oliwy", "amount": "3 łyżki" },
-      "stock": { "name": "bulionu", "amount": "400 ml" },
-      "cream": { "name": "śmietanki", "amount": "odrobina" },
-      "bread": { "name": "chleba do podania", "amount": "kilka kromek" }
+      "tomatoes": { "name": "pomidorów", "amount": "800 g", "missing": "pomidorów" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "garlic": { "name": "czosnku", "amount": "3 ząbki", "missing": "czosnku" },
+      "olive oil": { "name": "oliwy", "amount": "3 łyżki", "missing": "oliwy" },
+      "stock": { "name": "bulionu", "amount": "400 ml", "missing": "bulionu" },
+      "cream": { "name": "śmietanki", "amount": "odrobina", "missing": "śmietanki" },
+      "bread": { "name": "chleba do podania", "amount": "kilka kromek", "missing": "chleba" }
     },
     "steps": [
       "Piecz pomidory, cebulę pokrojoną w ćwiartki i czosnek z oliwą w 200°C przez 30 minut.",
@@ -262,10 +262,10 @@
     "title": "Ziemniaki z masłem czosnkowym",
     "summary": "Ugotowane i rozgniecione ziemniaki, przysmażone na chrupko w maśle czosnkowym.",
     "ingredients": {
-      "potatoes": { "name": "ziemniaków", "amount": "500 g" },
-      "garlic": { "name": "czosnku", "amount": "3 ząbki" },
-      "butter": { "name": "masła", "amount": "3 łyżki" },
-      "parsley": { "name": "posiekanej natki pietruszki", "amount": "trochę" }
+      "potatoes": { "name": "ziemniaków", "amount": "500 g", "missing": "ziemniaków" },
+      "garlic": { "name": "czosnku", "amount": "3 ząbki", "missing": "czosnku" },
+      "butter": { "name": "masła", "amount": "3 łyżki", "missing": "masła" },
+      "parsley": { "name": "posiekanej natki pietruszki", "amount": "trochę", "missing": "natki pietruszki" }
     },
     "steps": [
       "Ugotuj ziemniaki do miękkości, odcedź i lekko rozgnieć.",
@@ -276,15 +276,15 @@
     "title": "Smażony ryż z tego, co w lodówce",
     "summary": "Resztka ryżu, jajko i warzywa, które trzeba zużyć. Najlepiej smaży się zimny ryż.",
     "ingredients": {
-      "rice": { "name": "ugotowanego ryżu", "amount": "300 g" },
-      "eggs": { "name": "jajka", "amount": "2" },
-      "carrots": { "name": "marchewka", "amount": "1" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "soy sauce": { "name": "sosu sojowego", "amount": "2 łyżki" },
-      "vegetable oil": { "name": "oleju", "amount": "2 łyżki" },
-      "bell pepper": { "name": "papryka", "amount": "1" },
-      "chicken": { "name": "kurczaka", "amount": "resztki" },
-      "spring onion": { "name": "dymki", "amount": "2" }
+      "rice": { "name": "ugotowanego ryżu", "amount": "300 g", "missing": "ryżu" },
+      "eggs": { "name": "jajka", "amount": "2", "missing": "jajek" },
+      "carrots": { "name": "marchewka", "amount": "1", "missing": "marchewki" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "soy sauce": { "name": "sosu sojowego", "amount": "2 łyżki", "missing": "sosu sojowego" },
+      "vegetable oil": { "name": "oleju", "amount": "2 łyżki", "missing": "oleju" },
+      "bell pepper": { "name": "papryka", "amount": "1", "missing": "papryki" },
+      "chicken": { "name": "kurczaka", "amount": "resztki", "missing": "kurczaka" },
+      "spring onion": { "name": "dymki", "amount": "2", "missing": "dymki" }
     },
     "steps": [
       "Usmaż jajecznicę w rozgrzanym woku i odłóż.",
@@ -296,11 +296,11 @@
     "title": "Parfait jogurtowe z bananem",
     "summary": "Warstwy jogurtu, owoców i czegoś chrupiącego – na śniadanie albo na deser.",
     "ingredients": {
-      "yogurt": { "name": "jogurtu", "amount": "150 g" },
-      "bananas": { "name": "banan", "amount": "1" },
-      "oats": { "name": "płatków owsianych", "amount": "2 łyżki" },
-      "honey": { "name": "miodu", "amount": "trochę" },
-      "berries": { "name": "owoców jagodowych", "amount": "garść" }
+      "yogurt": { "name": "jogurtu", "amount": "150 g", "missing": "jogurtu" },
+      "bananas": { "name": "banan", "amount": "1", "missing": "banana" },
+      "oats": { "name": "płatków owsianych", "amount": "2 łyżki", "missing": "płatków owsianych" },
+      "honey": { "name": "miodu", "amount": "trochę", "missing": "miodu" },
+      "berries": { "name": "owoców jagodowych", "amount": "garść", "missing": "owoców jagodowych" }
     },
     "steps": [
       "Układaj w szklance warstwami jogurt, pokrojonego banana, owoce i płatki.",
@@ -311,12 +311,12 @@
     "title": "Wrap Cezar z kurczakiem",
     "summary": "Resztka kurczaka, chrupiąca sałata i szybki sos jogurtowy.",
     "ingredients": {
-      "chicken": { "name": "kurczaka", "amount": "1 pieczona pierś" },
-      "tortilla": { "name": "tortilla", "amount": "1" },
-      "lettuce": { "name": "sałaty", "amount": "garść" },
-      "yogurt": { "name": "jogurtu", "amount": "2 łyżki" },
-      "cheese": { "name": "tartego sera", "amount": "1 łyżka" },
-      "lemon": { "name": "soku z cytryny", "amount": "kilka kropli" }
+      "chicken": { "name": "kurczaka", "amount": "1 ugotowana lub upieczona pierś", "missing": "kurczaka" },
+      "tortilla": { "name": "tortilla", "amount": "1", "missing": "tortilli" },
+      "lettuce": { "name": "sałaty", "amount": "garść", "missing": "sałaty" },
+      "yogurt": { "name": "jogurtu", "amount": "2 łyżki", "missing": "jogurtu" },
+      "cheese": { "name": "tartego sera", "amount": "1 łyżka", "missing": "sera" },
+      "lemon": { "name": "soku z cytryny", "amount": "kilka kropli", "missing": "cytryny" }
     },
     "steps": [
       "Wymieszaj jogurt z serem, sokiem z cytryny, solą i pieprzem.",
@@ -327,12 +327,12 @@
     "title": "Papryki faszerowane zapiekane z serem",
     "summary": "Papryki nadziewane ryżem z pomidorami i zapiekane pod serem.",
     "ingredients": {
-      "bell pepper": { "name": "papryki", "amount": "2" },
-      "rice": { "name": "ugotowanego ryżu", "amount": "200 g" },
-      "tomatoes": { "name": "pomidorów", "amount": "150 g" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "cheese": { "name": "sera", "amount": "60 g" },
-      "garlic": { "name": "czosnku", "amount": "1 ząbek" }
+      "bell pepper": { "name": "papryki", "amount": "2", "missing": "papryk" },
+      "rice": { "name": "ugotowanego ryżu", "amount": "200 g", "missing": "ryżu" },
+      "tomatoes": { "name": "pomidorów", "amount": "150 g", "missing": "pomidorów" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "cheese": { "name": "sera", "amount": "60 g", "missing": "sera" },
+      "garlic": { "name": "czosnku", "amount": "1 ząbek", "missing": "czosnku" }
     },
     "steps": [
       "Zeszklij posiekaną cebulę z czosnkiem, wmieszaj pokrojone pomidory i ryż, dopraw.",
@@ -343,11 +343,11 @@
     "title": "Quesadilla ze szpinakiem i pieczarkami",
     "summary": "Chrupiąca, złożona na pół tortilla z roztopionym serem i podduszoną zieleniną.",
     "ingredients": {
-      "tortilla": { "name": "tortilla", "amount": "1 duża" },
-      "spinach": { "name": "szpinaku", "amount": "garść" },
-      "mushrooms": { "name": "pieczarki", "amount": "4" },
-      "cheese": { "name": "sera", "amount": "50 g" },
-      "olive oil": { "name": "oliwy", "amount": "1 łyżeczka" }
+      "tortilla": { "name": "tortilla", "amount": "1 duża", "missing": "tortilli" },
+      "spinach": { "name": "szpinaku", "amount": "garść", "missing": "szpinaku" },
+      "mushrooms": { "name": "pieczarki", "amount": "4", "missing": "pieczarek" },
+      "cheese": { "name": "sera", "amount": "50 g", "missing": "sera" },
+      "olive oil": { "name": "oliwy", "amount": "1 łyżeczka", "missing": "oliwy" }
     },
     "steps": [
       "Usmaż pokrojone w plasterki pieczarki, dodaj szpinak, żeby zwiądł, i dopraw.",
@@ -358,13 +358,13 @@
     "title": "Szybkie bolognese",
     "summary": "Szybki sos mięsny, który następnego dnia smakuje jeszcze lepiej i dobrze się mrozi.",
     "ingredients": {
-      "mince": { "name": "mięsa mielonego", "amount": "400 g" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "garlic": { "name": "czosnku", "amount": "2 ząbki" },
-      "tomatoes": { "name": "pomidorów, świeżych lub z puszki", "amount": "400 g" },
-      "pasta": { "name": "makaronu", "amount": "300 g" },
-      "carrots": { "name": "marchewka", "amount": "1" },
-      "cheese": { "name": "sera do posypania", "amount": "trochę" }
+      "mince": { "name": "mięsa mielonego", "amount": "400 g", "missing": "mięsa mielonego" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "garlic": { "name": "czosnku", "amount": "2 ząbki", "missing": "czosnku" },
+      "tomatoes": { "name": "pomidorów (świeżych lub z puszki)", "amount": "400 g", "missing": "pomidorów" },
+      "pasta": { "name": "makaronu", "amount": "300 g", "missing": "makaronu" },
+      "carrots": { "name": "marchewka", "amount": "1", "missing": "marchewki" },
+      "cheese": { "name": "sera do posypania", "amount": "trochę", "missing": "sera" }
     },
     "steps": [
       "Mocno obsmaż mięso, a potem dodaj cebulę, startą marchewkę i czosnek.",
@@ -374,14 +374,14 @@
   },
   "carrot-soup": {
     "title": "Zupa marchewkowa z imbirem",
-    "summary": "Słodka, rozgrzewająca i zużywa całą torbę marchewki.",
+    "summary": "Słodka i rozgrzewająca – zużyjesz w niej całą torbę marchewki.",
     "ingredients": {
-      "carrots": { "name": "marchewki", "amount": "600 g" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "garlic": { "name": "czosnku", "amount": "2 ząbki" },
-      "ginger": { "name": "imbiru", "amount": "2–3 cm" },
-      "stock": { "name": "bulionu", "amount": "1 l" },
-      "cream": { "name": "śmietanki", "amount": "odrobina" }
+      "carrots": { "name": "marchewki", "amount": "600 g", "missing": "marchewki" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "garlic": { "name": "czosnku", "amount": "2 ząbki", "missing": "czosnku" },
+      "ginger": { "name": "imbiru", "amount": "2–3 cm", "missing": "imbiru" },
+      "stock": { "name": "bulionu", "amount": "1 l", "missing": "bulionu" },
+      "cream": { "name": "śmietanki", "amount": "odrobina", "missing": "śmietanki" }
     },
     "steps": [
       "Podduś cebulę, czosnek i imbir, a potem dodaj pokrojoną marchewkę i bulion.",
@@ -392,12 +392,12 @@
     "title": "Pudding chlebowy z masłem",
     "summary": "Najlepszy sposób na czerstwy bochenek.",
     "ingredients": {
-      "bread": { "name": "chleba", "amount": "6 kromek" },
-      "eggs": { "name": "jajka", "amount": "2" },
-      "milk": { "name": "mleka", "amount": "400 ml" },
-      "butter": { "name": "masła do smarowania", "amount": "trochę" },
-      "sugar": { "name": "cukru", "amount": "50 g" },
-      "raisins": { "name": "rodzynek", "amount": "garść" }
+      "bread": { "name": "chleba", "amount": "6 kromek", "missing": "chleba" },
+      "eggs": { "name": "jajka", "amount": "2", "missing": "jajek" },
+      "milk": { "name": "mleka", "amount": "400 ml", "missing": "mleka" },
+      "butter": { "name": "masła do smarowania", "amount": "trochę", "missing": "masła" },
+      "sugar": { "name": "cukru", "amount": "50 g", "missing": "cukru" },
+      "raisins": { "name": "rodzynek", "amount": "garść", "missing": "rodzynek" }
     },
     "steps": [
       "Posmaruj chleb masłem, pokrój w trójkąty i ułóż warstwami w naczyniu, przekładając rodzynkami.",
@@ -409,12 +409,12 @@
     "title": "Smażony ryż z łososiem",
     "summary": "Kawałki łososia wmieszane w smażony ryż z jajkiem.",
     "ingredients": {
-      "salmon": { "name": "łososia", "amount": "2 filety" },
-      "rice": { "name": "ugotowanego ryżu", "amount": "300 g" },
-      "eggs": { "name": "jajka", "amount": "2" },
-      "soy sauce": { "name": "sosu sojowego", "amount": "2 łyżki" },
-      "spring onion": { "name": "dymki", "amount": "2" },
-      "carrots": { "name": "marchewka", "amount": "1" }
+      "salmon": { "name": "łososia", "amount": "2 filety", "missing": "łososia" },
+      "rice": { "name": "ugotowanego ryżu", "amount": "300 g", "missing": "ryżu" },
+      "eggs": { "name": "jajka", "amount": "2", "missing": "jajek" },
+      "soy sauce": { "name": "sosu sojowego", "amount": "2 łyżki", "missing": "sosu sojowego" },
+      "spring onion": { "name": "dymki", "amount": "2", "missing": "dymki" },
+      "carrots": { "name": "marchewka", "amount": "1", "missing": "marchewki" }
     },
     "steps": [
       "Usmaż łososia na patelni, a potem rozdziel go widelcem na płatki.",
@@ -424,15 +424,15 @@
   },
   "veg-traybake": {
     "title": "Pieczone warzywa z blachy",
-    "summary": "Wszystko, co zaczyna mięknąć, upieczone na słodko i chrupko.",
+    "summary": "Wszystko, co zaczyna mięknąć, upieczone, aż będzie słodkie i chrupiące.",
     "ingredients": {
-      "potatoes": { "name": "ziemniaków", "amount": "400 g" },
-      "bell pepper": { "name": "papryka", "amount": "1" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "carrots": { "name": "marchewki", "amount": "2" },
-      "garlic": { "name": "czosnku", "amount": "kilka całych ząbków" },
-      "olive oil": { "name": "oliwy", "amount": "3 łyżki" },
-      "cheese": { "name": "pokruszonego sera", "amount": "trochę" }
+      "potatoes": { "name": "ziemniaków", "amount": "400 g", "missing": "ziemniaków" },
+      "bell pepper": { "name": "papryka", "amount": "1", "missing": "papryki" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "carrots": { "name": "marchewki", "amount": "2", "missing": "marchewki" },
+      "garlic": { "name": "czosnku", "amount": "kilka całych ząbków", "missing": "czosnku" },
+      "olive oil": { "name": "oliwy", "amount": "3 łyżki", "missing": "oliwy" },
+      "cheese": { "name": "pokruszonego sera", "amount": "trochę", "missing": "sera" }
     },
     "steps": [
       "Pokrój ziemniaki i pozostałe warzywa w duże kawałki, cebulę w łódeczki, a potem wymieszaj wszystko z oliwą i solą na dużej blasze.",
@@ -443,12 +443,12 @@
     "title": "Kurczak z cytryną z blachy",
     "summary": "Jedna blacha: kurczak, ziemniaki, cytryna i czosnek.",
     "ingredients": {
-      "chicken": { "name": "kurczaka", "amount": "2 udka lub piersi" },
-      "potatoes": { "name": "ziemniaków", "amount": "400 g" },
-      "lemon": { "name": "cytryna", "amount": "1" },
-      "garlic": { "name": "czosnku", "amount": "4 ząbki" },
-      "olive oil": { "name": "oliwy", "amount": "2 łyżki" },
-      "onion": { "name": "cebula", "amount": "1" }
+      "chicken": { "name": "kurczaka", "amount": "2 udka lub piersi", "missing": "kurczaka" },
+      "potatoes": { "name": "ziemniaków", "amount": "400 g", "missing": "ziemniaków" },
+      "lemon": { "name": "cytryna", "amount": "1", "missing": "cytryny" },
+      "garlic": { "name": "czosnku", "amount": "4 ząbki", "missing": "czosnku" },
+      "olive oil": { "name": "oliwy", "amount": "2 łyżki", "missing": "oliwy" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" }
     },
     "steps": [
       "Pokrój cytrynę w cząstki, wymieszaj wszystko z oliwą i solą w brytfannie i ułóż kurczaka na wierzchu.",
@@ -459,12 +459,12 @@
     "title": "Smażony makaron z jajkiem",
     "summary": "Makaron w dziesięć minut, z jajkiem i chrupiącymi warzywami.",
     "ingredients": {
-      "noodles": { "name": "makaronu chińskiego", "amount": "1 gniazdo" },
-      "eggs": { "name": "jajko", "amount": "1" },
-      "carrots": { "name": "marchewka", "amount": "1" },
-      "soy sauce": { "name": "sosu sojowego", "amount": "1 łyżka" },
-      "garlic": { "name": "czosnku", "amount": "1 ząbek" },
-      "spring onion": { "name": "dymka", "amount": "1" }
+      "noodles": { "name": "makaronu chińskiego", "amount": "1 gniazdo", "missing": "makaronu chińskiego" },
+      "eggs": { "name": "jajko", "amount": "1", "missing": "jajek" },
+      "carrots": { "name": "marchewka", "amount": "1", "missing": "marchewki" },
+      "soy sauce": { "name": "sosu sojowego", "amount": "1 łyżka", "missing": "sosu sojowego" },
+      "garlic": { "name": "czosnku", "amount": "1 ząbek", "missing": "czosnku" },
+      "spring onion": { "name": "dymka", "amount": "1", "missing": "dymki" }
     },
     "steps": [
       "Ugotuj makaron i odcedź.",
@@ -476,11 +476,11 @@
     "title": "Pieczone ziemniaki z serem",
     "summary": "Chrupiąca skórka, puszysty środek, roztopiony ser.",
     "ingredients": {
-      "potatoes": { "name": "ziemniaki", "amount": "2 duże" },
-      "cheese": { "name": "sera", "amount": "80 g" },
-      "butter": { "name": "masła", "amount": "2 łyżki" },
-      "bacon": { "name": "chrupiącego boczku", "amount": "2 plastry" },
-      "spring onion": { "name": "dymka", "amount": "1" }
+      "potatoes": { "name": "ziemniaki", "amount": "2 duże", "missing": "ziemniaków" },
+      "cheese": { "name": "sera", "amount": "80 g", "missing": "sera" },
+      "butter": { "name": "masła", "amount": "2 łyżki", "missing": "masła" },
+      "bacon": { "name": "chrupiącego boczku", "amount": "2 plastry", "missing": "boczku" },
+      "spring onion": { "name": "dymka", "amount": "1", "missing": "dymki" }
     },
     "steps": [
       "Piecz ziemniaki w 200°C przez godzinę, aż skórka będzie chrupiąca.",
@@ -492,11 +492,11 @@
     "title": "Owsianka na noc",
     "summary": "Wymieszaj wieczorem, a rano śniadanie gotowe.",
     "ingredients": {
-      "oats": { "name": "płatków owsianych", "amount": "50 g" },
-      "milk": { "name": "mleka", "amount": "100 ml" },
-      "yogurt": { "name": "jogurtu", "amount": "2 łyżki" },
-      "bananas": { "name": "banan", "amount": "1" },
-      "honey": { "name": "miodu", "amount": "1 łyżeczka" }
+      "oats": { "name": "płatków owsianych", "amount": "50 g", "missing": "płatków owsianych" },
+      "milk": { "name": "mleka", "amount": "100 ml", "missing": "mleka" },
+      "yogurt": { "name": "jogurtu", "amount": "2 łyżki", "missing": "jogurtu" },
+      "bananas": { "name": "banan", "amount": "1", "missing": "banana" },
+      "honey": { "name": "miodu", "amount": "1 łyżeczka", "missing": "miodu" }
     },
     "steps": [
       "Wymieszaj płatki, mleko i jogurt w słoiku i wstaw na noc do lodówki.",
@@ -507,11 +507,11 @@
     "title": "Koktajl bananowy",
     "summary": "Banany w brązowe kropki są najsłodsze – zmiksuj je.",
     "ingredients": {
-      "bananas": { "name": "banan", "amount": "1" },
-      "milk": { "name": "mleka", "amount": "200 ml" },
-      "yogurt": { "name": "jogurtu", "amount": "2 łyżki" },
-      "spinach": { "name": "szpinaku", "amount": "garść" },
-      "berries": { "name": "owoców jagodowych", "amount": "garść" }
+      "bananas": { "name": "banan", "amount": "1", "missing": "banana" },
+      "milk": { "name": "mleka", "amount": "200 ml", "missing": "mleka" },
+      "yogurt": { "name": "jogurtu", "amount": "2 łyżki", "missing": "jogurtu" },
+      "spinach": { "name": "szpinaku", "amount": "garść", "missing": "szpinaku" },
+      "berries": { "name": "owoców jagodowych", "amount": "garść", "missing": "owoców jagodowych" }
     },
     "steps": [
       "Zmiksuj wszystko na gładko. Jeśli wolisz zimny, dodaj lód."
@@ -519,14 +519,14 @@
   },
   "tuna-pasta-bake": {
     "title": "Zapiekanka makaronowa z tuńczykiem",
-    "summary": "Tuńczyk z szafki, ser i pomidory, zapieczone na złoto.",
+    "summary": "Tuńczyk z domowych zapasów, ser i pomidory, zapieczone na złoto.",
     "ingredients": {
-      "pasta": { "name": "makaronu", "amount": "300 g" },
-      "tuna": { "name": "tuńczyka", "amount": "2 puszki" },
-      "cheese": { "name": "sera", "amount": "100 g" },
-      "tomatoes": { "name": "pomidorów, świeżych lub z puszki", "amount": "400 g" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "cream": { "name": "śmietanki", "amount": "100 ml" }
+      "pasta": { "name": "makaronu", "amount": "300 g", "missing": "makaronu" },
+      "tuna": { "name": "tuńczyka", "amount": "2 puszki", "missing": "tuńczyka" },
+      "cheese": { "name": "sera", "amount": "100 g", "missing": "sera" },
+      "tomatoes": { "name": "pomidorów (świeżych lub z puszki)", "amount": "400 g", "missing": "pomidorów" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "cream": { "name": "śmietanki", "amount": "100 ml", "missing": "śmietanki" }
     },
     "steps": [
       "Ugotuj makaron; zeszklij cebulę i dodaj pomidory, żeby powstał sos.",
@@ -538,17 +538,17 @@
     "title": "Szakszuka",
     "summary": "Jajka ścięte w aromatycznym sosie z papryki i pomidorów.",
     "ingredients": {
-      "eggs": { "name": "jajka", "amount": "4" },
-      "tomatoes": { "name": "pomidorów", "amount": "400 g" },
-      "bell pepper": { "name": "papryka", "amount": "1" },
-      "onion": { "name": "cebula", "amount": "1" },
-      "garlic": { "name": "czosnku", "amount": "2 ząbki" },
-      "olive oil": { "name": "oliwy", "amount": "2 łyżki" },
-      "bread": { "name": "chleba do podania", "amount": "kilka kromek" },
-      "cheese": { "name": "pokruszonej fety", "amount": "trochę" }
+      "eggs": { "name": "jajka", "amount": "4", "missing": "jajek" },
+      "tomatoes": { "name": "pomidorów", "amount": "400 g", "missing": "pomidorów" },
+      "bell pepper": { "name": "papryka", "amount": "1", "missing": "papryki" },
+      "onion": { "name": "cebula", "amount": "1", "missing": "cebuli" },
+      "garlic": { "name": "czosnku", "amount": "2 ząbki", "missing": "czosnku" },
+      "olive oil": { "name": "oliwy", "amount": "2 łyżki", "missing": "oliwy" },
+      "bread": { "name": "chleba do podania", "amount": "kilka kromek", "missing": "chleba" },
+      "cheese": { "name": "pokruszonej fety", "amount": "trochę", "missing": "fety" }
     },
     "steps": [
-      "Zeszklij cebulę i paprykę na oliwie, dodaj czosnek, a potem pomidory; gotuj na małym ogniu 10 minut.",
+      "Podsmaż cebulę i paprykę na oliwie, aż zmiękną, dodaj czosnek, a potem pomidory; gotuj na małym ogniu 10 minut.",
       "Zrób w sosie wgłębienia, wbij w nie jajka, przykryj i gotuj, aż białka się zetną.",
       "Posyp serem i podawaj z chlebem."
     ]
@@ -557,13 +557,13 @@
     "title": "Chrupiące warzywa z woka",
     "summary": "Papryka, marchewka i pieczarki z czosnkiem i sosem sojowym, z ryżem albo makaronem.",
     "ingredients": {
-      "bell pepper": { "name": "papryka", "amount": "1" },
-      "carrots": { "name": "marchewki", "amount": "2" },
-      "mushrooms": { "name": "pieczarek", "amount": "150 g" },
-      "garlic": { "name": "czosnku", "amount": "2 ząbki" },
-      "soy sauce": { "name": "sosu sojowego", "amount": "2 łyżki" },
-      "rice": { "name": "ryżu do podania", "amount": "trochę" },
-      "vegetable oil": { "name": "oleju", "amount": "1 łyżka" }
+      "bell pepper": { "name": "papryka", "amount": "1", "missing": "papryki" },
+      "carrots": { "name": "marchewki", "amount": "2", "missing": "marchewki" },
+      "mushrooms": { "name": "pieczarek", "amount": "150 g", "missing": "pieczarek" },
+      "garlic": { "name": "czosnku", "amount": "2 ząbki", "missing": "czosnku" },
+      "soy sauce": { "name": "sosu sojowego", "amount": "2 łyżki", "missing": "sosu sojowego" },
+      "rice": { "name": "ryżu do podania", "amount": "trochę", "missing": "ryżu" },
+      "vegetable oil": { "name": "oleju", "amount": "1 łyżka", "missing": "oleju" }
     },
     "steps": [
       "Pokrój wszystkie warzywa w cienkie plasterki.",
@@ -574,13 +574,13 @@
     "title": "Kurczak z pieczarkami w sosie śmietanowym",
     "summary": "Kurczak z patelni w kremowym sosie pieczarkowym z czosnkiem.",
     "ingredients": {
-      "chicken": { "name": "kurczaka", "amount": "2 piersi" },
-      "mushrooms": { "name": "pieczarek", "amount": "200 g" },
-      "cream": { "name": "śmietanki", "amount": "150 ml" },
-      "garlic": { "name": "czosnku", "amount": "2 ząbki" },
-      "onion": { "name": "cebula", "amount": "1 mała" },
-      "butter": { "name": "masła", "amount": "1 łyżka" },
-      "potatoes": { "name": "ziemniaków do podania", "amount": "kilka" }
+      "chicken": { "name": "kurczaka", "amount": "2 piersi", "missing": "kurczaka" },
+      "mushrooms": { "name": "pieczarek", "amount": "200 g", "missing": "pieczarek" },
+      "cream": { "name": "śmietanki", "amount": "150 ml", "missing": "śmietanki" },
+      "garlic": { "name": "czosnku", "amount": "2 ząbki", "missing": "czosnku" },
+      "onion": { "name": "cebula", "amount": "1 mała", "missing": "cebuli" },
+      "butter": { "name": "masła", "amount": "1 łyżka", "missing": "masła" },
+      "potatoes": { "name": "ziemniaków do podania", "amount": "kilka", "missing": "ziemniaków" }
     },
     "steps": [
       "Obsmaż kurczaka na maśle i odłóż.",

@@ -7,7 +7,9 @@ Exits non-zero when anything is wrong. Standard library only.
 What it checks
 - every JSON file involved parses;
 - shared-assets/recipes.pl.json covers every recipe id, every ingredient name (exactly) and the
-  same number of steps as shared-assets/recipes.json, with non-empty Polish text;
+  same number of steps as shared-assets/recipes.json, with non-empty Polish text; every ingredient
+  has "name", "amount" and "missing" (the genitive used after "Brakuje: …"); "missing" never holds a
+  comma and "name" holds one only inside parentheses, because apps comma-join these labels;
 - shared-assets/recipe-tags.json names every tag in both languages, and the English names equal
   what the apps show today (the raw tag, unmodified);
 - shared-assets/ingredient-aliases.pl.json has a key for every non-staple ingredient (singular,
@@ -211,11 +213,16 @@ def check_recipes(recipes, overlay):
         if sorted(ingredients) != sorted(names):
             fail(f"{where}: ingredient keys {sorted(ingredients)} != English names {sorted(names)}")
         for name, entry in ingredients.items():
-            for field in ("name", "amount"):
+            for field in ("name", "amount", "missing"):
                 if not isinstance(entry.get(field), str) or not entry[field].strip():
-                    fail(f"{where}.ingredients[{name}]: empty or missing {field}")
+                    fail(f"{where}.ingredients[{name}]: empty or absent {field!r}")
+            if "," in entry.get("missing", ""):
+                fail(f"{where}.ingredients[{name}]: 'missing' {entry['missing']!r} must not contain a comma")
+            if "," in re.sub(r"\([^()]*\)", "", entry.get("name", "")):
+                fail(f"{where}.ingredients[{name}]: 'name' {entry['name']!r} has a comma outside parentheses "
+                     f"(labels are comma-joined in lists)")
         texts = [pl.get("title", ""), pl.get("summary", "")] + list(steps or []) + \
-            [v for e in ingredients.values() for v in (e.get("name", ""), e.get("amount", ""))]
+            [v for e in ingredients.values() for v in (e.get("name", ""), e.get("amount", ""), e.get("missing", ""))]
         for text in texts:
             if english_words.search(text):
                 fail(f"{where}: untranslated English in {text!r}")
@@ -416,13 +423,13 @@ def main():
 
 
 def report():
-    for note in notes:
-        print(f"ok  {note}")
-    for problem in problems:
-        print(f"ERR {problem}")
     if problems:
+        for problem in problems:
+            print(f"ERR {problem}")
         print(f"FAILED: {len(problems)} problem(s)")
         return 1
+    for note in notes:
+        print(f"ok  {note}")
     print("All Polish assets OK")
     return 0
 
