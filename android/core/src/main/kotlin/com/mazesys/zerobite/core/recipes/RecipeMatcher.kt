@@ -136,9 +136,30 @@ class RecipeMatcher(
             val ga = synonymGroup(a)
             val gb = synonymGroup(b)
             if (ga != null && ga == gb) return true
+            return aliasMatches(a, b, aliases)
+        }
+
+        /**
+         * Free-text recipe search: the title, an ingredient's text, or another-language name of an
+         * ingredient, so "mleko" finds a recipe whose list says "mleka". [query] is trimmed and
+         * lowercased. Port of the iOS `recipe(_:matchesQuery:aliases:)`.
+         */
+        fun recipeMatchesQuery(recipe: Recipe, query: String, aliases: IngredientAliases = IngredientAliases.NONE): Boolean {
+            if (recipe.title.lowercase().contains(query)) return true
+            val normalizedQuery = normalize(query)
+            return recipe.ingredients.any { ingredient ->
+                ingredient.label.lowercase().contains(query) ||
+                    ingredient.name.lowercase().contains(query) ||
+                    aliasMatches(normalize(ingredient.name), normalizedQuery, aliases)
+            }
+        }
+
+        /** Whether the item contains, as whole words, an alias of the ingredient or of any term in its synonym group. */
+        private fun aliasMatches(normalizedIngredient: String, normalizedItem: String, aliases: IngredientAliases): Boolean {
             if (aliases.isEmpty) return false
-            val terms = if (ga == null) listOf(a) else listOf(a) + SYNONYM_GROUPS[ga]
-            return terms.any { term -> aliases.of(term).any { containsWords(it, b) } }
+            val group = synonymGroup(normalizedIngredient)
+            val terms = if (group == null) listOf(normalizedIngredient) else listOf(normalizedIngredient) + SYNONYM_GROUPS[group]
+            return terms.any { term -> aliases.of(term).any { containsWords(it, normalizedItem) } }
         }
 
         fun isStaple(name: String): Boolean {

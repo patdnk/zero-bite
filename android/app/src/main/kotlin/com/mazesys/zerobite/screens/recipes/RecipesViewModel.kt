@@ -74,11 +74,7 @@ data class RecipesUiState(
                     RecipeScope.NEARLY -> match.missing.size in 1..2
                     RecipeScope.ALL -> true
                 }
-                inScope && (
-                    query.isEmpty() ||
-                        match.recipe.title.lowercase().contains(query) ||
-                        match.recipe.ingredients.any { it.label.lowercase().contains(query) || it.name.lowercase().contains(query) }
-                    )
+                inScope && (query.isEmpty() || RecipeMatcher.recipeMatchesQuery(match.recipe, query, aliases))
             }
             return RecipesUiState(
                 today = today,

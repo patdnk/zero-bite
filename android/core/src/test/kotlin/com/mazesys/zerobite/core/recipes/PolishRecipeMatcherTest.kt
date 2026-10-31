@@ -2,6 +2,8 @@ package com.mazesys.zerobite.core.recipes
 
 import com.mazesys.zerobite.core.Fixtures
 import com.mazesys.zerobite.core.model.FoodItem
+import com.mazesys.zerobite.core.model.Recipe
+import com.mazesys.zerobite.core.model.RecipeCatalogue
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.junit.jupiter.api.DynamicTest
@@ -43,5 +45,33 @@ class PolishRecipeMatcherTest {
         val eggs = FoodItem(id = "eggs", name = "Jajka z wolnego wybiegu", addedAt = Instant.parse("2026-09-01T09:00:00Z"), expiresOn = today)
         assertEquals(eggs, RecipeMatcher(today, aliases = aliases).bestItem("eggs", listOf(eggs)))
         assertNull(RecipeMatcher(today).bestItem("eggs", listOf(eggs)))
+    }
+
+    @Test
+    fun `recipe search finds polish names of ingredients`() {
+        val omelette = RecipeCatalogue.localize(
+            RecipeCatalogue.decode(Fixtures.sharedAsset("recipes.json")),
+            RecipeCatalogue.decodeTranslations(Fixtures.sharedAsset("recipes.pl.json")),
+            emptyMap(),
+        ).first { it.id == "classic-omelette" }
+        // Title, label, English name, then aliases: "mleko" appears only as an alias of milk.
+        for (query in listOf("omlet", "mleka", "milk", "mleko", "jajko", "masło", "maslo")) {
+            assertTrue(RecipeMatcher.recipeMatchesQuery(omelette, query, aliases), query)
+        }
+        assertFalse(RecipeMatcher.recipeMatchesQuery(omelette, "makaron", aliases))
+        assertFalse(RecipeMatcher.recipeMatchesQuery(omelette, "mleko", IngredientAliases.NONE))
+    }
+
+    @Test
+    fun `recipe search does not widen through synonyms or partial queries`() {
+        val cheese = Recipe(
+            id = "x", title = "X", summary = "", steps = listOf("Cook"), prepMinutes = 1, servings = 1, tags = emptyList(),
+            ingredients = listOf(Recipe.Ingredient("cheese")),
+        )
+        // "gouda" shares cheese's synonym group, which matches() accepts but search does not.
+        assertTrue(RecipeMatcher.matches("cheese", "gouda", aliases))
+        assertFalse(RecipeMatcher.recipeMatchesQuery(cheese, "gouda", aliases))
+        // Aliases are whole words of the query.
+        assertFalse(RecipeMatcher.recipeMatchesQuery(cheese, "sernik", aliases))
     }
 }

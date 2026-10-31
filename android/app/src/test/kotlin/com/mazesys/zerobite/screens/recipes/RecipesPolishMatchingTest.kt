@@ -33,4 +33,14 @@ class RecipesPolishMatchingTest {
         assertEquals(listOf("omlet"), build("eggs").displayed.map { it.id })
         assertEquals(emptyList(), build("mleko").displayed)
     }
+
+    @Test
+    fun `search finds an ingredient through its aliases`() {
+        val pancake = recipe.copy(ingredients = listOf(Recipe.Ingredient("milk", label = "mleka", missingLabel = "mleka")))
+        val milkAliases = IngredientAliases(mapOf("milk" to listOf("mleko", "mleka")))
+        val found = RecipesUiState.build(listOf(eggs), listOf(pancake), milkAliases, RecipeScope.ALL, "mleko", 3, TestClock.today)
+        assertEquals(listOf("omlet"), found.displayed.map { it.id })
+        val none = RecipesUiState.build(listOf(eggs), listOf(pancake), IngredientAliases.NONE, RecipeScope.ALL, "mleko", 3, TestClock.today)
+        assertEquals(emptyList(), none.displayed)
+    }
 }
