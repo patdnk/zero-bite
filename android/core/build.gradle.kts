@@ -36,6 +36,9 @@ tasks.test {
     // Golden fixtures and shared assets live at the repo root, shared with the iOS tests.
     systemProperty("zerobite.testdata", rootDir.resolve("../testdata").canonicalPath)
     systemProperty("zerobite.sharedAssets", rootDir.resolve("../shared-assets").canonicalPath)
+    // The paths above are plain strings to Gradle: declare the contents so fixture edits rerun the tests.
+    inputs.dir(rootDir.resolve("../testdata")).withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.dir(rootDir.resolve("../shared-assets")).withPathSensitivity(PathSensitivity.RELATIVE)
 }
 
 // :core becomes a Kotlin Multiplatform module later, so keep JVM- and Android-only APIs out.
