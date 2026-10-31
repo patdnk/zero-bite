@@ -16,6 +16,7 @@
     { "ingredient": "mushrooms", "item": "Pieczarki", "matches": true },
     { "ingredient": "bell pepper", "item": "Papryka czerwona", "matches": true },
     { "ingredient": "spring onion", "item": "Dymka", "matches": true },
+    { "ingredient": "spring onion", "item": "Cebula", "matches": true },
     { "ingredient": "mince", "item": "Mięso mielone wołowe", "matches": true },
     { "ingredient": "mince", "item": "Wołowina", "matches": true },
     { "ingredient": "bread", "item": "Bułki kajzerki", "matches": true },
