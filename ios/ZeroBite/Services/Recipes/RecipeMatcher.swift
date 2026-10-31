@@ -149,12 +149,28 @@ struct RecipeMatcher: Sendable {
         guard !a.isEmpty, !b.isEmpty else { return false }
         if a == b { return true }
         if containsWords(a, in: b) || containsWords(b, in: a) { return true }
-        let ga = synonymGroup(for: a)
-        if let ga, let gb = synonymGroup(for: b), ga == gb { return true }
-        // Aliases of the ingredient, or of any term in its synonym group, as whole words of the item.
-        let terms = [a] + (ga.map { synonymGroups[$0] } ?? [])
+        if let ga = synonymGroup(for: a), let gb = synonymGroup(for: b), ga == gb { return true }
+        return aliasMatches(normalizedIngredient: a, normalizedItem: b, aliases: aliases)
+    }
+
+    /// Whether the item contains, as whole words, an alias of the ingredient or of any term in its
+    /// synonym group.
+    private static func aliasMatches(normalizedIngredient a: String, normalizedItem b: String, aliases: IngredientAliases) -> Bool {
+        let terms = [a] + (synonymGroup(for: a).map { synonymGroups[$0] } ?? [])
         return terms.contains { term in
             aliases.aliases(forNormalizedTerm: term).contains { containsWords($0, in: b) }
+        }
+    }
+
+    /// Free-text recipe search: the title, an ingredient's text, or another-language name of an
+    /// ingredient, so "mleko" finds a recipe whose list says "mleka". `query` is trimmed and lowercased.
+    static func recipe(_ recipe: Recipe, matchesQuery query: String, aliases: IngredientAliases = .bundled) -> Bool {
+        if recipe.title.lowercased().contains(query) { return true }
+        let normalizedQuery = normalize(query)
+        return recipe.ingredients.contains { ingredient in
+            ingredient.label.lowercased().contains(query)
+                || ingredient.name.lowercased().contains(query)
+                || aliasMatches(normalizedIngredient: normalize(ingredient.name), normalizedItem: normalizedQuery, aliases: aliases)
         }
     }
 

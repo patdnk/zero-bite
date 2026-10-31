@@ -79,8 +79,7 @@ final class RecipesViewModel {
             case .all: break
             }
             guard !query.isEmpty else { return true }
-            return match.recipe.title.lowercased().contains(query)
-                || match.recipe.ingredients.contains { $0.label.lowercased().contains(query) || $0.name.lowercased().contains(query) }
+            return RecipeMatcher.recipe(match.recipe, matchesQuery: query)
         }
     }
 

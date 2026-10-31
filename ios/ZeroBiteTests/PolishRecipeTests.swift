@@ -116,6 +116,17 @@ struct PolishRecipeCatalogueTests {
         #expect(tagged.displayTags[tagged.tags.firstIndex(of: "no-cook")!] == "bez gotowania")
     }
 
+    @Test func searchFindsPolishIngredientsInTheirDictionaryForm() throws {
+        let omelette = try #require(polish.first { $0.id == "classic-omelette" })
+        let aliases = IngredientAliases.load(bundle: AppBundle.app)
+        // The ingredient list says "mleka" and "masła"; people search "mleko" and "maslo".
+        for query in ["omlet", "mleka", "mleko", "masło", "maslo", "jajko", "milk"] {
+            #expect(RecipeMatcher.recipe(omelette, matchesQuery: query, aliases: aliases), "\(query)")
+        }
+        #expect(!RecipeMatcher.recipe(omelette, matchesQuery: "makaron", aliases: aliases))
+        #expect(!RecipeMatcher.recipe(omelette, matchesQuery: "mleko", aliases: .none))
+    }
+
     @Test func missingListsUseTheGenitiveInPolishAndTheNameInEnglish() throws {
         let now = TestSupport.date(2026, 9, 7)
         let fridge = [TestSupport.item("Masło", daysUntilExpiry: 10, from: now)]
@@ -173,7 +184,7 @@ struct PolishNotificationTests {
     @Test func polishNotificationPlans() throws {
         let fixture = try Golden.load("notification-plans-pl", as: GoldenNotificationTests.Fixture.self)
         #expect(fixture.timeZone == TestSupport.calendar.timeZone.identifier)
-        let copy = ExpiryNotificationCopy(bundle: AppBundle.lproj("pl"), locale: Locale(identifier: "pl_PL"))
+        let copy = NotificationCopy(bundle: AppBundle.lproj("pl"), locale: Locale(identifier: "pl_PL"))
         let planner = ExpiryNotificationPlanner(calendar: TestSupport.calendar, copy: copy)
         let now = Golden.localDateTime(fixture.now)
         for c in fixture.cases {
@@ -197,14 +208,14 @@ struct PolishNotificationTests {
     }
 
     @Test func polishSoonTitleCoversEveryLeadLength() {
-        let copy = ExpiryNotificationCopy(bundle: AppBundle.lproj("pl"), locale: Locale(identifier: "pl_PL"))
+        let copy = NotificationCopy(bundle: AppBundle.lproj("pl"), locale: Locale(identifier: "pl_PL"))
         #expect(copy.soonTitle(name: "Mleko", leadDays: 1) == "Mleko: termin mija jutro")
         #expect([2, 5, 7, 12, 22].map { copy.soonTitle(name: "Mleko", leadDays: $0) }
                 == [2, 5, 7, 12, 22].map { "Mleko: termin mija za \($0) dni" })
     }
 
     @Test func englishCopyFromTheEnglishTableIsUnchanged() {
-        let copy = ExpiryNotificationCopy(bundle: AppBundle.lproj("en"), locale: Locale(identifier: "en_GB"))
+        let copy = NotificationCopy(bundle: AppBundle.lproj("en"), locale: Locale(identifier: "en_GB"))
         #expect(copy.soonTitle(name: "Milk", leadDays: 1) == "Milk expires tomorrow")
         #expect(copy.soonTitle(name: "Milk", leadDays: 3) == "Milk expires in 3 days")
         #expect(copy.soonBody == "Plan a meal around it — Zero Bite has recipe ideas.")
@@ -215,10 +226,20 @@ struct PolishNotificationTests {
     }
 
     @Test func polishRecallAndTestNotificationCopy() {
-        let pl = AppBundle.lproj("pl")
-        #expect(pl.localizedString(forKey: "Zero Bite reminders are on", value: nil, table: "Notifications") == "Przypomnienia Zero Bite są włączone")
-        #expect(pl.localizedString(forKey: "Recall: check your %@", value: nil, table: "Notifications") == "Wycofanie ze sprzedaży – sprawdź: %@")
-        #expect(pl.localizedString(forKey: "%@. Check the pack before eating it.", value: nil, table: "Notifications")
-                == "%@. Sprawdź opakowanie, zanim to zjesz.")
+        let copy = NotificationCopy(bundle: AppBundle.lproj("pl"), locale: Locale(identifier: "pl_PL"))
+        #expect(copy.recallTitle(itemName: "Mleko", isLikely: true) == "Wycofanie ze sprzedaży – sprawdź: Mleko")
+        #expect(copy.recallTitle(itemName: "Mleko", isLikely: false) == "Możliwe wycofanie ze sprzedaży: Mleko")
+        #expect(copy.recallBody(alertTitle: "Dairy Co recalls Milk") == "Dairy Co recalls Milk. Sprawdź opakowanie, zanim to zjesz.")
+        #expect(copy.testTitle == "Przypomnienia Zero Bite są włączone")
+        #expect(copy.testBody == "Tak damy ci znać o jedzeniu, któremu kończy się termin.")
+    }
+
+    @Test func englishRecallAndTestNotificationCopyIsUnchanged() {
+        let copy = NotificationCopy(bundle: AppBundle.lproj("en"), locale: Locale(identifier: "en_GB"))
+        #expect(copy.recallTitle(itemName: "Milk", isLikely: true) == "Recall: check your Milk")
+        #expect(copy.recallTitle(itemName: "Milk", isLikely: false) == "Possible recall: Milk")
+        #expect(copy.recallBody(alertTitle: "Dairy Co recalls Milk") == "Dairy Co recalls Milk. Check the pack before eating it.")
+        #expect(copy.testTitle == "Zero Bite reminders are on")
+        #expect(copy.testBody == "This is how you'll hear about food that's about to expire.")
     }
 }
