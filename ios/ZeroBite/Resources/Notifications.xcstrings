@@ -64,7 +64,7 @@
                   "other" : {
                     "stringUnit" : {
                       "state" : "translated",
-                      "value" : "%arg dnia"
+                      "value" : "%arg dni"
                     }
                   }
                 }
@@ -184,7 +184,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Możliwe wycofanie ze sprzedaży: %@"
+            "value" : "Możliwe wycofanie: %@"
           }
         }
       }
@@ -201,7 +201,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wycofanie ze sprzedaży – sprawdź: %@"
+            "value" : "Wycofanie – sprawdź: %@"
           }
         }
       }

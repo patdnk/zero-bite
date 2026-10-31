@@ -4,25 +4,25 @@ SKANUJ ETYKIETĘ ZAMIAST PISAĆ
 Wyceluj aparat w datę ważności lub termin przydatności do spożycia, a Zero Bite odczyta ją za Ciebie. Zeskanuj też kod kreskowy, a nazwa i marka produktu uzupełnią się same. Etykiety są odczytywane na Twoim telefonie.
 
 WIESZ, CO ZJEŚĆ W PIERWSZEJ KOLEJNOŚCI
-Lodówka, zamrażarka i spiżarnia są posortowane według pilności. Produkt, który trzeba zjeść najpierw, jest na samej górze, z dużym odliczaniem i przyciskami do jednego dotknięcia: zużyte, zamroź lub przepisy.
+Lodówka, zamrażarka i szafka są posortowane według pilności. Produkt, który trzeba zjeść najpierw, jest na samej górze, z dużym odliczaniem i przyciskami na jedno stuknięcie: „Zużyte”, „Zamroź” lub „Przepisy”.
 
 PRZYPOMNIENIE, ZANIM COŚ SIĘ ZEPSUJE
-Ustal, ile dni wcześniej i o której godzinie chcesz dostawać powiadomienia. Dostaniesz przypomnienie przed datą, drugie w dniu, w którym mija termin, i trzecie, gdy coś się przeterminuje.
+Ustal, ile dni wcześniej i o której godzinie chcesz dostawać powiadomienia. Dostaniesz przypomnienie przed terminem, drugie w dniu, w którym mija termin, i trzecie, gdy coś się przeterminuje.
 
 UGOTUJ TO, CO ZARAZ SIĘ PSUJE
-Przepisy są ułożone według tego, co masz w lodówce, a produkty z kończącą się datą liczą się jako pierwsze. Przy każdym przepisie zobaczysz, co już masz, co się kończy i czego brakuje.
+Przepisy są ułożone według tego, co masz w lodówce, a najpierw liczą się produkty, którym kończy się termin. Przy każdym przepisie zobaczysz, co już masz, co się kończy i czego brakuje.
 
 BRYTYJSKIE ALERTY O WYCOFANIU ŻYWNOŚCI
-Zero Bite sprawdza komunikaty brytyjskiej Food Standards Agency o wycofaniu żywności i alergenach i informuje, gdy coś z Twojej lodówki może być objęte alertem. Dostajesz dane partii do porównania z opakowaniem oraz wskazówki, co dalej. Dodaj swoje alergie, a zobaczysz tylko te alerty alergiczne, które Cię dotyczą. Alerty dotyczą produktów sprzedawanych w Wielkiej Brytanii.
+Zero Bite sprawdza komunikaty brytyjskiej Food Standards Agency o wycofaniu żywności i alergenach i informuje, gdy coś z Twojej lodówki może być objęte alertem. Dostajesz dane partii do porównania z opakowaniem oraz wskazówki, co dalej. Dodaj swoje alergie, a zobaczysz alerty o alergenach, które Cię dotyczą. Alerty dotyczą produktów sprzedawanych w Wielkiej Brytanii.
 
 STWORZONE DLA PRAWDZIWYCH KUCHNI
-• Lodówka, zamrażarka i spiżarnia w jednym miejscu
+• Lodówka, zamrażarka i szafka w jednym miejscu
 • Przenieś jedzenie do zamrażarki i dodaj trzy miesiące jednym dotknięciem
-• Oznaczaj produkty jako zużyte lub cofnij to
+• Oznaczaj produkty jako zużyte lub odkładaj je z powrotem do lodówki
 • Przeszukuj wszystko, co przechowujesz
 • Bez zakładania konta: lista produktów zostaje na Twoim urządzeniu
 • Powiadomienia i przepisy po polsku
 
 Informacje o wycofaniach pochodzą z Food Standards Agency i są udostępniane na licencji Open Government Licence. Aplikacja Zero Bite nie jest powiązana z FSA; zawsze sprawdź oficjalny komunikat.
 
-Marnuj mniej. Gotuj więcej.
+Marnuj mniej, gotuj więcej.

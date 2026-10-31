@@ -227,8 +227,8 @@ struct PolishNotificationTests {
 
     @Test func polishRecallAndTestNotificationCopy() {
         let copy = NotificationCopy(bundle: AppBundle.lproj("pl"), locale: Locale(identifier: "pl_PL"))
-        #expect(copy.recallTitle(itemName: "Mleko", isLikely: true) == "Wycofanie ze sprzedaży – sprawdź: Mleko")
-        #expect(copy.recallTitle(itemName: "Mleko", isLikely: false) == "Możliwe wycofanie ze sprzedaży: Mleko")
+        #expect(copy.recallTitle(itemName: "Mleko", isLikely: true) == "Wycofanie – sprawdź: Mleko")
+        #expect(copy.recallTitle(itemName: "Mleko", isLikely: false) == "Możliwe wycofanie: Mleko")
         #expect(copy.recallBody(alertTitle: "Dairy Co recalls Milk") == "Dairy Co recalls Milk. Sprawdź opakowanie, zanim to zjesz.")
         #expect(copy.testTitle == "Przypomnienia Zero Bite są włączone")
         #expect(copy.testBody == "Tak damy ci znać o jedzeniu, któremu kończy się termin.")

@@ -46,7 +46,7 @@ class InventoryScreenPolishTest {
         compose.setContent { ZeroBiteTheme { InventoryScreen(vm) } }
 
         compose.onNodeWithText("Twoja lodówka jest pusta").assertIsDisplayed()
-        compose.onNodeWithText("Wypróbuj z przykładowym jedzeniem").performClick()
+        compose.onNodeWithText("Wypróbuj na przykładowych produktach").performClick()
 
         compose.onNode(hasText("Lodówka") and isHeading()).assertIsDisplayed()
         compose.onNodeWithText("pon. 7 wrz").assertIsDisplayed()
