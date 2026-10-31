@@ -60,21 +60,25 @@ roborazzi {
     outputDir.set(file("src/test/screenshots"))
 }
 
-/** Copies the recipe catalogue from /shared-assets so iOS and Android bundle the same file. */
+/**
+ * Copies the recipe catalogue, its Polish overlay, tag names and Polish ingredient aliases from
+ * /shared-assets so iOS and Android bundle the same files.
+ */
 abstract class CopySharedAssets : DefaultTask() {
-    @get:InputFile abstract val recipes: RegularFileProperty
+    @get:InputFiles abstract val files: ConfigurableFileCollection
     @get:OutputDirectory abstract val outputDir: DirectoryProperty
 
     @TaskAction
     fun copy() {
         val out = outputDir.get().asFile
         out.mkdirs()
-        recipes.get().asFile.copyTo(out.resolve("recipes.json"), overwrite = true)
+        files.forEach { it.copyTo(out.resolve(it.name), overwrite = true) }
     }
 }
 
 val copySharedAssets = tasks.register<CopySharedAssets>("copySharedAssets") {
-    recipes.set(rootProject.layout.projectDirectory.file("../shared-assets/recipes.json"))
+    val shared = rootProject.layout.projectDirectory.dir("../shared-assets")
+    files.from(listOf("recipes.json", "recipes.pl.json", "recipe-tags.json", "ingredient-aliases.pl.json").map(shared::file))
 }
 
 androidComponents {

@@ -40,6 +40,8 @@ class ExpiryNotificationPlanner(
     private val timeZone: TimeZone,
     /** Same cap as iOS (which allows 64 pending notifications) so both platforms behave alike. */
     private val limit: Int = 60,
+    /** The reminder text, in the app language. */
+    private val copy: NotificationCopy = NotificationCopy.ENGLISH,
 ) {
 
     fun plan(items: List<ExpiringItemSummary>, preferences: NotificationPreferences, now: Instant): List<PlannedNotification> {
@@ -55,11 +57,10 @@ class ExpiryNotificationPlanner(
             LocalDateTime(item.expiresOn.plus(daysFromExpiry, DateTimeUnit.DAY), LocalTime(preferences.hour, preferences.minute))
                 .toInstant(timeZone)
 
-        val leadPhrase = if (preferences.leadDays == 1) "tomorrow" else "in ${preferences.leadDays} days"
         val candidates = listOf(
-            Candidate("soon", fireAt(-preferences.leadDays), "${item.name} expires $leadPhrase", "Plan a meal around it — Zero Bite has recipe ideas."),
-            Candidate("today", fireAt(0), "${item.name} expires today", "Use it today or freeze it."),
-            Candidate("expired", fireAt(1), "${item.name} has expired", "Check it and update your fridge."),
+            Candidate("soon", fireAt(-preferences.leadDays), copy.soonTitle(item.name, preferences.leadDays), copy.soonBody),
+            Candidate("today", fireAt(0), copy.todayTitle(item.name), copy.todayBody),
+            Candidate("expired", fireAt(1), copy.expiredTitle(item.name), copy.expiredBody),
         )
 
         return candidates

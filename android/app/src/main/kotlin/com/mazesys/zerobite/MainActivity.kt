@@ -43,8 +43,10 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        // Renames the channel in the system settings after an app-language change (which recreates the activity).
+        // An app-language change recreates the activity: rename the channel in the system settings
+        // and switch the recipe catalogue to the new language.
         Notifications.createChannels(this)
+        dependencies.language.update(resources.configuration)
         if (savedInstanceState == null) handleIntent(intent)
         setContent {
             ZeroBiteTheme {

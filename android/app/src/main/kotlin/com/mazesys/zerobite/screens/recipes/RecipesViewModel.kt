@@ -8,6 +8,7 @@ import com.mazesys.zerobite.coordination.RecipesCoordinator
 import com.mazesys.zerobite.core.inventory.InventoryRepository
 import com.mazesys.zerobite.core.model.FoodItem
 import com.mazesys.zerobite.core.model.Recipe
+import com.mazesys.zerobite.core.recipes.IngredientAliases
 import com.mazesys.zerobite.core.recipes.RecipeMatch
 import com.mazesys.zerobite.core.recipes.RecipeMatcher
 import com.mazesys.zerobite.core.recipes.RecipeRepository
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.LocalDate
 
@@ -60,12 +60,13 @@ data class RecipesUiState(
         fun build(
             active: List<FoodItem>,
             recipes: List<Recipe>,
+            aliases: IngredientAliases,
             scope: RecipeScope,
             searchText: String,
             soonThresholdDays: Int,
             today: LocalDate,
         ): RecipesUiState {
-            val matches = RecipeMatcher(today, soonThresholdDays).match(recipes, active)
+            val matches = RecipeMatcher(today, soonThresholdDays, aliases).match(recipes, active)
             val query = searchText.trim().lowercase()
             val displayed = matches.filter { match ->
                 val inScope = when (scope) {
@@ -76,7 +77,7 @@ data class RecipesUiState(
                 inScope && (
                     query.isEmpty() ||
                         match.recipe.title.lowercase().contains(query) ||
-                        match.recipe.ingredients.any { it.name.lowercase().contains(query) }
+                        match.recipe.ingredients.any { it.label.lowercase().contains(query) || it.name.lowercase().contains(query) }
                     )
             }
             return RecipesUiState(
@@ -103,11 +104,10 @@ class RecipesViewModel(
 
     private val scope = MutableStateFlow(RecipeScope.READY)
     private val searchText = MutableStateFlow("")
-    private val catalogue = flow { emit(recipes.recipes()) }
 
     val state: StateFlow<RecipesUiState> =
-        combine(inventory.items, settings.state, catalogue, scope, searchText) { items, s, all, sc, query ->
-            RecipesUiState.build(items.filterNot { it.isConsumed }, all, sc, query, s.soonThresholdDays, clock.today())
+        combine(inventory.items, settings.state, recipes.catalogue, scope, searchText) { items, s, all, sc, query ->
+            RecipesUiState.build(items.filterNot { it.isConsumed }, all, recipes.ingredientAliases(), sc, query, s.soonThresholdDays, clock.today())
         }.stateIn(viewModelScope, SharingStarted.Eagerly, RecipesUiState(today = clock.today()))
 
     fun setScope(value: RecipeScope) {

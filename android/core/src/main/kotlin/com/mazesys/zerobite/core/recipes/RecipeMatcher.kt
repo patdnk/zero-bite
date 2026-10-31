@@ -32,9 +32,15 @@ data class RecipeMatch(
 
 /**
  * Scores recipes against what's in the fridge, favouring recipes that use up food about to
- * expire. Port of the iOS RecipeMatcher — keep them in step via testdata/recipe-matching.json.
+ * expire. Port of the iOS RecipeMatcher — keep them in step via testdata/recipe-matching.json
+ * and testdata/recipe-matching-pl.json.
  */
-class RecipeMatcher(private val today: LocalDate, private val soonThresholdDays: Int = 3) {
+class RecipeMatcher(
+    private val today: LocalDate,
+    private val soonThresholdDays: Int = 3,
+    /** Other-language item names that match an ingredient ("Jajka" for eggs). */
+    private val aliases: IngredientAliases = IngredientAliases.NONE,
+) {
 
     fun match(recipes: List<Recipe>, inventory: List<FoodItem>): List<RecipeMatch> {
         val available = inventory.filterNot { it.isConsumed }
@@ -80,7 +86,7 @@ class RecipeMatcher(private val today: LocalDate, private val soonThresholdDays:
 
     /** Prefers the item that expires soonest when several satisfy the ingredient. */
     fun bestItem(ingredient: String, items: List<FoodItem>): FoodItem? =
-        items.filter { matches(ingredient, it.name) }.minByOrNull { it.expiresOn }
+        items.filter { matches(ingredient, it.name, aliases) }.minByOrNull { it.expiresOn }
 
     companion object {
 
@@ -116,7 +122,12 @@ class RecipeMatcher(private val today: LocalDate, private val soonThresholdDays:
             listOf("banana"),
         ).map { group -> group.map(::normalize) }
 
-        fun matches(ingredient: String, itemName: String): Boolean {
+        /**
+         * True when a fridge item can stand in for a recipe ingredient: the same words, one
+         * containing the other, the same synonym group, or the item containing an alias of
+         * the ingredient or of any term in its synonym group.
+         */
+        fun matches(ingredient: String, itemName: String, aliases: IngredientAliases = IngredientAliases.NONE): Boolean {
             val a = normalize(ingredient)
             val b = normalize(itemName)
             if (a.isEmpty() || b.isEmpty()) return false
@@ -124,7 +135,10 @@ class RecipeMatcher(private val today: LocalDate, private val soonThresholdDays:
             if (containsWords(a, b) || containsWords(b, a)) return true
             val ga = synonymGroup(a)
             val gb = synonymGroup(b)
-            return ga != null && ga == gb
+            if (ga != null && ga == gb) return true
+            if (aliases.isEmpty) return false
+            val terms = if (ga == null) listOf(a) else listOf(a) + SYNONYM_GROUPS[ga]
+            return terms.any { term -> aliases.of(term).any { containsWords(it, b) } }
         }
 
         fun isStaple(name: String): Boolean {

@@ -4,6 +4,7 @@ import com.mazesys.zerobite.core.inventory.InventoryRepository
 import com.mazesys.zerobite.core.model.FoodItem
 import com.mazesys.zerobite.core.notifications.ExpiringItemSummary
 import com.mazesys.zerobite.core.notifications.ExpiryNotificationPlanner
+import com.mazesys.zerobite.core.notifications.NotificationCopy
 import com.mazesys.zerobite.core.time.AppClock
 import com.mazesys.zerobite.data.SettingsRepository
 import com.mazesys.zerobite.data.SettingsSnapshot
@@ -26,6 +27,8 @@ class ReminderSync(
     private val clock: AppClock,
     private val access: NotificationAccess,
     private val scheduler: ReminderScheduler,
+    /** Reminder text in the current app language; read at every replan so it follows language changes. */
+    private val copy: () -> NotificationCopy = { NotificationCopy.ENGLISH },
 ) {
     fun start(scope: CoroutineScope): Job = scope.launch {
         combine(inventory.items, settings.state) { items, s -> items to s }.collectLatest { (items, s) -> sync(items, s) }
@@ -41,6 +44,6 @@ class ReminderSync(
         val allowed = settings.notificationsEnabled && access.permission() == NotificationPermission.GRANTED
         val summaries = items.filterNot { it.isConsumed }.map { ExpiringItemSummary(it.id, it.name, it.expiresOn) }
         val preferences = settings.notificationPreferences.copy(enabled = allowed)
-        scheduler.reschedule(ExpiryNotificationPlanner(clock.timeZone).plan(summaries, preferences, clock.now()))
+        scheduler.reschedule(ExpiryNotificationPlanner(clock.timeZone, copy = copy()).plan(summaries, preferences, clock.now()))
     }
 }

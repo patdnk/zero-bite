@@ -5,9 +5,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.mazesys.zerobite.core.inventory.InventoryRepository
+import com.mazesys.zerobite.core.notifications.NotificationCopy
 import com.mazesys.zerobite.core.recipes.RecipeRepository
 import com.mazesys.zerobite.core.time.AppClock
 import com.mazesys.zerobite.core.time.SystemAppClock
+import com.mazesys.zerobite.data.AppLanguage
 import com.mazesys.zerobite.data.BundledRecipeRepository
 import com.mazesys.zerobite.data.DataStoreSettings
 import com.mazesys.zerobite.data.RoomInventoryRepository
@@ -19,6 +21,7 @@ import com.mazesys.zerobite.reminders.AndroidNotifier
 import com.mazesys.zerobite.reminders.NotificationAccess
 import com.mazesys.zerobite.reminders.Notifier
 import com.mazesys.zerobite.reminders.ReminderScheduler
+import com.mazesys.zerobite.reminders.ResourceNotificationCopy
 import com.mazesys.zerobite.reminders.ReminderSync
 import com.mazesys.zerobite.ui.text.Strings
 import kotlinx.coroutines.CoroutineScope
@@ -51,25 +54,32 @@ class AppDependencies(
     val notifier: Notifier,
     /** String resources in the current app language, for text that is stored rather than shown. */
     val strings: Strings,
+    /** The current app language, kept up to date by MainActivity. */
+    val language: AppLanguage = AppLanguage(),
+    /** Reminder text in the current app language, read at every replan. */
+    notificationCopy: () -> NotificationCopy = { NotificationCopy.ENGLISH },
 ) {
-    val reminders = ReminderSync(inventory, settings, clock, notifications, scheduler)
+    val reminders = ReminderSync(inventory, settings, clock, notifications, scheduler, notificationCopy)
 
     companion object {
         fun live(context: Context): AppDependencies {
             val app = context.applicationContext
             val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
             val prefs = app.getSharedPreferences("reminders", Context.MODE_PRIVATE)
+            val language = AppLanguage(AppLanguage.of(app.resources.configuration))
             return AppDependencies(
                 clock = SystemAppClock,
                 settings = DataStoreSettings(app.settingsDataStore, scope),
                 inventory = RoomInventoryRepository(ZeroBiteDatabase.open(app).foodItems()),
-                recipes = BundledRecipeRepository(app.assets),
+                recipes = BundledRecipeRepository(app.assets, language.code),
                 ids = IdGenerator.Random,
                 appScope = scope,
                 notifications = AndroidNotificationAccess(app, prefs),
                 scheduler = AlarmReminderScheduler(app, prefs),
                 notifier = AndroidNotifier(app),
                 strings = Strings { app.getString(it) },
+                language = language,
+                notificationCopy = { ResourceNotificationCopy(app.resources) },
             )
         }
     }

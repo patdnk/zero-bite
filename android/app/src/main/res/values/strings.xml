@@ -380,6 +380,17 @@
     <string name="notification_channel_expiry_description">A heads-up before food expires, on the day, and if it slips past.</string>
     <string name="notification_test_title">Zero Bite reminders are on</string>
     <string name="notification_test_body">This is how you\'ll hear about food that\'s about to expire.</string>
+    <!-- Expiry reminders: %1$s is the item name, %2$d the days left (2 or more; 1 uses "tomorrow"). -->
+    <string name="reminder_soon_title_tomorrow">%1$s expires tomorrow</string>
+    <plurals name="reminder_soon_title_days">
+        <item quantity="one">%1$s expires in %2$d day</item>
+        <item quantity="other">%1$s expires in %2$d days</item>
+    </plurals>
+    <string name="reminder_soon_body">Plan a meal around it — Zero Bite has recipe ideas.</string>
+    <string name="reminder_today_title">%1$s expires today</string>
+    <string name="reminder_today_body">Use it today or freeze it.</string>
+    <string name="reminder_expired_title">%1$s has expired</string>
+    <string name="reminder_expired_body">Check it and update your fridge.</string>
 
     <!-- Sample fridge ("Try it with sample food") -->
     <string name="sample_greek_yogurt">Greek yogurt</string>

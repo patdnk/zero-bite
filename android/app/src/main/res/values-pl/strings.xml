@@ -182,7 +182,7 @@
     <!-- Item form -->
     <string name="form_title_new">Nowy produkt</string>
     <string name="form_title_edit">Edytuj produkt</string>
-    <string name="form_overline_add">Nowy produkt</string>
+    <string name="form_overline_add">Do lodówki</string>
     <string name="form_overline_edit">Edycja</string>
     <string name="form_save_add">Dodaj do lodówki</string>
     <string name="form_save_edit">Zapisz zmiany</string>
@@ -397,6 +397,18 @@
     <string name="notification_channel_expiry_description">Przypomnienie przed końcem terminu, w dniu terminu i wtedy, gdy termin minie.</string>
     <string name="notification_test_title">Przypomnienia Zero Bite są włączone</string>
     <string name="notification_test_body">Tak dowiesz się o jedzeniu, któremu kończy się termin.</string>
+    <string name="reminder_soon_title_tomorrow">%1$s: termin mija jutro</string>
+    <plurals name="reminder_soon_title_days">
+        <item quantity="one">%1$s: termin mija za %2$d dzień</item>
+        <item quantity="few">%1$s: termin mija za %2$d dni</item>
+        <item quantity="many">%1$s: termin mija za %2$d dni</item>
+        <item quantity="other">%1$s: termin mija za %2$d dni</item>
+    </plurals>
+    <string name="reminder_soon_body">Zaplanuj z tym posiłek – Zero Bite podpowie przepisy.</string>
+    <string name="reminder_today_title">%1$s: termin mija dziś</string>
+    <string name="reminder_today_body">Zużyj to dziś albo zamroź.</string>
+    <string name="reminder_expired_title">%1$s: termin minął</string>
+    <string name="reminder_expired_body">Sprawdź produkt i zaktualizuj lodówkę.</string>
 
     <!-- Sample fridge -->
     <string name="sample_greek_yogurt">Jogurt grecki</string>

@@ -44,7 +44,7 @@ class CookedViewModel(
             val recipe = recipes.recipes().firstOrNull { it.id == recipeId }
             val active = inventory.items.first().filterNot { it.isConsumed }
             val usable = recipe
-                ?.let { RecipeMatcher(clock.today(), settings.current().soonThresholdDays).match(it, active).usedItems }
+                ?.let { RecipeMatcher(clock.today(), settings.current().soonThresholdDays, recipes.ingredientAliases()).match(it, active).usedItems }
                 .orEmpty()
             _state.value = CookedUiState(true, recipe?.title, usable, usable.map { it.id }.toSet())
         }

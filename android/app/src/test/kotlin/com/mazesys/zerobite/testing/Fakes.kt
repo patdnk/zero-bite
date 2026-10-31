@@ -10,6 +10,7 @@ import com.mazesys.zerobite.reminders.NotificationPermission
 import com.mazesys.zerobite.reminders.Notifier
 import com.mazesys.zerobite.reminders.ReminderScheduler
 import com.mazesys.zerobite.core.model.Recipe
+import com.mazesys.zerobite.core.recipes.IngredientAliases
 import com.mazesys.zerobite.core.recipes.RecipeRepository
 import com.mazesys.zerobite.core.time.AppClock
 import com.mazesys.zerobite.core.time.FixedClock
@@ -74,8 +75,12 @@ class FakeSettings(initial: SettingsSnapshot = SettingsSnapshot()) : SettingsRep
     override suspend fun update(transform: (SettingsSnapshot) -> SettingsSnapshot) { flow.value = transform(flow.value) }
 }
 
-class FakeRecipes(private val recipes: List<Recipe> = emptyList()) : RecipeRepository {
+class FakeRecipes(
+    private val recipes: List<Recipe> = emptyList(),
+    private val aliases: IngredientAliases = IngredientAliases.NONE,
+) : RecipeRepository {
     override suspend fun recipes() = recipes
+    override suspend fun ingredientAliases() = aliases
 }
 
 fun testDependencies(

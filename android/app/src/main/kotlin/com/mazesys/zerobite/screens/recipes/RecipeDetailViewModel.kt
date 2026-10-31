@@ -14,7 +14,6 @@ import com.mazesys.zerobite.data.SettingsRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.LocalDate
 
@@ -41,17 +40,15 @@ class RecipeDetailViewModel(
     private val onCooked: (String) -> Unit,
 ) : ViewModel() {
 
-    private val catalogue = flow { emit(recipes.recipes()) }
-
     val state: StateFlow<RecipeDetailUiState> =
-        combine(inventory.items, settings.state, catalogue) { items, s, all ->
+        combine(inventory.items, settings.state, recipes.catalogue) { items, s, all ->
             val today = clock.today()
             val recipe = all.firstOrNull { it.id == recipeId }
             RecipeDetailUiState(
                 today = today,
                 isLoading = false,
                 recipe = recipe,
-                match = recipe?.let { RecipeMatcher(today, s.soonThresholdDays).match(it, items.filterNot { item -> item.isConsumed }) },
+                match = recipe?.let { RecipeMatcher(today, s.soonThresholdDays, recipes.ingredientAliases()).match(it, items.filterNot { item -> item.isConsumed }) },
                 soonThresholdDays = s.soonThresholdDays,
             )
         }.stateIn(viewModelScope, SharingStarted.Eagerly, RecipeDetailUiState(today = clock.today()))

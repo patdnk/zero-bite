@@ -14,7 +14,6 @@ import com.mazesys.zerobite.ui.components.shelfLifeProgress
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -47,10 +46,8 @@ class ItemDetailViewModel(
     private val onDeleted: () -> Unit,
 ) : ViewModel() {
 
-    private val catalogue = flow { emit(recipes.recipes()) }
-
     val state: StateFlow<ItemDetailUiState> =
-        combine(inventory.items, settings.state, catalogue) { items, s, all ->
+        combine(inventory.items, settings.state, recipes.catalogue) { items, s, all ->
             val item = items.firstOrNull { it.id == itemId }
             val today = clock.today()
             val active = items.filterNot { it.isConsumed }
@@ -66,7 +63,7 @@ class ItemDetailViewModel(
                 progress = item?.shelfLifeProgress(clock.now(), clock.timeZone) ?: 0f,
                 addedOn = item?.addedAt?.toLocalDateTime(clock.timeZone)?.date,
                 consumedOn = item?.consumedAt?.toLocalDateTime(clock.timeZone)?.date,
-                recipeMatches = RecipeMatcher(today, s.soonThresholdDays).match(all, active).filter { it.uses(itemId) }.take(5),
+                recipeMatches = RecipeMatcher(today, s.soonThresholdDays, recipes.ingredientAliases()).match(all, active).filter { it.uses(itemId) }.take(5),
             )
         }.stateIn(viewModelScope, SharingStarted.Eagerly, ItemDetailUiState(today = clock.today()))
 

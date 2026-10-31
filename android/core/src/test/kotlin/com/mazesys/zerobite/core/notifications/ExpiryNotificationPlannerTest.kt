@@ -71,4 +71,25 @@ class ExpiryNotificationPlannerTest {
         assertEquals(planned.sortedBy { it.fireAt }, planned)
         assertTrue(NotificationPreferences.DEFAULT.let { !it.enabled && it.leadDays == 3 && it.hour == 9 && it.minute == 0 })
     }
+
+    @Test
+    fun `injected copy words every reminder`() {
+        val copy = object : NotificationCopy {
+            override fun soonTitle(name: String, leadDays: Int) = "soon $name $leadDays"
+            override val soonBody = "soon body"
+            override fun todayTitle(name: String) = "today $name"
+            override val todayBody = "today body"
+            override fun expiredTitle(name: String) = "expired $name"
+            override val expiredBody = "expired body"
+        }
+        val planned = ExpiryNotificationPlanner(zone, copy = copy).plan(
+            item = ExpiringItemSummary("ham", "Ham", LocalDate(2026, 9, 20)),
+            preferences = NotificationPreferences(enabled = true, leadDays = 2, hour = 9, minute = 0),
+            now = fixture.now.toInstant(zone),
+        )
+        assertEquals(
+            listOf("soon Ham 2" to "soon body", "today Ham" to "today body", "expired Ham" to "expired body"),
+            planned.map { it.title to it.body },
+        )
+    }
 }

@@ -58,10 +58,13 @@ import com.mazesys.zerobite.ui.theme.tint
 import kotlinx.datetime.LocalDate
 import kotlin.math.roundToInt
 
-/** Placeholder artwork until recipes carry photos. From the title only: tags say nothing about the look. */
+/**
+ * Placeholder artwork until recipes carry photos. From the English title only, whatever the app
+ * language: tags say nothing about the look.
+ */
 val Recipe.icon: ImageVector
     get() {
-        val haystack = title.lowercase()
+        val haystack = englishTitle.lowercase()
         val rules: List<Pair<ImageVector, List<String>>> = listOf(
             Icons.Rounded.LocalCafe to listOf("smoothie", "parfait", "oats", "porridge", "granola", "shake"),
             Icons.Rounded.SoupKitchen to listOf("soup", "broth", "stew", "chowder"),
@@ -80,11 +83,11 @@ val Recipe.icon: ImageVector
 val RecipeMatch.matchPercent: Int
     get() = if (requiredCount == 0) 100 else (requiredMatchedCount.toDouble() / requiredCount * 100).roundToInt()
 
-/** "Ready to cook", "Missing milk", "Missing a, b +2". */
+/** "Ready to cook", "Missing milk", "Missing a, b +2" (Polish: "Brakuje: mleka"). */
 val RecipeMatch.statusText: UiText
     get() {
         if (canMake) return uiText(R.string.recipe_ready_to_cook)
-        val names = missing.take(2).joinToString(", ") { it.name }
+        val names = missing.take(2).joinToString(", ") { it.missingLabel }
         return if (missing.size > 2) uiText(R.string.recipe_missing_more, names, missing.size - 2) else uiText(R.string.recipe_missing, names)
     }
 

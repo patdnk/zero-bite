@@ -115,7 +115,7 @@ private fun RecipeContent(recipe: Recipe, match: RecipeMatch, ui: RecipeDetailUi
                 contentPadding = PaddingValues(horizontal = Spacing.gutter),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                items(recipe.tags) { Tag(it) }
+                items(recipe.tagLabels) { Tag(it) }
             }
         }
         CardSection(
@@ -172,7 +172,7 @@ private fun StatusBanner(match: RecipeMatch) {
     ) {
         Icon(if (match.canMake) Icons.Rounded.CheckCircle else Icons.Rounded.ShoppingCart, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
         Text(
-            if (match.canMake) stringResource(R.string.recipe_have_everything) else stringResource(R.string.recipe_missing_sentence, match.missing.joinToString(", ") { it.name }),
+            if (match.canMake) stringResource(R.string.recipe_have_everything) else stringResource(R.string.recipe_missing_sentence, match.missing.joinToString(", ") { it.missingLabel }),
             style = ZeroBiteTheme.type.subheadline.medium(),
             color = tint,
         )
@@ -203,7 +203,7 @@ private fun IngredientRow(
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.padding(top = 1.dp).size(18.dp))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
-                if (ingredient.amount.isEmpty()) ingredient.name else "${ingredient.amount} ${ingredient.name}",
+                if (ingredient.amount.isEmpty()) ingredient.label else "${ingredient.amount} ${ingredient.label}",
                 style = ZeroBiteTheme.type.subheadline.medium(),
                 color = colors.textPrimary,
             )
