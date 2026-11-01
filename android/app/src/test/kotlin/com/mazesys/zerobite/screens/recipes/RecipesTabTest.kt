@@ -39,7 +39,7 @@ class RecipesTabTest {
     fun `recipe, then its ingredient's item, then back, then cooked`() {
         val dependencies = testDependencies(inventory = FakeInventoryRepository(recipeFridge()), recipes = FakeRecipes(testRecipes()))
         val app = AppCoordinator { TestClock.today }
-        val list = RecipesViewModel(dependencies.inventory, dependencies.settings, dependencies.recipes, dependencies.clock, app.recipes)
+        val list = RecipesViewModel(dependencies.inventory, dependencies.settings, dependencies.recipes, dependencies.clock, app.recipes, dependencies.computation)
         compose.setContent { ZeroBiteTheme { RecipesTab(app.recipes, list, dependencies) } }
 
         compose.onNodeWithText("Omelette").performClick()

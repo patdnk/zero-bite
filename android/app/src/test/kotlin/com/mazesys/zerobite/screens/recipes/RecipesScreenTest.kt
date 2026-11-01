@@ -20,6 +20,7 @@ import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.recipeFridge
 import com.mazesys.zerobite.testing.testRecipes
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
+import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,7 +43,7 @@ class RecipesScreenTest {
     private val app = AppCoordinator { TestClock.today }
 
     private fun show(dark: Boolean = false) {
-        val vm = RecipesViewModel(FakeInventoryRepository(recipeFridge()), FakeSettings(), FakeRecipes(testRecipes()), TestClock.fixed(), app.recipes)
+        val vm = RecipesViewModel(FakeInventoryRepository(recipeFridge()), FakeSettings(), FakeRecipes(testRecipes()), TestClock.fixed(), app.recipes, Dispatchers.Unconfined)
         compose.setContent { ZeroBiteTheme(darkTheme = dark) { RecipesScreen(vm) } }
     }
 

@@ -25,6 +25,7 @@ import com.mazesys.zerobite.reminders.ResourceNotificationCopy
 import com.mazesys.zerobite.reminders.ReminderSync
 import com.mazesys.zerobite.ui.text.Strings
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlin.uuid.Uuid
@@ -58,6 +59,8 @@ class AppDependencies(
     val language: AppLanguage = AppLanguage(),
     /** Reminder text in the current app language, read at every replan. */
     notificationCopy: () -> NotificationCopy = { NotificationCopy.ENGLISH },
+    /** Where CPU-heavy work that must stay off the main thread runs, such as ranking recipes against the fridge. */
+    val computation: CoroutineDispatcher = Dispatchers.Default,
 ) {
     val reminders = ReminderSync(inventory, settings, clock, notifications, scheduler, notificationCopy)
 

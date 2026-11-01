@@ -10,6 +10,7 @@ import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.recipeFridge
 import com.mazesys.zerobite.testing.testRecipes
+import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -22,7 +23,7 @@ class RecipesViewModelTest {
     val main = MainDispatcherRule()
 
     private val app = AppCoordinator { TestClock.today }
-    private val vm by lazy { RecipesViewModel(FakeInventoryRepository(recipeFridge()), FakeSettings(), FakeRecipes(testRecipes()), TestClock.fixed(), app.recipes) }
+    private val vm by lazy { RecipesViewModel(FakeInventoryRepository(recipeFridge()), FakeSettings(), FakeRecipes(testRecipes()), TestClock.fixed(), app.recipes, Dispatchers.Unconfined) }
     private fun ids() = vm.state.value.displayed.map { it.recipe.id }
 
     @Test
@@ -62,7 +63,7 @@ class RecipesViewModelTest {
         assertEquals(emptyList(), ids())
         assertEquals("Nothing to cook yet", english(vm.state.value.emptyTitle))
         assertEquals("Try a different search.", english(vm.state.value.emptyMessage))
-        val empty = RecipesViewModel(FakeInventoryRepository(), FakeSettings(), FakeRecipes(), TestClock.fixed(), app.recipes)
+        val empty = RecipesViewModel(FakeInventoryRepository(), FakeSettings(), FakeRecipes(), TestClock.fixed(), app.recipes, Dispatchers.Unconfined)
         empty.setScope(RecipeScope.NEARLY)
         assertEquals("No near-misses", english(empty.state.value.emptyTitle))
         assertEquals(

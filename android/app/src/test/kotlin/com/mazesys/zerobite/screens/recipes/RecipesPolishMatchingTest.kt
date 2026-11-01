@@ -19,7 +19,7 @@ class RecipesPolishMatchingTest {
     private val eggs = FoodItem(id = "e", name = "Jajka", addedAt = TestClock.now, expiresOn = TestClock.today.plus(5, DateTimeUnit.DAY))
 
     private fun build(query: String = "", aliases: IngredientAliases = this.aliases, scope: RecipeScope = RecipeScope.ALL) =
-        RecipesUiState.build(listOf(eggs), listOf(recipe), aliases, scope, query, 3, TestClock.today)
+        RecipesUiState.build(MatchedRecipes.of(listOf(eggs), listOf(recipe), aliases, 3, TestClock.today), scope, query)
 
     @Test
     fun `aliases make a polish item satisfy an english ingredient`() {
@@ -38,9 +38,9 @@ class RecipesPolishMatchingTest {
     fun `search finds an ingredient through its aliases`() {
         val pancake = recipe.copy(ingredients = listOf(Recipe.Ingredient("milk", label = "mleka", missingLabel = "mleka")))
         val milkAliases = IngredientAliases(mapOf("milk" to listOf("mleko", "mleka")))
-        val found = RecipesUiState.build(listOf(eggs), listOf(pancake), milkAliases, RecipeScope.ALL, "mleko", 3, TestClock.today)
+        val found = RecipesUiState.build(MatchedRecipes.of(listOf(eggs), listOf(pancake), milkAliases, 3, TestClock.today), RecipeScope.ALL, "mleko")
         assertEquals(listOf("omlet"), found.displayed.map { it.id })
-        val none = RecipesUiState.build(listOf(eggs), listOf(pancake), IngredientAliases.NONE, RecipeScope.ALL, "mleko", 3, TestClock.today)
+        val none = RecipesUiState.build(MatchedRecipes.of(listOf(eggs), listOf(pancake), IngredientAliases.NONE, 3, TestClock.today), RecipeScope.ALL, "mleko")
         assertEquals(emptyList(), none.displayed)
     }
 }

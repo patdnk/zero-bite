@@ -92,7 +92,7 @@ fun testDependencies(
     access: FakeAccess = FakeAccess(),
     scheduler: FakeScheduler = FakeScheduler(),
     notifier: FakeNotifier = FakeNotifier(),
-) = AppDependencies(clock, settings, inventory, recipes, ids, CoroutineScope(Dispatchers.Unconfined), access, scheduler, notifier, EnglishStrings)
+) = AppDependencies(clock, settings, inventory, recipes, ids, CoroutineScope(Dispatchers.Unconfined), access, scheduler, notifier, EnglishStrings, computation = Dispatchers.Unconfined)
 
 /** Runs `viewModelScope` work immediately on the test thread. */
 @OptIn(ExperimentalCoroutinesApi::class)

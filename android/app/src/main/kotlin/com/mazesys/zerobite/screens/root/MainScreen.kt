@@ -55,7 +55,7 @@ fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, d
         InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, coordinator.inventory, dependencies.notifications, dependencies.strings)
     }
     val recipesList = viewModel(key = "recipes") {
-        RecipesViewModel(dependencies.inventory, dependencies.settings, dependencies.recipes, dependencies.clock, coordinator.recipes)
+        RecipesViewModel(dependencies.inventory, dependencies.settings, dependencies.recipes, dependencies.clock, coordinator.recipes, dependencies.computation)
     }
     val settingsScreen = viewModel(key = "settings") {
         SettingsViewModel(dependencies, coordinator.settings, "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")

@@ -14,10 +14,14 @@ import com.mazesys.zerobite.core.recipes.RecipeMatcher
 import com.mazesys.zerobite.core.recipes.RecipeRepository
 import com.mazesys.zerobite.core.time.AppClock
 import com.mazesys.zerobite.data.SettingsRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.LocalDate
 
@@ -25,6 +29,35 @@ enum class RecipeScope(@StringRes val title: Int, @StringRes val sectionTitle: I
     READY(R.string.recipes_scope_ready, R.string.recipes_section_ready),
     NEARLY(R.string.recipes_scope_nearly, R.string.recipes_section_nearly),
     ALL(R.string.recipes_scope_all, R.string.recipes_section_all),
+}
+
+/**
+ * The catalogue ranked against the fridge. Producing this is the expensive step, so it stays apart
+ * from the scope and search filtering and only runs when the fridge, settings, catalogue or date change.
+ */
+class MatchedRecipes(
+    val today: LocalDate,
+    val soonThresholdDays: Int,
+    val aliases: IngredientAliases,
+    /** Items needing attention, for the "Use these first" strip. */
+    val expiringItems: List<FoodItem>,
+    val matches: List<RecipeMatch>,
+) {
+    companion object {
+        fun of(
+            active: List<FoodItem>,
+            recipes: List<Recipe>,
+            aliases: IngredientAliases,
+            soonThresholdDays: Int,
+            today: LocalDate,
+        ) = MatchedRecipes(
+            today = today,
+            soonThresholdDays = soonThresholdDays,
+            aliases = aliases,
+            expiringItems = active.filter { it.status(today, soonThresholdDays).needsAttention },
+            matches = RecipeMatcher(today, soonThresholdDays, aliases).match(recipes, active),
+        )
+    }
 }
 
 data class RecipesUiState(
@@ -57,32 +90,23 @@ data class RecipesUiState(
         }
 
     companion object {
-        fun build(
-            active: List<FoodItem>,
-            recipes: List<Recipe>,
-            aliases: IngredientAliases,
-            scope: RecipeScope,
-            searchText: String,
-            soonThresholdDays: Int,
-            today: LocalDate,
-        ): RecipesUiState {
-            val matches = RecipeMatcher(today, soonThresholdDays, aliases).match(recipes, active)
+        fun build(matched: MatchedRecipes, scope: RecipeScope, searchText: String): RecipesUiState {
             val query = searchText.trim().lowercase()
-            val displayed = matches.filter { match ->
+            val displayed = matched.matches.filter { match ->
                 val inScope = when (scope) {
                     RecipeScope.READY -> match.canMake
                     RecipeScope.NEARLY -> match.missing.size in 1..2
                     RecipeScope.ALL -> true
                 }
-                inScope && (query.isEmpty() || RecipeMatcher.recipeMatchesQuery(match.recipe, query, aliases))
+                inScope && (query.isEmpty() || RecipeMatcher.recipeMatchesQuery(match.recipe, query, matched.aliases))
             }
             return RecipesUiState(
-                today = today,
+                today = matched.today,
                 isLoading = false,
                 scope = scope,
                 searchText = searchText,
-                soonThresholdDays = soonThresholdDays,
-                expiringItems = active.filter { it.status(today, soonThresholdDays).needsAttention },
+                soonThresholdDays = matched.soonThresholdDays,
+                expiringItems = matched.expiringItems,
                 displayed = displayed,
             )
         }
@@ -96,22 +120,32 @@ class RecipesViewModel(
     recipes: RecipeRepository,
     private val clock: AppClock,
     private val coordinator: RecipesCoordinator,
+    computation: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val scope = MutableStateFlow(RecipeScope.READY)
     private val searchText = MutableStateFlow("")
+    private val today = MutableStateFlow(clock.today())
 
+    private val matched: Flow<MatchedRecipes> =
+        combine(inventory.items, settings.state, recipes.catalogue, today) { items, s, all, date ->
+            MatchedRecipes.of(items.filterNot { it.isConsumed }, all, recipes.ingredientAliases(), s.soonThresholdDays, date)
+        }.flowOn(computation)
+
+    /** Stays on the main thread, without waiting for [matched]: the search field shows this state's text. */
     val state: StateFlow<RecipesUiState> =
-        combine(inventory.items, settings.state, recipes.catalogue, scope, searchText) { items, s, all, sc, query ->
-            RecipesUiState.build(items.filterNot { it.isConsumed }, all, recipes.ingredientAliases(), sc, query, s.soonThresholdDays, clock.today())
+        combine(matched.onStart<MatchedRecipes?> { emit(null) }, scope, searchText) { m, sc, query ->
+            if (m == null) RecipesUiState(today = clock.today(), scope = sc, searchText = query) else RecipesUiState.build(m, sc, query)
         }.stateIn(viewModelScope, SharingStarted.Eagerly, RecipesUiState(today = clock.today()))
 
     fun setScope(value: RecipeScope) {
         scope.value = value
+        today.value = clock.today()
     }
 
     fun setSearchText(text: String) {
         searchText.value = text
+        today.value = clock.today()
     }
 
     fun showRecipe(match: RecipeMatch) = coordinator.showRecipe(match.recipe.id)
