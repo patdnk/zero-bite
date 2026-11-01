@@ -130,11 +130,17 @@ fun unitLabel(unit: String, quantity: Double): String {
     }
 }
 
-/** Maps a typed unit label back to its stored code ("szt." → "pcs"); anything else is kept as typed. */
+/**
+ * Maps a typed unit label back to its stored code ("szt." → "pcs"); anything else is kept as typed.
+ * In Polish "pack", "bag" and "punnet" all read "opak.", so it always stores "pack" (the first match).
+ */
 @Composable
 @ReadOnlyComposable
-fun unitCodes(): Map<String, String> =
-    ItemDraft.unitSuggestions.associateBy { unitLabel(it) }
+fun unitCodes(): Map<String, String> {
+    val codes = HashMap<String, String>()
+    for (code in ItemDraft.unitSuggestions + UNITS.keys) codes.putIfAbsent(unitLabel(code), code)
+    return codes
+}
 
 /** "500 g · Fridge". */
 @Composable

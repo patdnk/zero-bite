@@ -66,4 +66,22 @@ class QuantityLabelPolishTest {
         assertEquals("slices", codes["plastry"])
         assertEquals("g", codes["g"])
     }
+
+    @Test
+    fun `every known unit label maps back to its code, not to the Polish text`() {
+        lateinit var codes: Map<String, String>
+        lateinit var labels: Map<String, String>
+        compose.setContent {
+            codes = unitCodes()
+            labels = listOf("pints", "loaf", "bulb", "bag", "punnet").associateWith { unitLabel(it) }
+        }
+        compose.waitForIdle()
+        assertEquals("pinty", labels["pints"])
+        assertEquals("pints", codes["pinty"])
+        assertEquals("loaf", codes["bochenek"])
+        assertEquals("bulb", codes["główka"])
+        // "bag", "pack" and "punnet" share "opak.": the first match, "pack", wins as on iOS.
+        assertEquals("pack", codes[labels["bag"]])
+        assertEquals("pack", codes[labels["punnet"]])
+    }
 }
