@@ -92,7 +92,20 @@ class RecipesViewModelMatchingTest {
     }
 
     @Test
-    fun `a language change matches again and the search stays`() {
+    fun `a fridge change after midnight matches with the new day`() = runTest {
+        val vm = viewModel()
+        assertEquals(emptyList(), vm.match("stirfry").expiringItems.map { it.id })
+
+        clock.instant += 2.days
+        inventory.delete("butter")
+
+        assertEquals(clock.today(), vm.state.value.today)
+        assertEquals(listOf("chicken"), vm.match("stirfry").expiringItems.map { it.id })
+        assertTrue("chicken" in vm.state.value.expiringItems.map { it.id })
+    }
+
+    @Test
+    fun `a catalogue emission matches again and the search stays`() {
         val catalogue = MutableStateFlow(testRecipes())
         val vm = viewModel(object : RecipeRepository {
             override suspend fun recipes() = catalogue.value

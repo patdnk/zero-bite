@@ -45,6 +45,7 @@ class RecipeMatcherCostTest {
         val names = listOf(
             "onion", "onions", "red onion", "onion ring", "spring onion soup", "onionring", "ring onion", "onion onionring", "onionring onion",
             "egg", "eggs", "egg noodle", "eggy egg", "noodle egg", "a", "ab", "abc", "abc abc", "xabc abc", "abcx abc", "abcx xabc", "",
+            "abc  abc", "  abc", "abc  ", "   ", "abc\uD83C\uDF73 abc", "\uD83C\uDF73abc", "abc \uD83C\uDF73", "\uD83C\uDF73\uD83C\uDF73",
         )
         for (needle in names) for (haystack in names) {
             val expected = needle.length >= 3 && " $haystack ".contains(" $needle ")

@@ -125,11 +125,13 @@ class RecipesViewModel(
 
     private val scope = MutableStateFlow(RecipeScope.READY)
     private val searchText = MutableStateFlow("")
-    private val today = MutableStateFlow(clock.today())
+
+    /** Only a trigger, so that a keystroke or chip after midnight matches again. Matching reads the clock itself. */
+    private val dayCheck = MutableStateFlow(clock.today())
 
     private val matched: Flow<MatchedRecipes> =
-        combine(inventory.items, settings.state, recipes.catalogue, today) { items, s, all, date ->
-            MatchedRecipes.of(items.filterNot { it.isConsumed }, all, recipes.ingredientAliases(), s.soonThresholdDays, date)
+        combine(inventory.items, settings.state, recipes.catalogue, dayCheck) { items, s, all, _ ->
+            MatchedRecipes.of(items.filterNot { it.isConsumed }, all, recipes.ingredientAliases(), s.soonThresholdDays, clock.today())
         }.flowOn(computation)
 
     /** Stays on the main thread, without waiting for [matched]: the search field shows this state's text. */
@@ -140,12 +142,12 @@ class RecipesViewModel(
 
     fun setScope(value: RecipeScope) {
         scope.value = value
-        today.value = clock.today()
+        dayCheck.value = clock.today()
     }
 
     fun setSearchText(text: String) {
         searchText.value = text
-        today.value = clock.today()
+        dayCheck.value = clock.today()
     }
 
     fun showRecipe(match: RecipeMatch) = coordinator.showRecipe(match.recipe.id)
