@@ -878,7 +878,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dodaj więcej produktów do lodówki albo zajrzyj do zakładki „Prawie” po przepisy, którym brakuje jednego składnika."
+            "value" : "Dodaj do lodówki jeszcze kilka rzeczy albo zajrzyj do zakładki „Prawie” – są tam przepisy, którym brakuje jednego składnika."
           }
         }
       }
@@ -1118,7 +1118,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zezwól Zero Bite na powiadomienia w aplikacji Ustawienia, by dostawać przypomnienia o terminach."
+            "value" : "Zezwól aplikacji Zero Bite na powiadomienia w aplikacji Ustawienia, by dostawać przypomnienia o terminach."
           }
         }
       }
@@ -1472,7 +1472,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sprawdzaj wycofania żywności (UK)"
+            "value" : "Sprawdzaj wycofania żywności w Wielkiej Brytanii"
           }
         }
       }
@@ -4353,7 +4353,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przepisy z produktami z tego przedziału są wyżej na liście."
+            "value" : "Przepisy wykorzystujące jedzenie z tego okresu są wyżej na liście."
           }
         }
       }
