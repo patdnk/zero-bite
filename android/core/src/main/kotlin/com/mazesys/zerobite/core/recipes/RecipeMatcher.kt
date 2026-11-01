@@ -189,8 +189,17 @@ class RecipeMatcher(
         }
 
         /** Whole-word phrase containment: "onion" is in "spring onion" but not in "onionring". */
-        fun containsWords(needle: String, haystack: String): Boolean =
-            needle.length >= 3 && " $haystack ".contains(" $needle ")
+        fun containsWords(needle: String, haystack: String): Boolean {
+            if (needle.length < 3) return false
+            // Called about a million times per ranking of the catalogue, so no string building here.
+            var start = haystack.indexOf(needle)
+            while (start >= 0) {
+                val end = start + needle.length
+                if ((start == 0 || haystack[start - 1] == ' ') && (end == haystack.length || haystack[end] == ' ')) return true
+                start = haystack.indexOf(needle, start + 1)
+            }
+            return false
+        }
 
         private fun synonymGroup(normalizedName: String): Int? =
             SYNONYM_GROUPS.indexOfFirst { group ->
