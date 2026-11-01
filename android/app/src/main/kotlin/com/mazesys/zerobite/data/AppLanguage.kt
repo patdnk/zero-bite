@@ -19,6 +19,8 @@ class AppLanguage(initial: String = "en") {
     }
 
     companion object {
-        fun of(configuration: Configuration): String = configuration.locales[0]?.language ?: "en"
+        /** The first of the user's languages the app is translated into, like the resources Android picks. */
+        fun of(configuration: Configuration): String =
+            configuration.locales.getFirstMatch(arrayOf("en", "pl"))?.language ?: "en"
     }
 }
