@@ -107,3 +107,89 @@ struct RecipeMatcherTests {
         }
     }
 }
+
+/// Ranking the catalogue is far too expensive to repeat at every keystroke.
+@MainActor
+struct RecipesViewModelRankingTests {
+
+    private final class Clock {
+        var now = TestSupport.date(2026, 9, 7)
+    }
+
+    private let recipes = [
+        Recipe(id: "omelette", title: "Omelette", summary: "",
+               ingredients: [.init(name: "eggs", amount: "3"), .init(name: "butter", amount: "1 tbsp")],
+               steps: [], prepMinutes: 10, servings: 1, tags: []),
+        Recipe(id: "stirfry", title: "Stir-fry", summary: "",
+               ingredients: [.init(name: "chicken", amount: "2"), .init(name: "bell pepper", amount: "1")],
+               steps: [], prepMinutes: 20, servings: 2, tags: []),
+    ]
+
+    private func make() -> (RecipesViewModel, InventoryStore, AppSettings, Clock) {
+        let clock = Clock()
+        let store = InventoryStore.inMemory()
+        store.loadSampleData(now: clock.now)
+        let settings = AppSettings.ephemeral()
+        let viewModel = RecipesViewModel(store: store, settings: settings, recipes: recipes, coordinator: RecipesCoordinator(), now: { clock.now })
+        viewModel.scope = .all
+        return (viewModel, store, settings, clock)
+    }
+
+    @Test func typingAndChangingScopeDoNotRankAgain() {
+        let (viewModel, _, _, _) = make()
+        #expect(viewModel.displayedMatches.count == 2)
+        #expect(viewModel.rankingCount == 1)
+
+        for text in ["st", "sti", "stir"] {
+            viewModel.searchText = text
+            #expect(viewModel.displayedMatches.map(\.id) == ["stirfry"])
+        }
+        viewModel.searchText = ""
+        viewModel.scope = .ready
+        _ = viewModel.displayedMatches
+
+        #expect(viewModel.rankingCount == 1)
+    }
+
+    @Test func aChangeToWhatRankingReadsRanksAgain() throws {
+        let (viewModel, store, settings, clock) = make()
+        _ = viewModel.displayedMatches
+        #expect(viewModel.rankingCount == 1)
+
+        let item = try #require(store.activeItems.first)
+        store.markConsumed(item, at: clock.now)
+        _ = viewModel.displayedMatches
+        #expect(viewModel.rankingCount == 2)
+
+        let other = try #require(store.activeItems.first)
+        other.name = "Renamed"
+        _ = viewModel.displayedMatches
+        #expect(viewModel.rankingCount == 3)
+
+        other.expiresAt = other.expiresAt.addingTimeInterval(86_400)
+        _ = viewModel.displayedMatches
+        #expect(viewModel.rankingCount == 4)
+
+        settings.soonThresholdDays += 1
+        _ = viewModel.displayedMatches
+        #expect(viewModel.rankingCount == 5)
+
+        clock.now = clock.now.addingTimeInterval(60)
+        _ = viewModel.displayedMatches
+        #expect(viewModel.rankingCount == 5, "the same day")
+
+        clock.now = clock.now.addingTimeInterval(86_400)
+        _ = viewModel.displayedMatches
+        #expect(viewModel.rankingCount == 6, "a new day")
+    }
+
+    @Test func keptMatchesEqualAFreshRanking() {
+        let (viewModel, store, settings, clock) = make()
+        _ = viewModel.displayedMatches
+        viewModel.searchText = "o"
+        _ = viewModel.displayedMatches
+        let fresh = RecipeMatcher(soonThresholdDays: settings.soonThresholdDays, now: clock.now)
+            .match(recipes: recipes, inventory: store.activeItems)
+        #expect(viewModel.matches == fresh)
+    }
+}

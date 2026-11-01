@@ -41,6 +41,22 @@ final class RecipesViewModel {
     private let coordinator: RecipesCoordinator
     private let now: () -> Date
 
+    /// Everything ranking the catalogue reads. Ranking takes hundreds of milliseconds, far too long
+    /// to repeat at every keystroke, so the result is kept until one of these changes.
+    private struct MatchInputs: Equatable {
+        struct Item: Equatable {
+            let id: UUID
+            let name: String
+            let expiresAt: Date
+        }
+        let items: [Item]
+        let soonThresholdDays: Int
+        let day: Date
+    }
+
+    @ObservationIgnored private var ranked: (inputs: MatchInputs, matches: [RecipeMatch])?
+    @ObservationIgnored private(set) var rankingCount = 0
+
     init(
         store: InventoryStore,
         settings: AppSettings,
@@ -58,8 +74,19 @@ final class RecipesViewModel {
     var soonThresholdDays: Int { settings.soonThresholdDays }
 
     var matches: [RecipeMatch] {
-        RecipeMatcher(soonThresholdDays: soonThresholdDays, now: now())
-            .match(recipes: recipes, inventory: store.activeItems)
+        let active = store.activeItems
+        let date = now()
+        let inputs = MatchInputs(
+            items: active.map { .init(id: $0.id, name: $0.name, expiresAt: $0.expiresAt) },
+            soonThresholdDays: soonThresholdDays,
+            day: Calendar.current.startOfDay(for: date)
+        )
+        if let ranked, ranked.inputs == inputs { return ranked.matches }
+        let matches = RecipeMatcher(soonThresholdDays: soonThresholdDays, now: date)
+            .match(recipes: recipes, inventory: active)
+        ranked = (inputs, matches)
+        rankingCount += 1
+        return matches
     }
 
     var expiringItems: [FoodItem] {
