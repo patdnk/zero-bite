@@ -7,17 +7,20 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.mazesys.zerobite.core.model.StorageLocation
 import com.mazesys.zerobite.testing.FakeInventoryRepository
 import com.mazesys.zerobite.testing.FakeRecipes
 import com.mazesys.zerobite.testing.FakeSettings
 import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.sampleFridge
+import com.mazesys.zerobite.ui.text.putBackRes
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
@@ -50,6 +53,33 @@ class ItemDetailScreenTest {
         compose.onNodeWithText("Expires in 2 days").assertIsDisplayed()
         compose.onNodeWithText("9 September 2026").assertExists()
         compose.onNodeWithText("2 pints").assertExists()
+    }
+
+    @Test
+    fun `put back names where the item was stored`() {
+        val context = RuntimeEnvironment.getApplication()
+        assertEquals("Put it back in the fridge", context.getString(StorageLocation.FRIDGE.putBackRes))
+        assertEquals("Put it back in the freezer", context.getString(StorageLocation.FREEZER.putBackRes))
+        assertEquals("Put it back in the cupboard", context.getString(StorageLocation.PANTRY.putBackRes))
+    }
+
+    @Test
+    @Config(qualifiers = "pl-w411dp-h891dp-xxhdpi")
+    fun `put back names where the item was stored in Polish`() {
+        val context = RuntimeEnvironment.getApplication()
+        assertEquals("Odłóż z powrotem do lodówki", context.getString(StorageLocation.FRIDGE.putBackRes))
+        assertEquals("Odłóż z powrotem do zamrażarki", context.getString(StorageLocation.FREEZER.putBackRes))
+        assertEquals("Odłóż z powrotem do szafki", context.getString(StorageLocation.PANTRY.putBackRes))
+    }
+
+    @Test
+    fun `a frozen item goes back in the freezer`() {
+        val frozen = inventory.current.first().copy(storage = StorageLocation.FREEZER)
+        runBlocking { inventory.update(frozen) }
+        val vm = ItemDetailViewModel(frozen.id, inventory, FakeSettings(), FakeRecipes(), TestClock.fixed(), onEdit = {}, onShowRecipe = {}, onDeleted = {})
+        compose.setContent { ZeroBiteTheme { ItemDetailScreen(vm, onBack = {}) } }
+        compose.onNodeWithText("Mark as used up").performClick()
+        compose.onNodeWithText("Put it back in the freezer").assertExists()
     }
 
     @Test

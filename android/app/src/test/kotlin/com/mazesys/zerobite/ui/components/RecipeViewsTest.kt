@@ -103,7 +103,7 @@ class RecipeViewsTest {
                 }
             }
         }
-        compose.onNodeWithContentDescription("67 percent of ingredients in your fridge").assertExists()
+        compose.onNodeWithContentDescription("You have 67 percent of the ingredients").assertExists()
         compose.onNodeWithText("Eggs").assertExists()
         compose.onNodeWithText("10 min · Ready to cook").assertExists()
         compose.onAllNodesWithText("Omelette")[0].performClick() // featured card (the row shows the title too)

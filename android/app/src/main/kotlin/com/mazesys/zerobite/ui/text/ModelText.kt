@@ -47,6 +47,15 @@ val StorageLocation.labelRes: Int
         StorageLocation.PANTRY -> R.string.storage_pantry
     }
 
+/** Button that returns a used-up item to where it was stored. */
+@get:StringRes
+val StorageLocation.putBackRes: Int
+    get() = when (this) {
+        StorageLocation.FRIDGE -> R.string.detail_put_back_fridge
+        StorageLocation.FREEZER -> R.string.detail_put_back_freezer
+        StorageLocation.PANTRY -> R.string.detail_put_back_pantry
+    }
+
 /** Section headings on the Fridge: "Expired", "Expires today", "Expiring soon", "Fresh". */
 @get:StringRes
 val ExpiryStatus.titleRes: Int

@@ -163,7 +163,7 @@ final class SettingsViewModel {
     func deleteEverything() {
         coordinator.confirm(
             title: String(localized: "Delete everything?"),
-            message: String(localized: "This removes every item from your fridge. It can't be undone."),
+            message: String(localized: "This removes every item from My food. It can't be undone."),
             actionTitle: String(localized: "Delete all")
         ) { [store] in
             store.deleteAll()

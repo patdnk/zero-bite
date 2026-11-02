@@ -164,9 +164,9 @@ private struct OnboardingPage: View {
         case .scan:
             String(localized: "Point the camera at a best-before or use-by date. A barcode fills in the product name. Everything is read on your phone.")
         case .remind:
-            String(localized: "Your fridge is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze.")
+            String(localized: "Your food is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze.")
         case .cook:
-            String(localized: "Recipes are ranked by what's already in your fridge, with food that's about to expire counted first.")
+            String(localized: "Recipes are ranked by what you already have, with food that's about to expire counted first.")
         case .reminders:
             isDenied
                 ? String(localized: "You can turn them on any time in Settings.")

@@ -70,7 +70,7 @@ class SettingsScreenTest {
     @Test
     fun `sections from iOS are all there`() {
         show()
-        for (text in listOf("Food safety", "Your allergies", "“Expiring soon” means within 3 days", "In your fridge", "How Zero Bite works")) {
+        for (text in listOf("Food safety", "Your allergies", "“Expiring soon” means within 3 days", "In My food", "How Zero Bite works")) {
             compose.onNodeWithText(text).performScrollTo().assertExists()
         }
     }

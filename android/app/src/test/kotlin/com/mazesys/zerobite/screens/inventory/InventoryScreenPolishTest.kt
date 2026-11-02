@@ -36,7 +36,7 @@ class InventoryScreenPolishTest {
     val compose = createComposeRule()
 
     @Test
-    fun `the fridge reads in polish`() {
+    fun `my food reads in polish`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val app = AppCoordinator { TestClock.today }
         val vm = InventoryViewModel(
@@ -45,10 +45,10 @@ class InventoryScreenPolishTest {
         )
         compose.setContent { ZeroBiteTheme { InventoryScreen(vm) } }
 
-        compose.onNodeWithText("Twoja lodówka jest pusta").assertIsDisplayed()
+        compose.onNodeWithText("Nie ma tu jeszcze produktów").assertIsDisplayed()
         compose.onNodeWithText("Wypróbuj na przykładowych produktach").performClick()
 
-        compose.onNode(hasText("Lodówka") and isHeading()).assertIsDisplayed()
+        compose.onNode(hasText("Moje produkty") and isHeading()).assertIsDisplayed()
         compose.onNodeWithText("pon. 7 wrz").assertIsDisplayed()
         // The sample yogurt went off yesterday and leads the "Use first" card.
         compose.onNodeWithText("Zużyj najpierw").assertIsDisplayed()

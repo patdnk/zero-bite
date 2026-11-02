@@ -28,7 +28,7 @@ struct RecipeDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: Radius.card))
 
                 VStack(alignment: .leading, spacing: Spacing.sm) {
-                    DetailTitle(overline: String(localized: "\(match.matchPercent)% in your fridge"), title: recipe.title, overlineTint: match.accent)
+                    DetailTitle(overline: String(localized: "You have \(match.matchPercent)% of the ingredients"), title: recipe.title, overlineTint: match.accent)
                     Text(recipe.summary)
                         .font(.app(.body))
                         .foregroundStyle(Constants.TextSecondary)
@@ -80,7 +80,7 @@ struct RecipeDetailView: View {
                     }
                 }
 
-                PrimaryButton(String(localized: "I cooked this — update my fridge"), systemImage: "checkmark.seal", isEnabled: viewModel.canMarkCooked) {
+                PrimaryButton(String(localized: "I cooked this — update My food"), systemImage: "checkmark.seal", isEnabled: viewModel.canMarkCooked) {
                     viewModel.cooked()
                 }
                 .accessibilityIdentifier("recipe.cooked")
@@ -176,7 +176,7 @@ struct IngredientRow: View {
         } else if ingredient.optional {
             Text("Optional — skip it").foregroundStyle(Constants.TextSecondary)
         } else {
-            Text("Not in your fridge").foregroundStyle(Constants.TextSecondary)
+            Text("You don't have this").foregroundStyle(Constants.TextSecondary)
         }
     }
 }

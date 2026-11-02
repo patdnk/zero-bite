@@ -211,7 +211,7 @@ struct FoodAlertsViewModelTests {
 
         // The sample fridge has semi-skimmed milk, so the milk recall is "for you".
         #expect(viewModel.rows.map(\.alert.id) == ["FSA-PRIN-PREVIEW"])
-        #expect(viewModel.rows.first?.highlight == "In your fridge: Semi-skimmed milk")
+        #expect(viewModel.rows.first?.highlight == "You have: Semi-skimmed milk")
 
         dependencies.settings.allergenProfile = [.milk]
         #expect(viewModel.rows.map(\.alert.id) == ["FSA-PRIN-PREVIEW", "FSA-AA-PREVIEW"])

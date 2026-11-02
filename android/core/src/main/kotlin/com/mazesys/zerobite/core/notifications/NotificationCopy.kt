@@ -23,7 +23,7 @@ interface NotificationCopy {
             override fun todayTitle(name: String) = "$name expires today"
             override val todayBody = "Use it today or freeze it."
             override fun expiredTitle(name: String) = "$name has expired"
-            override val expiredBody = "Check it and update your fridge."
+            override val expiredBody = "Check it and update your list."
         }
     }
 }

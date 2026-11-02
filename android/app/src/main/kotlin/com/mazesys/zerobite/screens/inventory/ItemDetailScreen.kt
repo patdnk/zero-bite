@@ -42,6 +42,7 @@ import com.mazesys.zerobite.core.model.FoodItem
 import com.mazesys.zerobite.ui.format.appLocale
 import com.mazesys.zerobite.ui.text.expiryText
 import com.mazesys.zerobite.ui.text.labelRes
+import com.mazesys.zerobite.ui.text.putBackRes
 import com.mazesys.zerobite.ui.text.quantityAndStorage
 import com.mazesys.zerobite.ui.text.quantityLabel
 import com.mazesys.zerobite.ui.text.titleRes
@@ -145,7 +146,7 @@ private fun DetailContent(item: FoodItem, ui: ItemDetailUiState, viewModel: Item
         if (ui.state == DetailState.ACTIVE) RecipesUsing(item, ui, viewModel)
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
             if (ui.state == DetailState.USED) {
-                AppButton(stringResource(R.string.detail_put_back), viewModel::restore, kind = ButtonKind.TONAL, icon = Icons.AutoMirrored.Rounded.Undo)
+                AppButton(stringResource(item.storage.putBackRes), viewModel::restore, kind = ButtonKind.TONAL, icon = Icons.AutoMirrored.Rounded.Undo)
             } else {
                 AppButton(stringResource(R.string.detail_mark_used), viewModel::markUsed, icon = Icons.Rounded.Check)
                 AppButton(stringResource(R.string.action_edit), viewModel::edit, kind = ButtonKind.TONAL, icon = Icons.Rounded.Edit)

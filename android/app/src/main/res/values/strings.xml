@@ -26,7 +26,7 @@
     <string name="action_clear_search">Clear search</string>
 
     <!-- Tabs -->
-    <string name="tab_fridge">Fridge</string>
+    <string name="tab_fridge">My food</string>
     <string name="tab_recipes">Recipes</string>
     <string name="tab_settings">Settings</string>
 
@@ -124,9 +124,9 @@
     <string name="recall_flag">Recall?</string>
 
     <!-- Fridge -->
-    <string name="fridge_title">Fridge</string>
+    <string name="fridge_title">My food</string>
     <string name="fridge_add_food">Add food</string>
-    <string name="fridge_empty_title">Your fridge is empty</string>
+    <string name="fridge_empty_title">No food here yet</string>
     <string name="fridge_empty_message">Scan a label or add something by hand. We\'ll remind you before it goes off and suggest what to cook.</string>
     <string name="fridge_try_sample">Try it with sample food</string>
     <string name="fridge_search_placeholder">Search your food</string>
@@ -149,7 +149,7 @@
 
     <!-- Item detail -->
     <string name="detail_removed_title">Item removed</string>
-    <string name="detail_removed_message">This item is no longer in your fridge.</string>
+    <string name="detail_removed_message">This item is no longer in My food.</string>
     <string name="detail_delete_title">Delete this item?</string>
     <string name="detail_details">Details</string>
     <string name="detail_stored_in">Stored in</string>
@@ -158,7 +158,9 @@
     <string name="detail_added">Added</string>
     <string name="detail_barcode">Barcode</string>
     <string name="detail_notes">Notes</string>
-    <string name="detail_put_back">Put it back in the fridge</string>
+    <string name="detail_put_back_fridge">Put it back in the fridge</string>
+    <string name="detail_put_back_freezer">Put it back in the freezer</string>
+    <string name="detail_put_back_pantry">Put it back in the cupboard</string>
     <string name="detail_mark_used">Mark as used up</string>
     <string name="detail_used_up">Used up</string>
     <string name="detail_no_recipes">No recipe in the catalogue uses this yet.</string>
@@ -168,9 +170,9 @@
     <!-- Item form -->
     <string name="form_title_new">New item</string>
     <string name="form_title_edit">Edit item</string>
-    <string name="form_overline_add">Add to your fridge</string>
+    <string name="form_overline_add">Add to My food</string>
     <string name="form_overline_edit">Edit</string>
-    <string name="form_save_add">Add to fridge</string>
+    <string name="form_save_add">Add item</string>
     <string name="form_save_edit">Save changes</string>
     <string name="form_missing">This item no longer exists.</string>
     <string name="form_name">Name</string>
@@ -212,20 +214,20 @@
     <string name="settings_at">At</string>
     <string name="settings_send_test">Send a test notification</string>
     <string name="settings_food_safety">Food safety</string>
-    <string name="settings_food_safety_footer">Checks the Food Standards Agency for UK recalls and tells you if something in your fridge might be affected.</string>
+    <string name="settings_food_safety_footer">Checks the Food Standards Agency for UK recalls and tells you if any of your food might be affected.</string>
     <string name="settings_check_recalls">Check UK food recalls</string>
     <string name="settings_food_alerts">Food alerts</string>
     <string name="settings_next_build">Arrives in the next build</string>
     <string name="settings_your_allergies">Your allergies</string>
     <string name="settings_allergies_footer">Allergy alerts for these show under Food alerts → For you.</string>
-    <string name="settings_fridge">Fridge</string>
+    <string name="settings_fridge">My food</string>
     <string name="settings_fridge_footer">Recipes that use food inside this window are ranked higher.</string>
     <plurals name="settings_soon_threshold">
         <item quantity="one">“Expiring soon” means within %d days</item>
         <item quantity="other">“Expiring soon” means within %d days</item>
     </plurals>
     <string name="settings_data">Data</string>
-    <string name="settings_in_your_fridge">In your fridge</string>
+    <string name="settings_in_your_fridge">In My food</string>
     <string name="settings_used_up">Used up</string>
     <string name="settings_add_sample">Add sample food</string>
     <string name="settings_clear_history">Clear used-up history</string>
@@ -244,7 +246,7 @@
     </plurals>
     <string name="alert_clear_history_action">Clear</string>
     <string name="alert_delete_everything_title">Delete everything?</string>
-    <string name="alert_delete_everything_message">This removes every item from your fridge. It can\'t be undone.</string>
+    <string name="alert_delete_everything_message">This removes every item from My food. It can\'t be undone.</string>
     <string name="alert_delete_everything_action">Delete all</string>
 
     <!-- Allergens -->
@@ -279,8 +281,8 @@
     <string name="welcome_title_reminders_denied">Reminders are off.</string>
     <string name="welcome_message_welcome">Keep track of what\'s in your fridge, freezer and cupboard, and use it up before the date.</string>
     <string name="welcome_message_scan">Point the camera at a best-before or use-by date. A barcode fills in the product name. Everything is read on your phone.</string>
-    <string name="welcome_message_remind">Your fridge is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze.</string>
-    <string name="welcome_message_cook">Recipes are ranked by what\'s already in your fridge, with food that\'s about to expire counted first.</string>
+    <string name="welcome_message_remind">Your food is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze.</string>
+    <string name="welcome_message_cook">Recipes are ranked by what you already have, with food that\'s about to expire counted first.</string>
     <string name="welcome_message_reminders">We\'ll remind you a few days before the date, on the day, and if it slips past. You choose when.</string>
     <string name="welcome_message_reminders_denied">You can turn them on any time in Settings.</string>
     <!-- Welcome illustrations (mock app screens) -->
@@ -315,7 +317,7 @@
 
     <!-- Recipes -->
     <string name="recipes_title">Recipes</string>
-    <string name="recipes_overline">From your fridge</string>
+    <string name="recipes_overline">From what you have</string>
     <string name="recipes_use_these_first">Use these first</string>
     <string name="recipes_search_placeholder">Search recipes or ingredients</string>
     <string name="recipes_scope_ready">Ready</string>
@@ -332,7 +334,7 @@
     <string name="recipes_empty_nearly_title">No near-misses</string>
     <string name="recipes_empty_all_title">No recipes match</string>
     <string name="recipes_empty_search">Try a different search.</string>
-    <string name="recipes_empty_ready_message">Add a few more things to your fridge, or check the “Nearly” tab for recipes that need one more ingredient.</string>
+    <string name="recipes_empty_ready_message">Add a few more items, or check the “Nearly” tab for recipes that need one more ingredient.</string>
     <string name="recipes_empty_nearly_message">Everything is either ready to cook or needs more than a couple of ingredients.</string>
     <string name="recipes_empty_all_message">The recipe catalogue is empty.</string>
     <string name="recipe_ready_to_cook">Ready to cook</string>
@@ -344,13 +346,13 @@
     <string name="recipe_serves">serves %d</string>
     <string name="recipe_uses_expiring">uses %d expiring</string>
     <string name="recipe_match_percent">%d%%</string>
-    <string name="recipe_match_percent_description">%d percent of ingredients in your fridge</string>
-    <string name="recipe_card_meta">%1$d min · %2$d%% in fridge</string>
+    <string name="recipe_match_percent_description">You have %d percent of the ingredients</string>
+    <string name="recipe_card_meta">%1$d min · %2$d%% of ingredients</string>
     <!-- %2$s: "Ready to cook" or "Missing …" -->
     <string name="recipe_row_meta">%1$d min · %2$s</string>
     <string name="recipe_not_found_title">Recipe not found</string>
     <string name="recipe_not_found_message">It may have been removed from the catalogue.</string>
-    <string name="recipe_percent_in_fridge">%d%% in your fridge</string>
+    <string name="recipe_percent_in_fridge">You have %d%% of the ingredients</string>
     <string name="recipe_stat_minutes">min</string>
     <!-- Follows a number: "2 servings" -->
     <plurals name="recipe_stat_servings">
@@ -361,7 +363,7 @@
     <string name="recipe_stat_expiring">expiring</string>
     <string name="recipe_ingredients">Ingredients</string>
     <string name="recipe_method">Method</string>
-    <string name="recipe_cooked_button">I cooked this — update my fridge</string>
+    <string name="recipe_cooked_button">I cooked this — update My food</string>
     <string name="recipe_have_everything">You have everything you need.</string>
     <!-- %s: missing ingredient names, comma separated -->
     <string name="recipe_missing_sentence">Missing %s.</string>
@@ -369,11 +371,11 @@
     <string name="recipe_you_have">You have %1$s · %2$s</string>
     <string name="recipe_store_cupboard">Store cupboard</string>
     <string name="recipe_optional">Optional — skip it</string>
-    <string name="recipe_not_in_fridge">Not in your fridge</string>
+    <string name="recipe_not_in_fridge">You don\'t have this</string>
     <string name="cooked_title">Nice one! What did you use up?</string>
     <string name="cooked_overline">Cooked</string>
-    <string name="cooked_footer">Ticked items are marked as used. Anything unticked stays in your fridge — edit its quantity if you only used some.</string>
-    <string name="cooked_update_fridge">Update fridge</string>
+    <string name="cooked_footer">Ticked items are marked as used. Anything unticked stays in My food — edit its quantity if you only used some.</string>
+    <string name="cooked_update_fridge">Update My food</string>
 
     <!-- Notifications -->
     <string name="notification_channel_expiry_name">Expiry reminders</string>
@@ -390,7 +392,7 @@
     <string name="reminder_today_title">%1$s expires today</string>
     <string name="reminder_today_body">Use it today or freeze it.</string>
     <string name="reminder_expired_title">%1$s has expired</string>
-    <string name="reminder_expired_body">Check it and update your fridge.</string>
+    <string name="reminder_expired_body">Check it and update your list.</string>
 
     <!-- Sample fridge ("Try it with sample food") -->
     <string name="sample_greek_yogurt">Greek yogurt</string>

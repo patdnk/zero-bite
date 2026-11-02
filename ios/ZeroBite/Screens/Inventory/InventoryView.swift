@@ -17,13 +17,13 @@ struct InventoryView: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
-                        ScreenHeader(overline: viewModel.headerDate, title: String(localized: "Fridge"), count: viewModel.isEmpty ? nil : viewModel.items.count) {
+                        ScreenHeader(overline: viewModel.headerDate, title: String(localized: "My food"), count: viewModel.isEmpty ? nil : viewModel.items.count) {
                             addMenu
                         }
 
                         if viewModel.isEmpty {
                             EmptyStateView(
-                                title: String(localized: "Your fridge is empty"),
+                                title: String(localized: "No food here yet"),
                                 message: String(localized: "Scan a label or add something by hand. We'll remind you before it goes off and suggest what to cook."),
                                 systemImage: "refrigerator",
                                 primaryTitle: String(localized: "Scan a label"),

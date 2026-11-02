@@ -83,7 +83,7 @@ struct FeaturedRecipeCard: View {
                     Text(verbatim: "\(match.matchPercent)%")
                         .font(.app(.headline, weight: .semibold))
                         .foregroundStyle(match.accent)
-                        .accessibilityLabel("\(match.matchPercent) percent of ingredients in your fridge")
+                        .accessibilityLabel("You have \(match.matchPercent) percent of the ingredients")
                 }
                 Text(metaText)
                     .font(.app(.caption))
@@ -140,7 +140,7 @@ struct RecipeCard: View {
                 .foregroundStyle(match.canMake ? Constants.StatusFresh : Constants.TextSecondary)
                 .lineLimit(1)
                 .padding(.top, 2)
-            Text("\(match.recipe.prepMinutes) min · \(match.matchPercent)% in fridge")
+            Text("\(match.recipe.prepMinutes) min · \(match.matchPercent)% of ingredients")
                 .font(.app(.caption2))
                 .foregroundStyle(Constants.TextMuted)
                 .padding(.top, 2)

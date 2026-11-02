@@ -39,7 +39,7 @@ struct NotificationCopy: Sendable {
     }
 
     var expiredBody: String {
-        String(localized: "Check it and update your fridge.", table: "Notifications", bundle: bundle, locale: locale)
+        String(localized: "Check it and update your list.", table: "Notifications", bundle: bundle, locale: locale)
     }
 
     // MARK: - Recall notices

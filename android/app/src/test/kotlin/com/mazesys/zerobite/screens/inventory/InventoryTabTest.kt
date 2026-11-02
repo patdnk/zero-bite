@@ -42,7 +42,7 @@ class InventoryTabTest {
         compose.onNodeWithText("Spinach").performClick()
         compose.onNodeWithText("Details").assertIsDisplayed()
         compose.onNodeWithContentDescription("Back").performClick()
-        compose.onNode(hasText("Fridge") and isHeading()).assertIsDisplayed()
+        compose.onNode(hasText("My food") and isHeading()).assertIsDisplayed()
         assertEquals(1, app.inventory.backStack.size)
     }
 }

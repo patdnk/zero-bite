@@ -222,7 +222,7 @@ struct PolishNotificationTests {
         #expect(copy.todayTitle(name: "Milk") == "Milk expires today")
         #expect(copy.todayBody == "Use it today or freeze it.")
         #expect(copy.expiredTitle(name: "Milk") == "Milk has expired")
-        #expect(copy.expiredBody == "Check it and update your fridge.")
+        #expect(copy.expiredBody == "Check it and update your list.")
     }
 
     @Test func polishRecallAndTestNotificationCopy() {

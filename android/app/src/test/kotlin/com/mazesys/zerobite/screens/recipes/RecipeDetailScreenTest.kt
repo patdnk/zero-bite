@@ -61,7 +61,7 @@ class RecipeDetailScreenTest {
     fun `missing ingredients are listed`() {
         show("stirfry")
         compose.onNodeWithText("Missing bell pepper.").assertExists()
-        compose.onNodeWithText("Not in your fridge").assertExists()
+        compose.onNodeWithText("You don't have this").assertExists()
     }
 
     @Test

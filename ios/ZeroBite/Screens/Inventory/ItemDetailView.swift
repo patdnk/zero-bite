@@ -14,7 +14,7 @@ struct ItemDetailView: View {
             if let item = viewModel.item {
                 content(for: item)
             } else {
-                EmptyStateView(title: String(localized: "Item removed"), message: String(localized: "This item is no longer in your fridge."), systemImage: "trash")
+                EmptyStateView(title: String(localized: "Item removed"), message: String(localized: "This item is no longer in My food."), systemImage: "trash")
                     .padding(Spacing.gutter)
             }
         }
@@ -135,8 +135,8 @@ struct ItemDetailView: View {
     @ViewBuilder
     private var actions: some View {
         VStack(spacing: Spacing.sm) {
-            if viewModel.state == .used {
-                PrimaryButton(String(localized: "Put it back in the fridge"), systemImage: "arrow.uturn.backward", kind: .tonal) {
+            if viewModel.state == .used, let item = viewModel.item {
+                PrimaryButton(item.storage.putBackTitle, systemImage: "arrow.uturn.backward", kind: .tonal) {
                     viewModel.restore()
                 }
             } else {

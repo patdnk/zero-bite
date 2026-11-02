@@ -140,18 +140,18 @@
         }
       }
     },
-    "Check it and update your fridge." : {
+    "Check it and update your list." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Check it and update your fridge."
+            "value" : "Check it and update your list."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sprawdź produkt i zaktualizuj lodówkę."
+            "value" : "Sprawdź produkt i zaktualizuj listę."
           }
         }
       }

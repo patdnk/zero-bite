@@ -80,4 +80,17 @@ struct LocalizationTests {
         #expect(daysLeft(2) == "days")
         #expect(CountUnit.unit(in: String(localized: "\(1) days over", bundle: en, locale: enLocale), count: 1) == "day over")
     }
+
+    @Test func myFoodTabInPolish() {
+        #expect(String(localized: "My food", bundle: pl, locale: plLocale) == "Moje produkty")
+        #expect(String(localized: "My food", bundle: en, locale: enLocale) == "My food")
+        // The storage place keeps its own name.
+        #expect(String(localized: "Fridge", bundle: pl, locale: plLocale) == "Lodówka")
+    }
+
+    @Test func putBackNamesWhereTheItemWasStored() {
+        #expect(Set(StorageLocation.allCases.map(\.putBackTitle)).count == StorageLocation.allCases.count)
+        #expect(String(localized: "Put it back in the freezer", bundle: pl, locale: plLocale) == "Odłóż z powrotem do zamrażarki")
+        #expect(String(localized: "Put it back in the cupboard", bundle: pl, locale: plLocale) == "Odłóż z powrotem do szafki")
+    }
 }

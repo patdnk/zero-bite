@@ -17,7 +17,7 @@ struct RecipesView: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
-                        ScreenHeader(overline: String(localized: "From your fridge"), title: String(localized: "Recipes"))
+                        ScreenHeader(overline: String(localized: "From what you have"), title: String(localized: "Recipes"))
 
                         if viewModel.showsExpiringStrip {
                             VStack(alignment: .leading, spacing: Spacing.sm) {

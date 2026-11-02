@@ -15,7 +15,7 @@ struct CookedView: View {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
                         DetailTitle(overline: viewModel.recipe?.title ?? String(localized: "Cooked"), title: String(localized: "Nice one! What did you use up?"))
 
-                        CardSection(footer: String(localized: "Ticked items are marked as used. Anything unticked stays in your fridge — edit its quantity if you only used some.")) {
+                        CardSection(footer: String(localized: "Ticked items are marked as used. Anything unticked stays in My food — edit its quantity if you only used some.")) {
                             ForEach(viewModel.usableItems) { item in
                                 let isSelected = viewModel.isSelected(item)
                                 Button { viewModel.toggle(item) } label: {
@@ -42,7 +42,7 @@ struct CookedView: View {
                     .padding(.bottom, Spacing.xl)
                 }
 
-                PrimaryButton(viewModel.selectedCount == 0 ? String(localized: "Done") : String(localized: "Update fridge")) { viewModel.confirm() }
+                PrimaryButton(viewModel.selectedCount == 0 ? String(localized: "Done") : String(localized: "Update My food")) { viewModel.confirm() }
                     .accessibilityIdentifier("cooked.confirm")
                     .padding(.horizontal, Spacing.gutter)
                     .padding(.vertical, Spacing.sm)

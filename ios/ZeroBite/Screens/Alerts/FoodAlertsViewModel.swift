@@ -62,7 +62,7 @@ final class FoodAlertsViewModel {
         let allergens = settings.allergenProfile
 
         return recalls.alerts.compactMap { alert in
-            let fridge = matchedNames[alert.id].map { String(localized: "In your fridge: \($0.joined(separator: ", "))") }
+            let fridge = matchedNames[alert.id].map { String(localized: "You have: \($0.joined(separator: ", "))") }
             let concerns = alert.concerns(allergens)
             let allergy = concerns.isEmpty ? nil : String(localized: "Contains: \(concerns.map(\.label).joined(separator: ", "))")
             let highlight = fridge ?? allergy
@@ -88,10 +88,10 @@ final class FoodAlertsViewModel {
 
     var emptyMessage: String {
         if filter == .forYou && !hasAllergies {
-            return String(localized: "No recall matches anything in your fridge. Add your allergies in Settings to see allergy alerts here too.")
+            return String(localized: "No recall matches any of your food. Add your allergies in Settings to see allergy alerts here too.")
         }
         if filter == .forYou {
-            return String(localized: "No recall matches anything in your fridge, and there are no allergy alerts for your allergies.")
+            return String(localized: "No recall matches any of your food, and there are no allergy alerts for your allergies.")
         }
         return String(localized: "Pull down to check the Food Standards Agency again.")
     }

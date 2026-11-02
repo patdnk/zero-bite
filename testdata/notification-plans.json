@@ -9,7 +9,7 @@
       "expected": [
         { "itemId": "milk", "suffix": "soon", "title": "Milk expires in 3 days", "body": "Plan a meal around it — Zero Bite has recipe ideas.", "fireAt": "2026-09-09T09:30" },
         { "itemId": "milk", "suffix": "today", "title": "Milk expires today", "body": "Use it today or freeze it.", "fireAt": "2026-09-12T09:30" },
-        { "itemId": "milk", "suffix": "expired", "title": "Milk has expired", "body": "Check it and update your fridge.", "fireAt": "2026-09-13T09:30" }
+        { "itemId": "milk", "suffix": "expired", "title": "Milk has expired", "body": "Check it and update your list.", "fireAt": "2026-09-13T09:30" }
       ]
     },
     {
@@ -18,7 +18,7 @@
       "items": [{ "id": "yogurt", "name": "Yogurt", "expiresOn": "2026-09-07" }],
       "expected": [
         { "itemId": "yogurt", "suffix": "today", "title": "Yogurt expires today", "body": "Use it today or freeze it.", "fireAt": "2026-09-07T09:30" },
-        { "itemId": "yogurt", "suffix": "expired", "title": "Yogurt has expired", "body": "Check it and update your fridge.", "fireAt": "2026-09-08T09:30" }
+        { "itemId": "yogurt", "suffix": "expired", "title": "Yogurt has expired", "body": "Check it and update your list.", "fireAt": "2026-09-08T09:30" }
       ]
     },
     {
@@ -34,7 +34,7 @@
       "expected": [
         { "itemId": "bread", "suffix": "soon", "title": "Bread expires tomorrow", "body": "Plan a meal around it — Zero Bite has recipe ideas.", "fireAt": "2026-09-11T09:00" },
         { "itemId": "bread", "suffix": "today", "title": "Bread expires today", "body": "Use it today or freeze it.", "fireAt": "2026-09-12T09:00" },
-        { "itemId": "bread", "suffix": "expired", "title": "Bread has expired", "body": "Check it and update your fridge.", "fireAt": "2026-09-13T09:00" }
+        { "itemId": "bread", "suffix": "expired", "title": "Bread has expired", "body": "Check it and update your list.", "fireAt": "2026-09-13T09:00" }
       ]
     },
     {
@@ -53,10 +53,10 @@
       "expected": [
         { "itemId": "ham", "suffix": "soon", "title": "Ham expires in 3 days", "body": "Plan a meal around it — Zero Bite has recipe ideas.", "fireAt": "2026-09-07T09:30" },
         { "itemId": "ham", "suffix": "today", "title": "Ham expires today", "body": "Use it today or freeze it.", "fireAt": "2026-09-10T09:30" },
-        { "itemId": "ham", "suffix": "expired", "title": "Ham has expired", "body": "Check it and update your fridge.", "fireAt": "2026-09-11T09:30" },
+        { "itemId": "ham", "suffix": "expired", "title": "Ham has expired", "body": "Check it and update your list.", "fireAt": "2026-09-11T09:30" },
         { "itemId": "cheese", "suffix": "soon", "title": "Cheese expires in 3 days", "body": "Plan a meal around it — Zero Bite has recipe ideas.", "fireAt": "2026-09-17T09:30" },
         { "itemId": "cheese", "suffix": "today", "title": "Cheese expires today", "body": "Use it today or freeze it.", "fireAt": "2026-09-20T09:30" },
-        { "itemId": "cheese", "suffix": "expired", "title": "Cheese has expired", "body": "Check it and update your fridge.", "fireAt": "2026-09-21T09:30" }
+        { "itemId": "cheese", "suffix": "expired", "title": "Cheese has expired", "body": "Check it and update your list.", "fireAt": "2026-09-21T09:30" }
       ]
     }
   ]

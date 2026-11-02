@@ -51,7 +51,7 @@ PL_COPY = {
     "today": "{name}: termin mija dziś",
     "today_body": "Zużyj to dziś albo zamroź.",
     "expired": "{name}: termin minął",
-    "expired_body": "Sprawdź produkt i zaktualizuj lodówkę.",
+    "expired_body": "Sprawdź produkt i zaktualizuj listę.",
 }
 
 # Alias overlaps that are intended. (alias owner, ingredient that also matches it).

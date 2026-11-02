@@ -63,7 +63,7 @@ class InventoryScreenTest {
     @Test
     fun `empty fridge offers sample food`() {
         show(FakeInventoryRepository())
-        compose.onNodeWithText("Your fridge is empty").assertIsDisplayed()
+        compose.onNodeWithText("No food here yet").assertIsDisplayed()
         compose.onNodeWithText("Try it with sample food").performClick()
         compose.onNodeWithText("Greek yogurt").assertIsDisplayed()
     }
@@ -88,7 +88,7 @@ class InventoryScreenTest {
     @Test
     fun `large font scale keeps names visible`() {
         show(FakeInventoryRepository(sampleFridge()), fontScale = 2f)
-        compose.onNode(hasText("Fridge") and isHeading()).assertIsDisplayed()
+        compose.onNode(hasText("My food") and isHeading()).assertIsDisplayed()
         compose.onNodeWithText("Greek yogurt").assertIsDisplayed()
         compose.onRoot().captureRoboImage("src/test/screenshots/fridge_font2.png")
     }

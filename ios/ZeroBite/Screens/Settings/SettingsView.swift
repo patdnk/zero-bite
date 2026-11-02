@@ -48,7 +48,7 @@ struct SettingsView: View {
                         .opacity(viewModel.notificationsEnabled ? 1 : 0.45)
                     }
 
-                    CardSection(String(localized: "Food safety"), footer: String(localized: "Checks the Food Standards Agency for UK recalls and tells you if something in your fridge might be affected.")) {
+                    CardSection(String(localized: "Food safety"), footer: String(localized: "Checks the Food Standards Agency for UK recalls and tells you if any of your food might be affected.")) {
                         Toggle(isOn: $viewModel.recallChecksEnabled) {
                             Text("Check UK food recalls").font(.app(.subheadline, weight: .medium))
                         }
@@ -101,14 +101,14 @@ struct SettingsView: View {
                             .foregroundStyle(Constants.TextSecondary)
                     }
 
-                    CardSection(String(localized: "Fridge"), footer: String(localized: "Recipes that use food inside this window are ranked higher.")) {
+                    CardSection(String(localized: "My food"), footer: String(localized: "Recipes that use food inside this window are ranked higher.")) {
                         Stepper(value: $viewModel.soonThresholdDays, in: 1...14) {
                             Text("“Expiring soon” means within \(viewModel.soonThresholdDays) days").font(.app(.subheadline))
                         }
                     }
 
                     CardSection(String(localized: "Data")) {
-                        InfoRow(String(localized: "In your fridge"), symbol: "refrigerator", value: "\(viewModel.activeItemCount)")
+                        InfoRow(String(localized: "In My food"), symbol: "refrigerator", value: "\(viewModel.activeItemCount)")
                         InfoRow(String(localized: "Used up"), symbol: "checkmark", value: "\(viewModel.usedItemCount)")
                         ActionRow(title: String(localized: "Add sample food"), symbol: "sparkles") { viewModel.loadSampleData() }
                         ActionRow(title: String(localized: "Clear used-up history"), symbol: "clock.arrow.circlepath") { viewModel.clearUsedHistory() }

@@ -414,18 +414,18 @@
         }
       }
     },
-    "%lld min · %lld%% in fridge" : {
+    "%lld min · %lld%% of ingredients" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld min · %lld%% in fridge"
+            "value" : "%lld min · %lld%% of ingredients"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld min · %2$lld%% w lodówce"
+            "value" : "%1$lld min · %2$lld%% składników"
           }
         }
       }
@@ -470,18 +470,18 @@
         }
       }
     },
-    "%lld percent of ingredients in your fridge" : {
+    "You have %lld percent of the ingredients" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld percent of ingredients in your fridge"
+            "value" : "You have %lld percent of the ingredients"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld%% składników masz w lodówce"
+            "value" : "Masz %lld%% składników"
           }
         }
       }
@@ -713,18 +713,18 @@
         }
       }
     },
-    "%lld%% in your fridge" : {
+    "You have %lld%% of the ingredients" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld%% in your fridge"
+            "value" : "You have %lld%% of the ingredients"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld%% w lodówce"
+            "value" : "Masz %lld%% składników"
           }
         }
       }
@@ -867,18 +867,18 @@
         }
       }
     },
-    "Add a few more things to your fridge, or check the “Nearly” tab for recipes that need one more ingredient." : {
+    "Add a few more items, or check the “Nearly” tab for recipes that need one more ingredient." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add a few more things to your fridge, or check the “Nearly” tab for recipes that need one more ingredient."
+            "value" : "Add a few more items, or check the “Nearly” tab for recipes that need one more ingredient."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dodaj do lodówki jeszcze kilka rzeczy albo zajrzyj do zakładki „Prawie” – są tam przepisy, którym brakuje jednego składnika."
+            "value" : "Dodaj jeszcze kilka produktów albo zajrzyj do zakładki „Prawie” – są tam przepisy, którym brakuje jednego składnika."
           }
         }
       }
@@ -931,34 +931,34 @@
         }
       }
     },
-    "Add to fridge" : {
+    "Add item" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add to fridge"
+            "value" : "Add item"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dodaj do lodówki"
+            "value" : "Dodaj produkt"
           }
         }
       }
     },
-    "Add to your fridge" : {
+    "Add to My food" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add to your fridge"
+            "value" : "Add to My food"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Do lodówki"
+            "value" : "Do moich produktów"
           }
         }
       }
@@ -1493,18 +1493,18 @@
         }
       }
     },
-    "Checks the Food Standards Agency for UK recalls and tells you if something in your fridge might be affected." : {
+    "Checks the Food Standards Agency for UK recalls and tells you if any of your food might be affected." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Checks the Food Standards Agency for UK recalls and tells you if something in your fridge might be affected."
+            "value" : "Checks the Food Standards Agency for UK recalls and tells you if any of your food might be affected."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sprawdza komunikaty brytyjskiej FSA o wycofaniach i daje znać, jeśli mogą dotyczyć czegoś w twojej lodówce."
+            "value" : "Sprawdza komunikaty brytyjskiej FSA o wycofaniach i daje znać, jeśli mogą dotyczyć twoich produktów."
           }
         }
       }
@@ -2551,6 +2551,22 @@
         }
       }
     },
+    "My food" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My food"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moje produkty"
+          }
+        }
+      }
+    },
     "From" : {
       "localizations" : {
         "en" : {
@@ -2567,18 +2583,18 @@
         }
       }
     },
-    "From your fridge" : {
+    "From what you have" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "From your fridge"
+            "value" : "From what you have"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Z twojej lodówki"
+            "value" : "Z tego, co masz"
           }
         }
       }
@@ -2767,50 +2783,50 @@
         }
       }
     },
-    "I cooked this — update my fridge" : {
+    "I cooked this — update My food" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I cooked this — update my fridge"
+            "value" : "I cooked this — update My food"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ugotowane – zaktualizuj lodówkę"
+            "value" : "Ugotowane – zaktualizuj produkty"
           }
         }
       }
     },
-    "In your fridge" : {
+    "In My food" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "In your fridge"
+            "value" : "In My food"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W lodówce"
+            "value" : "Produkty"
           }
         }
       }
     },
-    "In your fridge: %@" : {
+    "You have: %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "In your fridge: %@"
+            "value" : "You have: %@"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W lodówce: %@"
+            "value" : "Masz: %@"
           }
         }
       }
@@ -3474,34 +3490,34 @@
         }
       }
     },
-    "No recall matches anything in your fridge, and there are no allergy alerts for your allergies." : {
+    "No recall matches any of your food, and there are no allergy alerts for your allergies." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No recall matches anything in your fridge, and there are no allergy alerts for your allergies."
+            "value" : "No recall matches any of your food, and there are no allergy alerts for your allergies."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Żadne wycofanie nie dotyczy produktów z twojej lodówki i nie ma alertów dla twoich alergii."
+            "value" : "Żadne wycofanie nie dotyczy twoich produktów i nie ma alertów dla twoich alergii."
           }
         }
       }
     },
-    "No recall matches anything in your fridge. Add your allergies in Settings to see allergy alerts here too." : {
+    "No recall matches any of your food. Add your allergies in Settings to see allergy alerts here too." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No recall matches anything in your fridge. Add your allergies in Settings to see allergy alerts here too."
+            "value" : "No recall matches any of your food. Add your allergies in Settings to see allergy alerts here too."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Żadne wycofanie nie dotyczy produktów z twojej lodówki. Dodaj swoje alergie w Ustawieniach, by widzieć tu też alerty alergenowe."
+            "value" : "Żadne wycofanie nie dotyczy twoich produktów. Dodaj swoje alergie w Ustawieniach, by widzieć tu też alerty alergenowe."
           }
         }
       }
@@ -3618,18 +3634,18 @@
         }
       }
     },
-    "Not in your fridge" : {
+    "You don't have this" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not in your fridge"
+            "value" : "You don't have this"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Brak w lodówce"
+            "value" : "Nie masz tego"
           }
         }
       }
@@ -4166,6 +4182,38 @@
         }
       }
     },
+    "Put it back in the freezer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Put it back in the freezer"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odłóż z powrotem do zamrażarki"
+          }
+        }
+      }
+    },
+    "Put it back in the cupboard" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Put it back in the cupboard"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odłóż z powrotem do szafki"
+          }
+        }
+      }
+    },
     "Quantity" : {
       "localizations" : {
         "en" : {
@@ -4326,18 +4374,18 @@
         }
       }
     },
-    "Recipes are ranked by what's already in your fridge, with food that's about to expire counted first." : {
+    "Recipes are ranked by what you already have, with food that's about to expire counted first." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recipes are ranked by what's already in your fridge, with food that's about to expire counted first."
+            "value" : "Recipes are ranked by what you already have, with food that's about to expire counted first."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przepisy są układane według tego, co już masz w lodówce – najwyżej te z produktami, którym kończy się termin."
+            "value" : "Przepisy są układane według tego, co już masz – najwyżej te z produktami, którym kończy się termin."
           }
         }
       }
@@ -5171,18 +5219,18 @@
         }
       }
     },
-    "This item is no longer in your fridge." : {
+    "This item is no longer in My food." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This item is no longer in your fridge."
+            "value" : "This item is no longer in My food."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tego produktu nie ma już w lodówce."
+            "value" : "Tego produktu nie ma już na liście."
           }
         }
       }
@@ -5203,34 +5251,34 @@
         }
       }
     },
-    "This removes every item from your fridge. It can't be undone." : {
+    "This removes every item from My food. It can't be undone." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This removes every item from your fridge. It can't be undone."
+            "value" : "This removes every item from My food. It can't be undone."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usuwa wszystkie produkty z lodówki. Tego nie da się cofnąć."
+            "value" : "Usuwa wszystkie twoje produkty. Tego nie da się cofnąć."
           }
         }
       }
     },
-    "Ticked items are marked as used. Anything unticked stays in your fridge — edit its quantity if you only used some." : {
+    "Ticked items are marked as used. Anything unticked stays in My food — edit its quantity if you only used some." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ticked items are marked as used. Anything unticked stays in your fridge — edit its quantity if you only used some."
+            "value" : "Ticked items are marked as used. Anything unticked stays in My food — edit its quantity if you only used some."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zaznaczone produkty zostaną oznaczone jako zużyte. Niezaznaczone zostają w lodówce – jeśli zużyto tylko część, popraw ich ilość."
+            "value" : "Zaznaczone produkty zostaną oznaczone jako zużyte. Niezaznaczone zostają na liście – jeśli zużyto tylko część, popraw ich ilość."
           }
         }
       }
@@ -5379,18 +5427,18 @@
         }
       }
     },
-    "Update fridge" : {
+    "Update My food" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Update fridge"
+            "value" : "Update My food"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zaktualizuj lodówkę"
+            "value" : "Zaktualizuj produkty"
           }
         }
       }
@@ -5870,34 +5918,34 @@
         }
       }
     },
-    "Your fridge is empty" : {
+    "No food here yet" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your fridge is empty"
+            "value" : "No food here yet"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Twoja lodówka jest pusta"
+            "value" : "Nie ma tu jeszcze produktów"
           }
         }
       }
     },
-    "Your fridge is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze." : {
+    "Your food is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your fridge is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze."
+            "value" : "Your food is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lodówka jest posortowana według pilności. Najpilniejszy produkt jest na górze, z przyciskami Zużyte i Zamroź."
+            "value" : "Produkty są posortowane według pilności. Najpilniejszy jest na górze, z przyciskami Zużyte i Zamroź."
           }
         }
       }

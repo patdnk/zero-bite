@@ -121,7 +121,7 @@ final class RecipesViewModel {
     var emptyMessage: String {
         if !searchText.isEmpty { return String(localized: "Try a different search.") }
         switch scope {
-        case .ready: return String(localized: "Add a few more things to your fridge, or check the “Nearly” tab for recipes that need one more ingredient.")
+        case .ready: return String(localized: "Add a few more items, or check the “Nearly” tab for recipes that need one more ingredient.")
         case .nearly: return String(localized: "Everything is either ready to cook or needs more than a couple of ingredients.")
         case .all: return String(localized: "The recipe catalogue is empty.")
         }

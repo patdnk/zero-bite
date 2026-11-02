@@ -24,7 +24,7 @@
     <string name="action_clear_search">Wyczyść wyszukiwanie</string>
 
     <!-- Tabs -->
-    <string name="tab_fridge">Lodówka</string>
+    <string name="tab_fridge">Moje produkty</string>
     <string name="tab_recipes">Przepisy</string>
     <string name="tab_settings">Ustawienia</string>
 
@@ -135,9 +135,9 @@
     <string name="recall_flag">Wycofanie?</string>
 
     <!-- Fridge -->
-    <string name="fridge_title">Lodówka</string>
+    <string name="fridge_title">Moje produkty</string>
     <string name="fridge_add_food">Dodaj produkt</string>
-    <string name="fridge_empty_title">Twoja lodówka jest pusta</string>
+    <string name="fridge_empty_title">Nie ma tu jeszcze produktów</string>
     <string name="fridge_empty_message">Zeskanuj etykietę albo dodaj coś ręcznie. Przypomnimy ci, zanim się zepsuje, i podpowiemy, co ugotować.</string>
     <string name="fridge_try_sample">Wypróbuj na przykładowych produktach</string>
     <string name="fridge_search_placeholder">Szukaj produktów</string>
@@ -163,7 +163,7 @@
 
     <!-- Item detail -->
     <string name="detail_removed_title">Produkt usunięty</string>
-    <string name="detail_removed_message">Tego produktu nie ma już w lodówce.</string>
+    <string name="detail_removed_message">Tego produktu nie ma już na liście.</string>
     <string name="detail_delete_title">Usunąć ten produkt?</string>
     <string name="detail_details">Szczegóły</string>
     <string name="detail_stored_in">Miejsce</string>
@@ -172,7 +172,9 @@
     <string name="detail_added">Dodano</string>
     <string name="detail_barcode">Kod kreskowy</string>
     <string name="detail_notes">Notatki</string>
-    <string name="detail_put_back">Odłóż z powrotem do lodówki</string>
+    <string name="detail_put_back_fridge">Odłóż z powrotem do lodówki</string>
+    <string name="detail_put_back_freezer">Odłóż z powrotem do zamrażarki</string>
+    <string name="detail_put_back_pantry">Odłóż z powrotem do szafki</string>
     <string name="detail_mark_used">Oznacz jako zużyte</string>
     <string name="detail_used_up">Zużyte</string>
     <string name="detail_no_recipes">Żaden przepis w katalogu jeszcze tego nie używa.</string>
@@ -182,9 +184,9 @@
     <!-- Item form -->
     <string name="form_title_new">Nowy produkt</string>
     <string name="form_title_edit">Edytuj produkt</string>
-    <string name="form_overline_add">Do lodówki</string>
+    <string name="form_overline_add">Do moich produktów</string>
     <string name="form_overline_edit">Edytuj</string>
-    <string name="form_save_add">Dodaj do lodówki</string>
+    <string name="form_save_add">Dodaj produkt</string>
     <string name="form_save_edit">Zapisz zmiany</string>
     <string name="form_missing">Ten produkt już nie istnieje.</string>
     <string name="form_name">Nazwa</string>
@@ -228,13 +230,13 @@
     <string name="settings_at">Godzina</string>
     <string name="settings_send_test">Wyślij powiadomienie testowe</string>
     <string name="settings_food_safety">Bezpieczeństwo żywności</string>
-    <string name="settings_food_safety_footer">Sprawdza komunikaty brytyjskiej Food Standards Agency o wycofanej żywności i daje ci znać, jeśli może to dotyczyć czegoś w twojej lodówce.</string>
+    <string name="settings_food_safety_footer">Sprawdza komunikaty brytyjskiej Food Standards Agency o wycofanej żywności i daje ci znać, jeśli może to dotyczyć twoich produktów.</string>
     <string name="settings_check_recalls">Sprawdzaj wycofania żywności w Wielkiej Brytanii</string>
     <string name="settings_food_alerts">Alerty żywnościowe</string>
     <string name="settings_next_build">Pojawi się w następnej wersji</string>
     <string name="settings_your_allergies">Twoje alergie</string>
     <string name="settings_allergies_footer">Alerty o tych alergenach znajdziesz w sekcji Alerty żywnościowe → Dla ciebie.</string>
-    <string name="settings_fridge">Lodówka</string>
+    <string name="settings_fridge">Moje produkty</string>
     <string name="settings_fridge_footer">Przepisy wykorzystujące jedzenie z tego okresu są wyżej na liście.</string>
     <plurals name="settings_soon_threshold">
         <item quantity="one">„Termin mija wkrótce” – do %d dnia</item>
@@ -243,7 +245,7 @@
         <item quantity="other">„Termin mija wkrótce” – do %d dnia</item>
     </plurals>
     <string name="settings_data">Dane</string>
-    <string name="settings_in_your_fridge">W lodówce</string>
+    <string name="settings_in_your_fridge">Produkty</string>
     <string name="settings_used_up">Zużyte</string>
     <string name="settings_add_sample">Dodaj przykładowe produkty</string>
     <string name="settings_clear_history">Wyczyść historię zużytych</string>
@@ -264,7 +266,7 @@
     </plurals>
     <string name="alert_clear_history_action">Wyczyść</string>
     <string name="alert_delete_everything_title">Usunąć wszystko?</string>
-    <string name="alert_delete_everything_message">Usuwa wszystkie produkty z lodówki. Tego nie da się cofnąć.</string>
+    <string name="alert_delete_everything_message">Usuwa wszystkie twoje produkty. Tego nie da się cofnąć.</string>
     <string name="alert_delete_everything_action">Usuń wszystko</string>
 
     <!-- Allergens -->
@@ -299,8 +301,8 @@
     <string name="welcome_title_reminders_denied">Przypomnienia są wyłączone.</string>
     <string name="welcome_message_welcome">Miej oko na to, co masz w lodówce, zamrażarce i szafce, i zużywaj wszystko przed terminem.</string>
     <string name="welcome_message_scan">Skieruj aparat na datę ważności. Kod kreskowy uzupełni nazwę produktu. Wszystko jest odczytywane na twoim telefonie.</string>
-    <string name="welcome_message_remind">Lodówka jest posortowana według pilności. Najpilniejszy produkt jest na górze, a Zużyte i Zamroź masz pod jednym dotknięciem.</string>
-    <string name="welcome_message_cook">Przepisy są ułożone według tego, co już masz w lodówce – najwyżej te z jedzeniem, któremu kończy się termin.</string>
+    <string name="welcome_message_remind">Produkty są posortowane według pilności. Najpilniejszy jest na górze, a Zużyte i Zamroź masz pod jednym dotknięciem.</string>
+    <string name="welcome_message_cook">Przepisy są ułożone według tego, co już masz – najwyżej te z jedzeniem, któremu kończy się termin.</string>
     <string name="welcome_message_reminders">Przypomnimy ci kilka dni przed terminem, w dniu terminu i wtedy, gdy termin minie. Ty decydujesz, o której.</string>
     <string name="welcome_message_reminders_denied">Możesz je włączyć w każdej chwili w Ustawieniach.</string>
     <!-- Welcome illustrations (mock app screens) -->
@@ -335,7 +337,7 @@
 
     <!-- Recipes -->
     <string name="recipes_title">Przepisy</string>
-    <string name="recipes_overline">Z twojej lodówki</string>
+    <string name="recipes_overline">Z tego, co masz</string>
     <string name="recipes_use_these_first">Zużyj najpierw</string>
     <string name="recipes_search_placeholder">Szukaj przepisów lub składników</string>
     <string name="recipes_scope_ready">Gotowe</string>
@@ -354,7 +356,7 @@
     <string name="recipes_empty_nearly_title">Brak prawie gotowych przepisów</string>
     <string name="recipes_empty_all_title">Żaden przepis nie pasuje</string>
     <string name="recipes_empty_search">Spróbuj wyszukać coś innego.</string>
-    <string name="recipes_empty_ready_message">Dodaj do lodówki jeszcze kilka rzeczy albo zajrzyj do zakładki „Prawie” – są tam przepisy, którym brakuje jednego składnika.</string>
+    <string name="recipes_empty_ready_message">Dodaj jeszcze kilka produktów albo zajrzyj do zakładki „Prawie” – są tam przepisy, którym brakuje jednego składnika.</string>
     <string name="recipes_empty_nearly_message">Każdy przepis jest albo gotowy do ugotowania, albo brakuje mu więcej niż dwóch składników.</string>
     <string name="recipes_empty_all_message">Katalog przepisów jest pusty.</string>
     <string name="recipe_ready_to_cook">Możesz gotować</string>
@@ -364,12 +366,12 @@
     <string name="recipe_serves">dla %d os.</string>
     <string name="recipe_uses_expiring">%d do zużycia</string>
     <string name="recipe_match_percent">%d%%</string>
-    <string name="recipe_match_percent_description">%d procent składników masz w lodówce</string>
-    <string name="recipe_card_meta">%1$d min · %2$d%% w lodówce</string>
+    <string name="recipe_match_percent_description">Masz %d procent składników</string>
+    <string name="recipe_card_meta">%1$d min · %2$d%% składników</string>
     <string name="recipe_row_meta">%1$d min · %2$s</string>
     <string name="recipe_not_found_title">Nie znaleziono przepisu</string>
     <string name="recipe_not_found_message">Mógł zostać usunięty z katalogu.</string>
-    <string name="recipe_percent_in_fridge">%d%% w lodówce</string>
+    <string name="recipe_percent_in_fridge">Masz %d%% składników</string>
     <string name="recipe_stat_minutes">min</string>
     <plurals name="recipe_stat_servings">
         <item quantity="one">porcja</item>
@@ -380,17 +382,17 @@
     <string name="recipe_stat_expiring">do zużycia</string>
     <string name="recipe_ingredients">Składniki</string>
     <string name="recipe_method">Przygotowanie</string>
-    <string name="recipe_cooked_button">Ugotowane – zaktualizuj lodówkę</string>
+    <string name="recipe_cooked_button">Ugotowane – zaktualizuj produkty</string>
     <string name="recipe_have_everything">Masz wszystko, czego potrzebujesz.</string>
     <string name="recipe_missing_sentence">Brakuje: %s.</string>
     <string name="recipe_you_have">Masz: %1$s · %2$s</string>
     <string name="recipe_store_cupboard">Z domowych zapasów</string>
     <string name="recipe_optional">Opcjonalnie – możesz pominąć</string>
-    <string name="recipe_not_in_fridge">Brak w lodówce</string>
+    <string name="recipe_not_in_fridge">Nie masz tego</string>
     <string name="cooked_title">Brawo! Co udało się zużyć?</string>
     <string name="cooked_overline">Ugotowane</string>
-    <string name="cooked_footer">Zaznaczone produkty zostaną oznaczone jako zużyte. Niezaznaczone zostają w lodówce – zmień ich ilość, jeśli zużyto tylko część.</string>
-    <string name="cooked_update_fridge">Zaktualizuj lodówkę</string>
+    <string name="cooked_footer">Zaznaczone produkty zostaną oznaczone jako zużyte. Niezaznaczone zostają na liście – zmień ich ilość, jeśli zużyto tylko część.</string>
+    <string name="cooked_update_fridge">Zaktualizuj produkty</string>
 
     <!-- Notifications -->
     <string name="notification_channel_expiry_name">Przypomnienia o terminach</string>
@@ -408,7 +410,7 @@
     <string name="reminder_today_title">%1$s: termin mija dziś</string>
     <string name="reminder_today_body">Zużyj to dziś albo zamroź.</string>
     <string name="reminder_expired_title">%1$s: termin minął</string>
-    <string name="reminder_expired_body">Sprawdź produkt i zaktualizuj lodówkę.</string>
+    <string name="reminder_expired_body">Sprawdź produkt i zaktualizuj listę.</string>
 
     <!-- Sample fridge -->
     <string name="sample_greek_yogurt">Jogurt grecki</string>

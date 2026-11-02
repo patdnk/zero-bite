@@ -30,7 +30,7 @@ class CookedViewModelTest {
         assertEquals("Omelette", state.recipeTitle)
         assertEquals(listOf("eggs", "butter"), state.usableItems.map { it.id })
         assertEquals(setOf("eggs", "butter"), state.selectedIds)
-        assertEquals("Update fridge", english(state.confirmTitle))
+        assertEquals("Update My food", english(state.confirmTitle))
     }
 
     @Test

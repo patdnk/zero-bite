@@ -45,7 +45,7 @@ final class AppCoordinator {
 
         var title: String {
             switch self {
-            case .fridge: String(localized: "Fridge")
+            case .fridge: String(localized: "My food")
             case .recipes: String(localized: "Recipes")
             case .settings: String(localized: "Settings")
             }

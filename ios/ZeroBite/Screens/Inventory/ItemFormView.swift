@@ -16,7 +16,7 @@ struct ItemFormView: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
-                    DetailTitle(overline: viewModel.isEditing ? String(localized: "Edit") : String(localized: "Add to your fridge"), title: viewModel.title)
+                    DetailTitle(overline: viewModel.isEditing ? String(localized: "Edit") : String(localized: "Add to My food"), title: viewModel.title)
 
                     LabeledInput(
                         label: String(localized: "Name"),
@@ -77,7 +77,7 @@ struct ItemFormView: View {
             }
             .scrollDismissesKeyboard(.interactively)
 
-            PrimaryButton(viewModel.isEditing ? String(localized: "Save changes") : String(localized: "Add to fridge"), isEnabled: viewModel.canSave) {
+            PrimaryButton(viewModel.isEditing ? String(localized: "Save changes") : String(localized: "Add item"), isEnabled: viewModel.canSave) {
                 viewModel.save()
             }
             .accessibilityIdentifier("itemForm.save")

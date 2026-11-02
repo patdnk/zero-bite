@@ -76,6 +76,15 @@ enum StorageLocation: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// Button that returns a used-up item to where it was stored.
+    var putBackTitle: String {
+        switch self {
+        case .fridge: String(localized: "Put it back in the fridge")
+        case .freezer: String(localized: "Put it back in the freezer")
+        case .pantry: String(localized: "Put it back in the cupboard")
+        }
+    }
+
     var symbol: String {
         switch self {
         case .fridge: "refrigerator"

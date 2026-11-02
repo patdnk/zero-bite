@@ -105,10 +105,10 @@ struct SectionHeading: View {
 
 #Preview {
     VStack(alignment: .leading, spacing: 24) {
-        ScreenHeader(overline: "Tue 7 Oct", title: "Fridge", count: 14) {
+        ScreenHeader(overline: "Tue 7 Oct", title: "My food", count: 14) {
             HeaderIconButtonLabel(symbol: "plus")
         }
-        ScreenHeader(overline: "From your fridge", title: "Recipes")
+        ScreenHeader(overline: "From what you have", title: "Recipes")
         SectionHeading(title: "Expired", detail: "6 items", tint: Constants.StatusExpired, symbol: "xmark.octagon.fill")
     }
     .padding()
