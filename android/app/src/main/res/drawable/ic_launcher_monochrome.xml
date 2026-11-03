@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Themed (monochrome) launcher icon, the Android twin of the iOS tinted icon. Geometry mirrors design/BrandMark.svg and ui/brand/BrandMark.kt. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+    <!-- Shrinks the 1024 iOS tile into the 72dp visible area so the mark keeps the iOS proportions. -->
+    <group
+        android:pivotX="512"
+        android:pivotY="512"
+        android:scaleX="0.6667"
+        android:scaleY="0.6667">
+        <!-- Everything except the bite (the circle winds against the square). -->
+        <clip-path android:pathData="M-200,-200H1224V1224H-200Z M710,464a175,175 0,1 0,350 0a175,175 0,1 0,-350 0Z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M136,512a376,376 0,1 1,752 0a376,376 0,1 1,-752 0Z M212,512a300,300 0,1 1,600 0a300,300 0,1 1,-600 0Z" />
+        <path
+            android:fillAlpha="0.42"
+            android:fillColor="#FFFFFF"
+            android:pathData="M212,512a300,300 0,1 1,600 0a300,300 0,1 1,-600 0Z" />
+        <group
+            android:pivotX="512"
+            android:pivotY="512"
+            android:scaleX="0.909"
+            android:scaleY="0.909">
+            <path
+                android:fillColor="#FFFFFF"
+                android:pathData="M372,352h280v84h-280Z M372,588h280v84h-280Z" />
+            <!-- The diagonal runs right through to the outer edge so it fuses with the ring. -->
+            <group>
+                <clip-path android:pathData="M98.36,512a413.64,413.64 0,1 1,827.28 0a413.64,413.64 0,1 1,-827.28 0Z" />
+                <group
+                    android:pivotX="512"
+                    android:pivotY="512"
+                    android:rotation="-40">
+                    <path
+                        android:fillColor="#FFFFFF"
+                        android:pathData="M-100,470h1224v84h-1224Z" />
+                </group>
+            </group>
+        </group>
+    </group>
+</vector>
