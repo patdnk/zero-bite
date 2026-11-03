@@ -244,6 +244,9 @@
         <item quantity="many">„Termin mija wkrótce” – do %d dni</item>
         <item quantity="other">„Termin mija wkrótce” – do %d dnia</item>
     </plurals>
+    <string name="settings_privacy">Prywatność</string>
+    <string name="settings_share_usage">Udostępniaj statystyki i raporty o awariach</string>
+    <string name="settings_privacy_footer">Statystyki użycia i raporty o awariach pomagają nam naprawiać błędy i ulepszać aplikację. Są wysyłane przez Google Firebase i nigdy nie zawierają twojego jedzenia, notatek, alergii ani zdjęć.</string>
     <string name="settings_data">Dane</string>
     <string name="settings_in_your_fridge">Produkty</string>
     <string name="settings_used_up">Zużyte</string>
@@ -288,21 +291,26 @@
     <!-- Welcome -->
     <string name="welcome_show_me_how">Pokaż, jak to działa</string>
     <string name="welcome_turn_on_reminders">Włącz przypomnienia</string>
+    <string name="welcome_share_usage_data">Udostępniaj dane</string>
+    <string name="welcome_dont_share">Nie udostępniaj</string>
     <string name="welcome_page_indicator">Strona %1$d z %2$d</string>
     <string name="welcome_overline_scan">1 · Skanuj</string>
     <string name="welcome_overline_remind">2 · Przypomnienia</string>
     <string name="welcome_overline_cook">3 · Gotuj</string>
+    <string name="welcome_overline_share">Prywatność</string>
     <string name="welcome_overline_reminders">Ostatni krok</string>
     <string name="welcome_title_welcome">Marnuj mniej,\ngotuj więcej.</string>
     <string name="welcome_title_scan">Zeskanuj etykietę, zamiast pisać.</string>
     <string name="welcome_title_remind">Zobacz, co zużyć najpierw.</string>
     <string name="welcome_title_cook">Gotuj z tego, co masz.</string>
+    <string name="welcome_title_share">Pomóż nam ulepszać Zero Bite</string>
     <string name="welcome_title_reminders">Przypomnieć ci, zanim jedzenie się zepsuje?</string>
     <string name="welcome_title_reminders_denied">Przypomnienia są wyłączone.</string>
     <string name="welcome_message_welcome">Miej oko na to, co masz w lodówce, zamrażarce i szafce, i zużywaj wszystko przed terminem.</string>
     <string name="welcome_message_scan">Skieruj aparat na datę ważności. Kod kreskowy uzupełni nazwę produktu. Wszystko jest odczytywane na twoim telefonie.</string>
     <string name="welcome_message_remind">Produkty są posortowane według pilności. Najpilniejszy jest na górze, a Zużyte i Zamroź masz pod jednym dotknięciem.</string>
     <string name="welcome_message_cook">Przepisy są ułożone według tego, co już masz – najwyżej te z jedzeniem, któremu kończy się termin.</string>
+    <string name="welcome_message_share">Udostępniaj nam statystyki użycia i raporty o awariach, wysyłane przez Google Firebase. Nigdy nie zawierają twojego jedzenia, notatek, alergii ani zdjęć. Możesz to zmienić w każdej chwili w Ustawieniach.</string>
     <string name="welcome_message_reminders">Przypomnimy ci kilka dni przed terminem, w dniu terminu i wtedy, gdy termin minie. Ty decydujesz, o której.</string>
     <string name="welcome_message_reminders_denied">Możesz je włączyć w każdej chwili w Ustawieniach.</string>
     <!-- Welcome illustrations (mock app screens) -->
@@ -334,6 +342,13 @@
     <string name="welcome_art_text_day">Zużyj dziś szpinak</string>
     <string name="welcome_art_when_after">Dzień po</string>
     <string name="welcome_art_text_after">Mleko: termin minął wczoraj</string>
+    <string name="welcome_art_usage_statistics">Statystyki użycia</string>
+    <string name="welcome_art_crash_reports">Raporty o awariach</string>
+    <string name="welcome_art_never_sent">Nigdy nie wysyłamy</string>
+    <string name="welcome_art_food">Jedzenie</string>
+    <string name="welcome_art_notes">Notatki</string>
+    <string name="welcome_art_allergies">Alergie</string>
+    <string name="welcome_art_photos">Zdjęcia</string>
 
     <!-- Recipes -->
     <string name="recipes_title">Przepisy</string>

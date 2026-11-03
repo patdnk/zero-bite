@@ -76,9 +76,24 @@ class SettingsScreenTest {
     }
 
     @Test
+    fun `usage data sharing is off until switched on`() {
+        show()
+        compose.onNodeWithText("Privacy").performScrollTo().assertExists()
+        compose.onNodeWithTag("settings.shareUsageToggle").performScrollTo().assertIsOff().performClick()
+        compose.onNodeWithTag("settings.shareUsageToggle").assertIsOn()
+    }
+
+    @Test
     fun `settings light`() {
         show()
         compose.onRoot().captureRoboImage("src/test/screenshots/settings_light.png")
+    }
+
+    @Test
+    fun `settings privacy light`() {
+        show()
+        compose.onNodeWithText("In My food").performScrollTo() // the Data row below, so the whole Privacy section shows
+        compose.onRoot().captureRoboImage("src/test/screenshots/settings_privacy_light.png")
     }
 
     @Test

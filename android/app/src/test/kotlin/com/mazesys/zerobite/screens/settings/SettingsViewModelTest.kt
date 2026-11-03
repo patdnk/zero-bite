@@ -99,6 +99,16 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun `sharing usage data is off until switched on`() {
+        assertFalse(vm.state.value.snapshot.shareUsageData)
+        vm.setShareUsageData(true)
+        assertTrue(settings.state.value.shareUsageData)
+        assertTrue(vm.state.value.snapshot.shareUsageData)
+        vm.setShareUsageData(false)
+        assertFalse(settings.state.value.shareUsageData)
+    }
+
+    @Test
     fun `data actions confirm before deleting`() = runBlocking {
         assertEquals(21, vm.state.value.activeCount)
         assertEquals(4, vm.state.value.recipeCount)

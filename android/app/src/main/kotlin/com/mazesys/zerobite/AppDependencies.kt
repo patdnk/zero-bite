@@ -15,6 +15,9 @@ import com.mazesys.zerobite.data.DataStoreSettings
 import com.mazesys.zerobite.data.RoomInventoryRepository
 import com.mazesys.zerobite.data.SettingsRepository
 import com.mazesys.zerobite.data.ZeroBiteDatabase
+import com.mazesys.zerobite.privacy.FirebaseUsageDataCollection
+import com.mazesys.zerobite.privacy.UsageDataCollection
+import com.mazesys.zerobite.privacy.UsageDataSync
 import com.mazesys.zerobite.reminders.AlarmReminderScheduler
 import com.mazesys.zerobite.reminders.AndroidNotificationAccess
 import com.mazesys.zerobite.reminders.AndroidNotifier
@@ -59,10 +62,13 @@ class AppDependencies(
     val language: AppLanguage = AppLanguage(),
     /** Reminder text in the current app language, read at every replan. */
     notificationCopy: () -> NotificationCopy = { NotificationCopy.ENGLISH },
+    /** Usage statistics and crash reports, switched by the "share usage data" setting. */
+    usageData: UsageDataCollection = UsageDataCollection {},
     /** Where CPU-heavy work that must stay off the main thread runs, such as ranking recipes against the fridge. */
     val computation: CoroutineDispatcher = Dispatchers.Default,
 ) {
     val reminders = ReminderSync(inventory, settings, clock, notifications, scheduler, notificationCopy)
+    val usageData = UsageDataSync(settings, usageData)
 
     companion object {
         fun live(context: Context): AppDependencies {
@@ -83,6 +89,7 @@ class AppDependencies(
                 strings = Strings { app.getString(it) },
                 language = language,
                 notificationCopy = { ResourceNotificationCopy(app.resources) },
+                usageData = FirebaseUsageDataCollection(app),
             )
         }
     }

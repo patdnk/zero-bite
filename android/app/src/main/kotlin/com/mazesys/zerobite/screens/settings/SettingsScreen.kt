@@ -150,6 +150,14 @@ fun SettingsScreen(viewModel: SettingsViewModel, modifier: Modifier = Modifier) 
         )
 
         CardSection(
+            title = stringResource(R.string.settings_privacy),
+            footer = stringResource(R.string.settings_privacy_footer),
+            rows = listOf<@Composable () -> Unit>({
+                SwitchRow(stringResource(R.string.settings_share_usage), s.shareUsageData, viewModel::setShareUsageData, testTag = "settings.shareUsageToggle")
+            }),
+        )
+
+        CardSection(
             title = stringResource(R.string.settings_data),
             rows = listOf<@Composable () -> Unit>(
                 { InfoRow(stringResource(R.string.settings_in_your_fridge), "${ui.activeCount}", icon = Icons.Rounded.Kitchen) },

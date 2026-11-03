@@ -470,6 +470,237 @@
         }
       }
     },
+    "Allergies" : {
+      "comment" : "Onboarding illustration: what is never sent; keep it short",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allergies"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alergie"
+          }
+        }
+      }
+    },
+    "Crash reports" : {
+      "comment" : "Onboarding illustration: what usage data sharing sends",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crash reports"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raporty o awariach"
+          }
+        }
+      }
+    },
+    "Don't share" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Don't share"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udostępniaj"
+          }
+        }
+      }
+    },
+    "Food" : {
+      "comment" : "Onboarding illustration: what is never sent; keep it short",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Food"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jedzenie"
+          }
+        }
+      }
+    },
+    "Help us improve Zero Bite" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help us improve Zero Bite"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pomóż nam ulepszać Zero Bite"
+          }
+        }
+      }
+    },
+    "Never sent" : {
+      "comment" : "Onboarding illustration: what is never sent",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Never sent"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nigdy nie wysyłamy"
+          }
+        }
+      }
+    },
+    "Photos" : {
+      "comment" : "Onboarding illustration: what is never sent; keep it short",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photos"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zdjęcia"
+          }
+        }
+      }
+    },
+    "Privacy" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prywatność"
+          }
+        }
+      }
+    },
+    "Sent through Firebase" : {
+      "comment" : "Onboarding illustration: what usage data sharing sends",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sent through Firebase"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wysyłane przez Firebase"
+          }
+        }
+      }
+    },
+    "Share usage and crash data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share usage and crash data"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udostępniaj statystyki i raporty o awariach"
+          }
+        }
+      }
+    },
+    "Share usage data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share usage data"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udostępniaj dane"
+          }
+        }
+      }
+    },
+    "Share usage statistics and crash reports with us, sent through Google Firebase. They never include your food, notes, allergies or photos. You can change this at any time in Settings." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share usage statistics and crash reports with us, sent through Google Firebase. They never include your food, notes, allergies or photos. You can change this at any time in Settings."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udostępniaj nam statystyki użycia i raporty o awariach, wysyłane przez Google Firebase. Nigdy nie zawierają twojego jedzenia, notatek, alergii ani zdjęć. Możesz to zmienić w każdej chwili w Ustawieniach."
+          }
+        }
+      }
+    },
+    "Usage statistics" : {
+      "comment" : "Onboarding illustration: what usage data sharing sends",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usage statistics"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statystyki użycia"
+          }
+        }
+      }
+    },
+    "Usage statistics and crash reports help us fix problems and improve the app. They're sent through Google Firebase and never include your food, notes, allergies or photos." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usage statistics and crash reports help us fix problems and improve the app. They're sent through Google Firebase and never include your food, notes, allergies or photos."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statystyki użycia i raporty o awariach pomagają nam naprawiać błędy i ulepszać aplikację. Są wysyłane przez Google Firebase i nigdy nie zawierają twojego jedzenia, notatek, alergii ani zdjęć."
+          }
+        }
+      }
+    },
     "You have %lld percent of the ingredients" : {
       "localizations" : {
         "en" : {

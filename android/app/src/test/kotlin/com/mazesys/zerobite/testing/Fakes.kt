@@ -17,6 +17,7 @@ import com.mazesys.zerobite.core.time.FixedClock
 import com.mazesys.zerobite.data.SampleData
 import com.mazesys.zerobite.data.SettingsRepository
 import com.mazesys.zerobite.data.SettingsSnapshot
+import com.mazesys.zerobite.privacy.UsageDataCollection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -71,6 +72,7 @@ class FakeInventoryRepository(initial: List<FoodItem> = emptyList()) : Inventory
 class FakeSettings(initial: SettingsSnapshot = SettingsSnapshot()) : SettingsRepository {
     private val flow = MutableStateFlow(initial)
     override val state: StateFlow<SettingsSnapshot> = flow
+    override val saved: Flow<SettingsSnapshot> = flow
     override suspend fun current() = flow.value
     override suspend fun update(transform: (SettingsSnapshot) -> SettingsSnapshot) { flow.value = transform(flow.value) }
 }
@@ -92,7 +94,11 @@ fun testDependencies(
     access: FakeAccess = FakeAccess(),
     scheduler: FakeScheduler = FakeScheduler(),
     notifier: FakeNotifier = FakeNotifier(),
-) = AppDependencies(clock, settings, inventory, recipes, ids, CoroutineScope(Dispatchers.Unconfined), access, scheduler, notifier, EnglishStrings, computation = Dispatchers.Unconfined)
+    usageData: FakeUsageData = FakeUsageData(),
+) = AppDependencies(
+    clock, settings, inventory, recipes, ids, CoroutineScope(Dispatchers.Unconfined), access, scheduler, notifier, EnglishStrings,
+    usageData = usageData, computation = Dispatchers.Unconfined,
+)
 
 /** Runs `viewModelScope` work immediately on the test thread. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -144,5 +150,13 @@ class FakeNotifier : Notifier {
     var tests = 0
     override fun sendTest() {
         tests++
+    }
+}
+
+class FakeUsageData : UsageDataCollection {
+    /** Every value applied, in order. */
+    val applied = mutableListOf<Boolean>()
+    override fun setEnabled(enabled: Boolean) {
+        applied += enabled
     }
 }

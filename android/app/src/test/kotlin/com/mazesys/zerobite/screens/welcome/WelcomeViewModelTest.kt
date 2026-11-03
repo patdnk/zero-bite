@@ -5,6 +5,7 @@ import com.mazesys.zerobite.reminders.NotificationPermission
 import com.mazesys.zerobite.testing.FakeAccess
 import com.mazesys.zerobite.testing.FakeSettings
 import com.mazesys.zerobite.testing.MainDispatcherRule
+import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -22,12 +23,23 @@ class WelcomeViewModelTest {
     private fun vm(mode: WelcomeMode = WelcomeMode.FIRST_RUN) = WelcomeViewModel(mode, settings, access, onComplete = { completed++ })
     private val never = com.mazesys.zerobite.reminders.PermissionRequester { false }
 
+    /** To the reminders page, past the usage data question. */
+    private fun WelcomeViewModel.toReminders() {
+        skipIntro()
+        declineSharing()
+    }
+
     @Test
-    fun `first run pages through to the reminders step`() {
+    fun `first run pages through the questions to the reminders step`() {
         val model = vm()
-        assertEquals(WelcomePage.REMINDERS, model.state.value.pages.last())
+        assertEquals(listOf(WelcomePage.COOK, WelcomePage.SHARE, WelcomePage.REMINDERS), model.state.value.pages.takeLast(3))
         assertEquals("Show me how", english(model.state.value.primaryTitle))
-        repeat(model.state.value.pages.size - 1) { model.primaryAction(never) }
+        repeat(model.state.value.pages.size - 2) { model.primaryAction(never) }
+        assertEquals(WelcomePage.SHARE, model.state.value.currentPage)
+        assertEquals("Share usage data", english(model.state.value.primaryTitle))
+        assertFalse(model.state.value.showsSkip)
+        assertFalse(model.state.value.showsNotNow)
+        model.primaryAction(never)
         assertEquals(WelcomePage.REMINDERS, model.state.value.currentPage)
         assertTrue(model.state.value.isLastPage)
         assertEquals("Turn on reminders", english(model.state.value.primaryTitle))
@@ -35,15 +47,39 @@ class WelcomeViewModelTest {
     }
 
     @Test
-    fun `skip jumps to reminders on first run`() {
+    fun `skip jumps to the usage data question on first run`() {
         val model = vm()
+        assertTrue(model.state.value.showsSkip)
         model.skipIntro()
-        assertEquals(WelcomePage.REMINDERS, model.state.value.currentPage)
+        assertEquals(WelcomePage.SHARE, model.state.value.currentPage)
     }
 
     @Test
-    fun `replay has no permission step and finishes on the last page`() {
+    fun `sharing usage data saves yes and moves on to reminders`() {
+        val model = vm()
+        model.skipIntro()
+        model.primaryAction(never)
+        assertTrue(settings.state.value.shareUsageData)
+        assertEquals(WelcomePage.REMINDERS, model.state.value.currentPage)
+        assertFalse(access.asked)
+        assertEquals(0, completed)
+    }
+
+    @Test
+    fun `not sharing saves no and moves on to reminders`() {
+        runBlocking { settings.update { it.copy(shareUsageData = true) } }
+        val model = vm()
+        model.skipIntro()
+        model.declineSharing()
+        assertFalse(settings.state.value.shareUsageData)
+        assertEquals(WelcomePage.REMINDERS, model.state.value.currentPage)
+        assertEquals(0, completed)
+    }
+
+    @Test
+    fun `replay has no questions and finishes on the last page`() {
         val model = vm(WelcomeMode.REPLAY)
+        assertFalse(WelcomePage.SHARE in model.state.value.pages)
         assertFalse(WelcomePage.REMINDERS in model.state.value.pages)
         assertEquals("Close", english(model.state.value.skipTitle))
         repeat(model.state.value.pages.size) { model.primaryAction(never) }
@@ -53,7 +89,7 @@ class WelcomeViewModelTest {
     @Test
     fun `granting finishes with reminders on`() {
         val model = vm()
-        model.skipIntro()
+        model.toReminders()
         model.primaryAction { access.current = NotificationPermission.GRANTED; true }
         assertTrue(settings.state.value.notificationsEnabled)
         assertTrue(access.asked)
@@ -63,7 +99,7 @@ class WelcomeViewModelTest {
     @Test
     fun `refusing shows the denied step, then continues`() {
         val model = vm()
-        model.skipIntro()
+        model.toReminders()
         model.primaryAction(never)
         assertEquals(WelcomeStep.DENIED, model.state.value.step)
         assertEquals("Continue", english(model.state.value.primaryTitle))
@@ -75,7 +111,7 @@ class WelcomeViewModelTest {
     @Test
     fun `not now finishes with reminders off`() {
         val model = vm()
-        model.skipIntro()
+        model.toReminders()
         model.skip()
         assertFalse(settings.state.value.notificationsEnabled)
         assertEquals(1, completed)

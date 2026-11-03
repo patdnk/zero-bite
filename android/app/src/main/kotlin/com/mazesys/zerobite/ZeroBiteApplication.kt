@@ -10,5 +10,6 @@ class ZeroBiteApplication : Application() {
         super.onCreate()
         Notifications.createChannels(this)
         dependencies.reminders.start(dependencies.appScope)
+        dependencies.usageData.start(dependencies.appScope)
     }
 }

@@ -20,3 +20,6 @@ playground.xcworkspace
 # Fonts are downloaded by scripts/fetch-fonts.sh
 ios/ZeroBite/Resources/Fonts/*.ttf
 android/app/src/main/assets/fonts/*.ttf
+
+# Firebase config (public repo): add locally from the Firebase console
+ios/ZeroBite/Resources/Firebase/GoogleService-Info.plist

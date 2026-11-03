@@ -29,6 +29,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
@@ -61,11 +62,14 @@ class RootScreenTest {
         compose.onNodeWithText("Zero Bite").assertExists()
         waitForTag("welcome.skip")
         compose.onNodeWithTag("welcome.skip").performClick()
+        waitForTag("welcome.dontShare")
+        compose.onNodeWithTag("welcome.dontShare").performClick()
         waitForTag("welcome.notNow")
         compose.onNodeWithTag("welcome.notNow").performClick()
         waitForTag("tab.fridge")
         compose.onNodeWithTag("tab.fridge").assertIsSelected()
         assertTrue(runBlocking { settings.current().hasCompletedWelcome })
+        assertFalse(runBlocking { settings.current().shareUsageData })
     }
 
     @Test

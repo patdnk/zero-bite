@@ -6,6 +6,13 @@ plugins {
     alias(libs.plugins.roborazzi)
 }
 
+// Firebase (Analytics + Crashlytics) needs app/google-services.json, which is gitignored because the
+// repo is public. Without it the app still builds and runs, just without Firebase.
+if (file("google-services.json").exists()) {
+    apply(plugin = libs.plugins.google.services.get().pluginId)
+    apply(plugin = libs.plugins.firebase.crashlytics.get().pluginId)
+}
+
 android {
     namespace = "com.mazesys.zerobite"
     compileSdk = 37
@@ -110,6 +117,11 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    // Analytics pulls in an old Fragment that breaks registerForActivityResult; pin a current one.
+    implementation(libs.fragment)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 

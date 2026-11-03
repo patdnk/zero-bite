@@ -16,6 +16,7 @@ enum WelcomeFactory {
             mode: mode,
             settings: dependencies.settings,
             notifications: dependencies.notifications,
+            usageData: dependencies.usageData,
             onComplete: onComplete
         )) { viewModel in
             WelcomeView(viewModel: viewModel)
@@ -48,7 +49,7 @@ struct WelcomeView: View {
         HStack {
             PageIndicator(count: viewModel.pages.count, index: viewModel.pageIndex)
             Spacer()
-            if !viewModel.isLastPage {
+            if viewModel.showsSkip {
                 Button(viewModel.mode == .replay ? String(localized: "Close") : String(localized: "Skip")) { viewModel.skipIntro() }
                     .font(.app(.subheadline, weight: .medium))
                     .foregroundStyle(Constants.TextSecondary)
@@ -64,21 +65,32 @@ struct WelcomeView: View {
         VStack(spacing: Spacing.sm) {
             PrimaryButton(
                 viewModel.primaryTitle,
-                systemImage: viewModel.currentPage == .reminders && viewModel.step != .denied ? "bell.badge" : nil,
+                systemImage: primarySymbol,
                 isLoading: viewModel.isRequesting,
-                kind: viewModel.currentPage == .reminders ? .brand : .ink
+                kind: viewModel.currentPage.isQuestion ? .brand : .ink
             ) {
                 Task { await viewModel.primaryAction() }
             }
             .accessibilityIdentifier("welcome.primary")
 
-            if viewModel.currentPage == .reminders, viewModel.step != .denied {
+            if viewModel.currentPage == .share {
+                SecondaryButton(String(localized: "Don't share")) { viewModel.shareUsageData(false) }
+                    .accessibilityIdentifier("welcome.dontShare")
+            } else if viewModel.currentPage == .reminders, viewModel.step != .denied {
                 SecondaryButton(String(localized: "Not now")) { viewModel.skip() }
                     .accessibilityIdentifier("welcome.notNow")
             }
         }
         .padding(.horizontal, Spacing.xl)
         .padding(.bottom, Spacing.lg)
+    }
+
+    private var primarySymbol: String? {
+        switch viewModel.currentPage {
+        case .share: "chart.bar.fill"
+        case .reminders: viewModel.step != .denied ? "bell.badge" : nil
+        default: nil
+        }
     }
 }
 
@@ -143,6 +155,7 @@ private struct OnboardingPage: View {
         case .scan: String(localized: "1 · Scan")
         case .remind: String(localized: "2 · Get reminded")
         case .cook: String(localized: "3 · Cook")
+        case .share: String(localized: "Privacy")
         case .reminders: String(localized: "Last step")
         }
     }
@@ -153,6 +166,7 @@ private struct OnboardingPage: View {
         case .scan: String(localized: "Scan the label, skip the typing.")
         case .remind: String(localized: "Know what to use first.")
         case .cook: String(localized: "Cook with what you have.")
+        case .share: String(localized: "Help us improve Zero Bite")
         case .reminders: isDenied ? String(localized: "Reminders are off.") : String(localized: "Want a nudge before food goes off?")
         }
     }
@@ -167,6 +181,8 @@ private struct OnboardingPage: View {
             String(localized: "Your food is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze.")
         case .cook:
             String(localized: "Recipes are ranked by what you already have, with food that's about to expire counted first.")
+        case .share:
+            String(localized: "Share usage statistics and crash reports with us, sent through Google Firebase. They never include your food, notes, allergies or photos. You can change this at any time in Settings.")
         case .reminders:
             isDenied
                 ? String(localized: "You can turn them on any time in Settings.")
@@ -181,6 +197,7 @@ private struct OnboardingPage: View {
         case .scan: ScanIllustration()
         case .remind: RemindIllustration()
         case .cook: CookIllustration()
+        case .share: ShareIllustration()
         case .reminders: RemindersIllustration()
         }
     }
@@ -399,6 +416,60 @@ private struct CookIllustration: View {
         .clipShape(RoundedRectangle(cornerRadius: Radius.card))
         .cardStyle(padding: 0)
         .accessibilityHidden(true)
+    }
+}
+
+/// What goes out (usage and crash reports) above what is never sent.
+private struct ShareIllustration: View {
+    var body: some View {
+        VStack(spacing: Spacing.sm) {
+            VStack(alignment: .leading, spacing: Spacing.md) {
+                Overline(String(localized: "Sent through Firebase"), tint: Constants.BrandOrange)
+                sentRow(symbol: "chart.bar.fill", text: String(localized: "Usage statistics"))
+                sentRow(symbol: "ladybug.fill", text: String(localized: "Crash reports"))
+            }
+            .cardStyle(accent: Constants.BrandOrange)
+
+            VStack(alignment: .leading, spacing: Spacing.md) {
+                HStack(spacing: 5) {
+                    Image(systemName: "lock.fill").font(.system(size: 10, weight: .semibold))
+                    Overline(String(localized: "Never sent"))
+                }
+                .foregroundStyle(Constants.TextSecondary)
+                HStack(alignment: .top, spacing: Spacing.sm) {
+                    keptTile(symbol: "refrigerator", text: String(localized: "Food"))
+                    keptTile(symbol: "note.text", text: String(localized: "Notes"))
+                    keptTile(symbol: "allergens", text: String(localized: "Allergies"))
+                    keptTile(symbol: "photo", text: String(localized: "Photos"))
+                }
+            }
+            .cardStyle()
+            .padding(.horizontal, Spacing.md)
+        }
+        .accessibilityHidden(true)
+    }
+
+    private func sentRow(symbol: String, text: String) -> some View {
+        HStack(spacing: Spacing.md) {
+            IconTile(symbol: symbol, tint: Constants.BrandOrange, size: 36)
+            Text(text).font(.app(.subheadline, weight: .medium)).foregroundStyle(Constants.TextPrimary)
+            Spacer()
+            Image(systemName: "checkmark")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Constants.BrandOrange)
+        }
+    }
+
+    private func keptTile(symbol: String, text: String) -> some View {
+        VStack(spacing: 6) {
+            IconTile(symbol: symbol, tint: Constants.TextSecondary, size: 40)
+            Text(text)
+                .font(.app(.caption))
+                .foregroundStyle(Constants.TextSecondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 

@@ -34,6 +34,7 @@ class SettingsTest {
         assertEquals(false, snapshot.hasCompletedWelcome)
         assertEquals(3, snapshot.soonThresholdDays)
         assertEquals(true, snapshot.recallChecksEnabled)
+        assertEquals(false, snapshot.shareUsageData)
         assertEquals(com.mazesys.zerobite.core.notifications.NotificationPreferences.DEFAULT, snapshot.notificationPreferences)
         job.cancelAndJoin()
     }
@@ -42,7 +43,7 @@ class SettingsTest {
     fun `updates persist and reach the state flow`() = runBlocking {
         val file = File(folder.root, "settings.preferences_pb")
         val (settings, job) = open(file)
-        settings.update { it.copy(hasCompletedWelcome = true, soonThresholdDays = 5, allergens = setOf("milk", "peanuts")) }
+        settings.update { it.copy(hasCompletedWelcome = true, soonThresholdDays = 5, allergens = setOf("milk", "peanuts"), shareUsageData = true) }
         assertEquals(5, settings.state.first { it.soonThresholdDays == 5 }.soonThresholdDays)
         job.cancelAndJoin()
 
@@ -50,6 +51,8 @@ class SettingsTest {
         val snapshot = reopened.current()
         assertEquals(true, snapshot.hasCompletedWelcome)
         assertEquals(setOf("milk", "peanuts"), snapshot.allergens)
+        assertEquals(true, snapshot.shareUsageData)
+        assertEquals(true, reopened.saved.first().shareUsageData, "saved starts from the file, not the defaults")
         job2.cancelAndJoin()
     }
 }

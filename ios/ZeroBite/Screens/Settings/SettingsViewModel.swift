@@ -132,6 +132,16 @@ final class SettingsViewModel {
         UIApplication.shared.open(url)
     }
 
+    // MARK: - Privacy
+
+    var shareUsageData: Bool {
+        get { settings.shareUsageData }
+        set {
+            settings.shareUsageData = newValue
+            dependencies.applyUsageDataChoice()
+        }
+    }
+
     // MARK: - Data
 
     var activeItemCount: Int { store.activeItems.count }

@@ -19,6 +19,8 @@ struct ZeroBiteApp: App {
         AppFont.registerBundledFonts()
         AppFont.configureAppearance()
         let dependencies = AppDependencies.live()
+        // Firebase is configured here only if the user has already agreed to share usage data.
+        dependencies.applyUsageDataChoice()
         let coordinator = AppCoordinator(dependencies: dependencies)
         _dependencies = State(initialValue: dependencies)
         _flowController = State(initialValue: AppFlowController(settings: dependencies.settings))

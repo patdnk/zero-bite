@@ -8,18 +8,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material3.Text
@@ -63,7 +66,7 @@ fun WelcomeScreen(viewModel: WelcomeViewModel, modifier: Modifier = Modifier) {
         ) {
             PageIndicator(ui.pages.size, ui.pageIndex)
             Spacer(Modifier.weight(1f))
-            if (!ui.isLastPage) {
+            if (ui.showsSkip) {
                 Text(
                     stringResource(ui.skipTitle),
                     style = ZeroBiteTheme.type.subheadline.medium(),
@@ -77,14 +80,18 @@ fun WelcomeScreen(viewModel: WelcomeViewModel, modifier: Modifier = Modifier) {
         }
         Column(Modifier.padding(horizontal = Spacing.xl).padding(bottom = Spacing.lg), verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
             val onReminders = ui.currentPage == WelcomePage.REMINDERS
+            val onShare = ui.currentPage == WelcomePage.SHARE
             AppButton(
                 stringResource(ui.primaryTitle),
                 { viewModel.primaryAction(requester) },
                 Modifier.testTag("welcome.primary"),
-                kind = if (onReminders) ButtonKind.BRAND else ButtonKind.INK,
+                kind = if (onReminders || onShare) ButtonKind.BRAND else ButtonKind.INK,
                 icon = if (onReminders && ui.step != WelcomeStep.DENIED) Icons.Rounded.NotificationsActive else null,
                 loading = ui.isRequesting,
             )
+            if (onShare) {
+                AppButton(stringResource(R.string.welcome_dont_share), viewModel::declineSharing, Modifier.testTag("welcome.dontShare"), kind = ButtonKind.PLAIN)
+            }
             if (ui.showsNotNow) {
                 AppButton(stringResource(R.string.action_not_now), viewModel::skip, Modifier.testTag("welcome.notNow"), kind = ButtonKind.PLAIN)
             }
@@ -111,23 +118,28 @@ private fun PageIndicator(count: Int, index: Int) {
 @Composable
 private fun OnboardingPage(page: WelcomePage, denied: Boolean) {
     val colors = ZeroBiteTheme.colors
-    Column(Modifier.fillMaxSize().padding(horizontal = Spacing.xl)) {
-        Spacer(Modifier.weight(1f))
-        // Like SwiftUI's fixed frame: the art may overflow the 300dp slot rather than being squashed.
-        Box(Modifier.fillMaxWidth().height(300.dp), contentAlignment = Alignment.Center) {
-            Box(Modifier.wrapContentHeight(unbounded = true)) { Illustration(page) }
-        }
-        Spacer(Modifier.weight(1f))
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-            if (page == WelcomePage.WELCOME) {
-                BrandLockup(size = 30.dp, modifier = Modifier.padding(bottom = Spacing.xs))
-            } else {
-                Overline(stringResource(page.overline), tint = colors.brandOrange)
+    // Fills the page with the art centred above the text; scrolls when large text or a small screen
+    // doesn't leave room (the usage data page's text must never be cut off).
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        Column(
+            Modifier.verticalScroll(rememberScrollState()).heightIn(min = maxHeight).padding(horizontal = Spacing.xl),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Spacer(Modifier)
+            // Like SwiftUI's fixed frame: the art may overflow the 300dp slot rather than being squashed.
+            Box(Modifier.fillMaxWidth().height(300.dp), contentAlignment = Alignment.Center) {
+                Box(Modifier.wrapContentHeight(unbounded = true)) { Illustration(page) }
             }
-            Text(stringResource(page.title(denied)), style = ZeroBiteTheme.type.largeTitle.semibold(), letterSpacing = (-1).sp, color = colors.textPrimary)
-            Text(stringResource(page.message(denied)), style = ZeroBiteTheme.type.body, color = colors.textSecondary)
+            Column(Modifier.padding(bottom = Spacing.xl), verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                if (page == WelcomePage.WELCOME) {
+                    BrandLockup(size = 30.dp, modifier = Modifier.padding(bottom = Spacing.xs))
+                } else {
+                    Overline(stringResource(page.overline), tint = colors.brandOrange)
+                }
+                Text(stringResource(page.title(denied)), style = ZeroBiteTheme.type.largeTitle.semibold(), letterSpacing = (-1).sp, color = colors.textPrimary)
+                Text(stringResource(page.message(denied)), style = ZeroBiteTheme.type.body, color = colors.textSecondary)
+            }
         }
-        Spacer(Modifier.size(Spacing.xl))
     }
 }
 
@@ -138,6 +150,7 @@ private val WelcomePage.overline: Int
         WelcomePage.SCAN -> R.string.welcome_overline_scan
         WelcomePage.REMIND -> R.string.welcome_overline_remind
         WelcomePage.COOK -> R.string.welcome_overline_cook
+        WelcomePage.SHARE -> R.string.welcome_overline_share
         WelcomePage.REMINDERS -> R.string.welcome_overline_reminders
     }
 
@@ -147,6 +160,7 @@ private fun WelcomePage.title(denied: Boolean): Int = when (this) {
     WelcomePage.SCAN -> R.string.welcome_title_scan
     WelcomePage.REMIND -> R.string.welcome_title_remind
     WelcomePage.COOK -> R.string.welcome_title_cook
+    WelcomePage.SHARE -> R.string.welcome_title_share
     WelcomePage.REMINDERS -> if (denied) R.string.welcome_title_reminders_denied else R.string.welcome_title_reminders
 }
 
@@ -156,5 +170,6 @@ private fun WelcomePage.message(denied: Boolean): Int = when (this) {
     WelcomePage.SCAN -> R.string.welcome_message_scan
     WelcomePage.REMIND -> R.string.welcome_message_remind
     WelcomePage.COOK -> R.string.welcome_message_cook
+    WelcomePage.SHARE -> R.string.welcome_message_share
     WelcomePage.REMINDERS -> if (denied) R.string.welcome_message_reminders_denied else R.string.welcome_message_reminders
 }

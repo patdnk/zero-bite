@@ -107,6 +107,8 @@ class SettingsViewModel(
 
     fun setRecallChecksEnabled(enabled: Boolean) = update { it.copy(recallChecksEnabled = enabled) }
 
+    fun setShareUsageData(enabled: Boolean) = update { it.copy(shareUsageData = enabled) }
+
     fun toggleAllergen(allergen: Allergen) = update {
         it.copy(allergens = if (allergen.raw in it.allergens) it.allergens - allergen.raw else it.allergens + allergen.raw)
     }

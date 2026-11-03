@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.mazesys.zerobite.core.notifications.NotificationPreferences
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -32,6 +33,8 @@ data class SettingsSnapshot(
     val recallChecksEnabled: Boolean = true,
     /** Allergen raw values the user wants allergy alerts for. */
     val allergens: Set<String> = emptySet(),
+    /** Consent to send usage statistics and crash reports (Firebase). Off until the user agrees. */
+    val shareUsageData: Boolean = false,
 ) {
     val notificationPreferences: NotificationPreferences
         get() = NotificationPreferences(notificationsEnabled, leadDays, notifyHour, notifyMinute)
@@ -40,14 +43,17 @@ data class SettingsSnapshot(
 interface SettingsRepository {
     /** Live settings. Before the first read it holds the defaults, so use [current] for decisions. */
     val state: StateFlow<SettingsSnapshot>
+    /** Settings as saved: like [state], but starting from the first read rather than the defaults. */
+    val saved: Flow<SettingsSnapshot>
     suspend fun current(): SettingsSnapshot
     suspend fun update(transform: (SettingsSnapshot) -> SettingsSnapshot)
 }
 
 class DataStoreSettings(private val store: DataStore<Preferences>, scope: CoroutineScope) : SettingsRepository {
 
-    override val state: StateFlow<SettingsSnapshot> =
-        store.data.map(::read).stateIn(scope, SharingStarted.Eagerly, SettingsSnapshot())
+    override val saved: Flow<SettingsSnapshot> = store.data.map(::read)
+
+    override val state: StateFlow<SettingsSnapshot> = saved.stateIn(scope, SharingStarted.Eagerly, SettingsSnapshot())
 
     override suspend fun current(): SettingsSnapshot = read(store.data.first())
 
@@ -66,6 +72,7 @@ class DataStoreSettings(private val store: DataStore<Preferences>, scope: Corout
         val dismissedNotificationTip = booleanPreferencesKey("dismissedNotificationTip")
         val recallChecksEnabled = booleanPreferencesKey("recallChecksEnabled")
         val allergens = stringSetPreferencesKey("allergens")
+        val shareUsageData = booleanPreferencesKey("shareUsageData")
     }
 
     private fun read(prefs: Preferences): SettingsSnapshot {
@@ -80,6 +87,7 @@ class DataStoreSettings(private val store: DataStore<Preferences>, scope: Corout
             dismissedNotificationTip = prefs[Keys.dismissedNotificationTip] ?: defaults.dismissedNotificationTip,
             recallChecksEnabled = prefs[Keys.recallChecksEnabled] ?: defaults.recallChecksEnabled,
             allergens = prefs[Keys.allergens] ?: defaults.allergens,
+            shareUsageData = prefs[Keys.shareUsageData] ?: defaults.shareUsageData,
         )
     }
 
@@ -93,5 +101,6 @@ class DataStoreSettings(private val store: DataStore<Preferences>, scope: Corout
         prefs[Keys.dismissedNotificationTip] = s.dismissedNotificationTip
         prefs[Keys.recallChecksEnabled] = s.recallChecksEnabled
         prefs[Keys.allergens] = s.allergens
+        prefs[Keys.shareUsageData] = s.shareUsageData
     }
 }

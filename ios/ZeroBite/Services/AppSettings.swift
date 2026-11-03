@@ -22,6 +22,7 @@ final class AppSettings {
         static let dismissedNotificationTip = "dismissedNotificationTip"
         static let recallChecksEnabled = "recallChecksEnabled"
         static let allergens = "allergens"
+        static let shareUsageData = "shareUsageData"
     }
 
     private let defaults: UserDefaults
@@ -68,6 +69,11 @@ final class AppSettings {
         didSet { defaults.set(allergens, forKey: Keys.allergens) }
     }
 
+    /// Send usage statistics and crash reports through Firebase. Off until the user agrees.
+    var shareUsageData: Bool {
+        didSet { defaults.set(shareUsageData, forKey: Keys.shareUsageData) }
+    }
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         hasCompletedWelcome = defaults.bool(forKey: Keys.hasCompletedWelcome)
@@ -79,6 +85,7 @@ final class AppSettings {
         dismissedNotificationTip = defaults.bool(forKey: Keys.dismissedNotificationTip)
         recallChecksEnabled = defaults.object(forKey: Keys.recallChecksEnabled) as? Bool ?? true
         allergens = defaults.stringArray(forKey: Keys.allergens) ?? []
+        shareUsageData = defaults.bool(forKey: Keys.shareUsageData)
     }
 
     var notificationPreferences: NotificationPreferences {

@@ -9,6 +9,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,8 +20,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BakeryDining
+import androidx.compose.material.icons.rounded.BarChart
+import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Eco
 import androidx.compose.material.icons.rounded.Egg
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.QrCode
 import androidx.compose.material.icons.rounded.RiceBowl
@@ -63,6 +69,7 @@ fun Illustration(page: WelcomePage) {
             WelcomePage.SCAN -> ScanArt()
             WelcomePage.REMIND -> RemindArt()
             WelcomePage.COOK -> CookArt()
+            WelcomePage.SHARE -> ShareArt()
             WelcomePage.REMINDERS -> RemindersArt()
         }
     }
@@ -210,6 +217,42 @@ private fun CookArt() {
                 Tag(stringResource(R.string.welcome_art_eggs), tint = c.brandOrange)
                 Tag("+3")
             }
+        }
+    }
+}
+
+/** What is sent (with consent), and what never is. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ShareArt() {
+    val c = ZeroBiteTheme.colors
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+        SharedRow(Icons.Rounded.BarChart, stringResource(R.string.welcome_art_usage_statistics))
+        SharedRow(Icons.Rounded.BugReport, stringResource(R.string.welcome_art_crash_reports))
+        AppCard {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Icon(Icons.Rounded.Lock, contentDescription = null, tint = c.textSecondary, modifier = Modifier.size(14.dp))
+                Overline(stringResource(R.string.welcome_art_never_sent))
+            }
+            // Wraps for longer (Polish) labels and large text.
+            FlowRow(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Tag(stringResource(R.string.welcome_art_food))
+                Tag(stringResource(R.string.welcome_art_notes))
+                Tag(stringResource(R.string.welcome_art_allergies))
+                Tag(stringResource(R.string.welcome_art_photos))
+            }
+        }
+    }
+}
+
+@Composable
+private fun SharedRow(icon: ImageVector, text: String) {
+    val c = ZeroBiteTheme.colors
+    AppCard(accent = c.brandOrange) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+            IconTile(icon, tint = c.brandOrange, size = 36.dp)
+            Text(text, style = ZeroBiteTheme.type.subheadline.medium(), color = c.textPrimary, modifier = Modifier.weight(1f))
+            Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = c.brandOrange, modifier = Modifier.size(20.dp))
         }
     }
 }

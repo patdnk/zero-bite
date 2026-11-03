@@ -107,6 +107,14 @@ struct SettingsView: View {
                         }
                     }
 
+                    CardSection(String(localized: "Privacy"), footer: String(localized: "Usage statistics and crash reports help us fix problems and improve the app. They're sent through Google Firebase and never include your food, notes, allergies or photos.")) {
+                        Toggle(isOn: $viewModel.shareUsageData) {
+                            Text("Share usage and crash data").font(.app(.subheadline, weight: .medium))
+                        }
+                        .tint(Constants.BrandOrange)
+                        .accessibilityIdentifier("settings.shareUsageDataToggle")
+                    }
+
                     CardSection(String(localized: "Data")) {
                         InfoRow(String(localized: "In My food"), symbol: "refrigerator", value: "\(viewModel.activeItemCount)")
                         InfoRow(String(localized: "Used up"), symbol: "checkmark", value: "\(viewModel.usedItemCount)")

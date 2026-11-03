@@ -33,3 +33,11 @@ struct StubProductLookup: ProductLookup {
 
     func lookup(barcode: String) async throws -> ProductInfo? { info }
 }
+
+/// Records every collection change instead of touching Firebase.
+@MainActor
+final class RecordingUsageDataCollection: UsageDataCollection {
+    private(set) var calls: [Bool] = []
+
+    func setEnabled(_ enabled: Bool) { calls.append(enabled) }
+}

@@ -226,6 +226,9 @@
         <item quantity="one">“Expiring soon” means within %d days</item>
         <item quantity="other">“Expiring soon” means within %d days</item>
     </plurals>
+    <string name="settings_privacy">Privacy</string>
+    <string name="settings_share_usage">Share usage and crash data</string>
+    <string name="settings_privacy_footer">Usage statistics and crash reports help us fix problems and improve the app. They\'re sent through Google Firebase and never include your food, notes, allergies or photos.</string>
     <string name="settings_data">Data</string>
     <string name="settings_in_your_fridge">In My food</string>
     <string name="settings_used_up">Used up</string>
@@ -268,21 +271,26 @@
     <!-- Welcome -->
     <string name="welcome_show_me_how">Show me how</string>
     <string name="welcome_turn_on_reminders">Turn on reminders</string>
+    <string name="welcome_share_usage_data">Share usage data</string>
+    <string name="welcome_dont_share">Don\'t share</string>
     <string name="welcome_page_indicator">Page %1$d of %2$d</string>
     <string name="welcome_overline_scan">1 · Scan</string>
     <string name="welcome_overline_remind">2 · Get reminded</string>
     <string name="welcome_overline_cook">3 · Cook</string>
+    <string name="welcome_overline_share">Privacy</string>
     <string name="welcome_overline_reminders">Last step</string>
     <string name="welcome_title_welcome">Waste less,\ncook more.</string>
     <string name="welcome_title_scan">Scan the label, skip the typing.</string>
     <string name="welcome_title_remind">Know what to use first.</string>
     <string name="welcome_title_cook">Cook with what you have.</string>
+    <string name="welcome_title_share">Help us improve Zero Bite</string>
     <string name="welcome_title_reminders">Want a nudge before food goes off?</string>
     <string name="welcome_title_reminders_denied">Reminders are off.</string>
     <string name="welcome_message_welcome">Keep track of what\'s in your fridge, freezer and cupboard, and use it up before the date.</string>
     <string name="welcome_message_scan">Point the camera at a best-before or use-by date. A barcode fills in the product name. Everything is read on your phone.</string>
     <string name="welcome_message_remind">Your food is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze.</string>
     <string name="welcome_message_cook">Recipes are ranked by what you already have, with food that\'s about to expire counted first.</string>
+    <string name="welcome_message_share">Share usage statistics and crash reports with us, sent through Google Firebase. They never include your food, notes, allergies or photos. You can change this at any time in Settings.</string>
     <string name="welcome_message_reminders">We\'ll remind you a few days before the date, on the day, and if it slips past. You choose when.</string>
     <string name="welcome_message_reminders_denied">You can turn them on any time in Settings.</string>
     <!-- Welcome illustrations (mock app screens) -->
@@ -314,6 +322,13 @@
     <string name="welcome_art_text_day">Use your spinach today</string>
     <string name="welcome_art_when_after">Day after</string>
     <string name="welcome_art_text_after">Milk went past its date yesterday</string>
+    <string name="welcome_art_usage_statistics">Usage statistics</string>
+    <string name="welcome_art_crash_reports">Crash reports</string>
+    <string name="welcome_art_never_sent">Never sent</string>
+    <string name="welcome_art_food">Food</string>
+    <string name="welcome_art_notes">Notes</string>
+    <string name="welcome_art_allergies">Allergies</string>
+    <string name="welcome_art_photos">Photos</string>
 
     <!-- Recipes -->
     <string name="recipes_title">Recipes</string>

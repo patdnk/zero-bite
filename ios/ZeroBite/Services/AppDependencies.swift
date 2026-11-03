@@ -18,6 +18,7 @@ final class AppDependencies {
     let recipes: [Recipe]
     let productLookup: any ProductLookup
     let recalls: RecallStore
+    let usageData: any UsageDataCollection
 
     init(
         settings: AppSettings,
@@ -25,7 +26,8 @@ final class AppDependencies {
         notifications: ExpiryNotificationService,
         recipes: [Recipe],
         productLookup: any ProductLookup,
-        recalls: RecallStore
+        recalls: RecallStore,
+        usageData: any UsageDataCollection
     ) {
         self.settings = settings
         self.inventory = inventory
@@ -33,6 +35,7 @@ final class AppDependencies {
         self.recipes = recipes
         self.productLookup = productLookup
         self.recalls = recalls
+        self.usageData = usageData
 
         inventory.onChange = { [weak self] in
             Task {
@@ -55,7 +58,8 @@ final class AppDependencies {
             notifications: ExpiryNotificationService(),
             recipes: RecipeStore.loadBundled(),
             productLookup: OpenFoodFactsLookup(),
-            recalls: liveRecallStore()
+            recalls: liveRecallStore(),
+            usageData: FirebaseUsageDataCollection()
         )
     }
 
@@ -70,7 +74,11 @@ final class AppDependencies {
     }
 
     /// In-memory everything, optionally pre-filled with the sample fridge.
-    static func preview(withSampleData: Bool = true, alerts: any FoodAlertsFetching = PreviewFoodAlerts()) -> AppDependencies {
+    static func preview(
+        withSampleData: Bool = true,
+        alerts: any FoodAlertsFetching = PreviewFoodAlerts(),
+        usageData: any UsageDataCollection = FirebaseUsageDataCollection()
+    ) -> AppDependencies {
         let inventory = InventoryStore.inMemory()
         if withSampleData { inventory.loadSampleData() }
         let settings = AppSettings.ephemeral()
@@ -80,7 +88,8 @@ final class AppDependencies {
             notifications: ExpiryNotificationService(),
             recipes: RecipeStore.loadBundled(),
             productLookup: OpenFoodFactsLookup(),
-            recalls: RecallStore(client: alerts, cacheURL: nil, defaults: settings.userDefaults)
+            recalls: RecallStore(client: alerts, cacheURL: nil, defaults: settings.userDefaults),
+            usageData: usageData
         )
     }
 
@@ -90,6 +99,14 @@ final class AppDependencies {
             ExpiringItemSummary(id: $0.id, name: $0.name, expiresAt: $0.expiresAt)
         }
         await notifications.reschedule(items: summaries, preferences: settings.notificationPreferences)
+    }
+
+    // MARK: - Usage data
+
+    /// Matches Analytics and Crashlytics collection to the user's choice (at launch and on change).
+    /// Firebase is configured the first time the choice is to share.
+    func applyUsageDataChoice() {
+        usageData.setEnabled(settings.shareUsageData)
     }
 
     // MARK: - Recalls

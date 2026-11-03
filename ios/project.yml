@@ -12,6 +12,10 @@ settings:
     DEVELOPMENT_TEAM: NU6K42S2Q4
     CODE_SIGN_STYLE: Automatic
     ENABLE_USER_SCRIPT_SANDBOXING: YES
+packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: 13.1.1
 targets:
   ZeroBite:
     type: application
@@ -26,11 +30,17 @@ targets:
         buildPhase: resources
       - path: ../shared-assets/ingredient-aliases.pl.json
         buildPhase: resources
+    dependencies:
+      # Core leaves out the IDFA support and the Google Ads conversion SDK.
+      - package: Firebase
+        product: FirebaseAnalyticsCore
+      - package: Firebase
+        product: FirebaseCrashlytics
     info:
       path: ZeroBite/Info.plist
       properties:
         CFBundleDisplayName: Zero Bite
-        CFBundleShortVersionString: "1.0"
+        CFBundleShortVersionString: "1.1"
         CFBundleVersion: "1"
         UILaunchScreen: {}
         UIApplicationSceneManifest:
@@ -39,6 +49,14 @@ targets:
           - UIInterfaceOrientationPortrait
         NSCameraUsageDescription: Zero Bite uses the camera to read best-before dates and barcodes on food labels.
         ITSAppUsesNonExemptEncryption: false
+        # Analytics without the advertising identifier: no ad tracking.
+        GOOGLE_ANALYTICS_ADID_COLLECTION_ENABLED: false
+        GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS: false
+        GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE: false
+        GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA: false
+        # Nothing is collected until the user agrees (Settings → Privacy or onboarding).
+        FIREBASE_ANALYTICS_COLLECTION_ENABLED: false
+        FirebaseCrashlyticsCollectionEnabled: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.mazesys.zerobite
@@ -47,6 +65,8 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         SWIFT_EMIT_LOC_STRINGS: YES
+        # Firebase finds Analytics at runtime by class name; without -ObjC the linker drops it.
+        OTHER_LDFLAGS: ["$(inherited)", "-ObjC"]
   ZeroBiteTests:
     type: bundle.unit-test
     platform: iOS
@@ -72,3 +92,14 @@ schemes:
       config: Debug
       targets:
         - ZeroBiteTests
+    archive:
+      config: Release
+      postActions:
+        # Build-phase scripts are sandboxed, so Crashlytics symbols go up after the archive instead.
+        - name: Upload Crashlytics symbols
+          settingsTarget: ZeroBite
+          script: |
+            GSP="${PROJECT_DIR}/ZeroBite/Resources/Firebase/GoogleService-Info.plist"
+            [ -f "$GSP" ] || exit 0
+            "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols" \
+              -gsp "$GSP" -p ios "${ARCHIVE_DSYMS_PATH}" > "${ARCHIVE_PATH}/crashlytics-upload.log" 2>&1

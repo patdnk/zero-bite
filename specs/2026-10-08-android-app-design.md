@@ -259,13 +259,14 @@ monotonically increasing build number.
   invite testers into a `friends` group.
 - `scripts/distribute-android.sh`: builds the signed release APK and uploads it with the
   Firebase CLI, with release notes and the `friends` group.
-- No Firebase SDK or Google Services plugin in the app — distribution only, nothing to
-  declare in privacy disclosures.
+- ~~No Firebase SDK or Google Services plugin in the app.~~ Changed for 1.1 (3 Nov 2026): the
+  app ships Firebase Analytics and Crashlytics, off until the user opts in. See
+  `2026-11-03-usage-data-consent.md`, `playstore/data-safety.md` and `appstore/app-privacy.md`.
 
 **Later — Google Play** (when Pat has a Play Console account)
 - `playstore/` beside `appstore/`: listing text adapted from the iOS metadata, feature
   graphic and phone screenshots (`render-assets.sh` extended for Play sizes), Data safety
-  answers derived from `appstore/app-privacy.md` (no data collected).
+  answers in `playstore/data-safety.md` (opt-in Firebase usage and crash data).
 - New personal accounts need a closed test with 12+ testers for 14 days before production:
   move the Firebase testers into Play closed testing, then promote.
 - Optional: Gradle Play Publisher in CI to upload signed AABs to the internal track.
@@ -300,6 +301,7 @@ monotonically increasing build number.
 | Inventory storage | Room (in `:app`) | SQLDelight; Room KMP in `:core` |
 | Reminders | Inexact `AlarmManager` driven by shared planner | Exact alarms; WorkManager daily sweep |
 | Distribution | Firebase App Distribution now, Play closed testing later | Sideloaded APK |
+| Analytics and crash reports (1.1) | Firebase Analytics + Crashlytics, opt-in, no advertising ID | None (the original choice); on by default with an opt-out |
 | Repo | Monorepo; iOS moved to `ios/` | Separate Android repo |
 
 ## 12. Pat's manual steps
