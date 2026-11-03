@@ -1,3 +1,4 @@
+import com.android.build.api.artifact.SingleArtifact
 import java.util.Properties
 
 plugins {
@@ -15,8 +16,9 @@ if (file("google-services.json").exists()) {
     apply(plugin = libs.plugins.firebase.crashlytics.get().pluginId)
 }
 
-// Release signing comes from the gitignored android/keystore.properties (keystore in ~/.zerobite/).
-// Without it, as on CI, the release build is left unsigned.
+// Release signing comes from the gitignored android/keystore.properties. For Firebase App
+// Distribution it names the key 1.0 was signed with, so testers get updates in place. Without it,
+// as on CI, the release build is left unsigned.
 val keystoreProperties = rootProject.file("keystore.properties").takeIf { it.exists() }?.let { file ->
     Properties().apply { file.inputStream().use { load(it) } }
 }
@@ -116,9 +118,44 @@ val copySharedAssets = tasks.register<CopySharedAssets>("copySharedAssets") {
     files.from(listOf("recipes.json", "recipes.pl.json", "recipe-tags.json", "ingredient-aliases.pl.json").map(shared::file))
 }
 
+/** Copies the release APK or AAB to build/outputs/release/ as zero-bite-<x.y.z>.<extension>. */
+abstract class NameReleaseFile : DefaultTask() {
+    @get:InputFiles abstract val source: ConfigurableFileCollection
+    @get:Input abstract val fileName: Property<String>
+    @get:OutputDirectory abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun copy() {
+        val extension = fileName.get().substringAfterLast('.')
+        val built = source.asFileTree.matching { include("*.$extension") }.singleFile
+        built.copyTo(outputDir.get().asFile.resolve(fileName.get()), overwrite = true)
+    }
+}
+
 androidComponents {
     onVariants { variant ->
         variant.sources.assets?.addGeneratedSourceDirectory(copySharedAssets, CopySharedAssets::outputDir)
+    }
+    onVariants(selector().withBuildType("release")) { variant ->
+        // versionName "1.1" (matching iOS) becomes "1.1.0" in the file name.
+        val version = variant.outputs.single().versionName.map { name ->
+            (name.split('.') + listOf("0", "0")).take(3).joinToString(".")
+        }
+        val outputDir = layout.buildDirectory.dir("outputs/release")
+        val apk = tasks.register<NameReleaseFile>("nameReleaseApk") {
+            source.from(variant.artifacts.get(SingleArtifact.APK))
+            fileName.set(version.map { "zero-bite-$it.apk" })
+            this.outputDir.set(outputDir)
+        }
+        val aab = tasks.register<NameReleaseFile>("nameReleaseBundle") {
+            source.from(variant.artifacts.get(SingleArtifact.BUNDLE))
+            fileName.set(version.map { "zero-bite-$it.aab" })
+            this.outputDir.set(outputDir)
+        }
+        tasks.configureEach {
+            if (name == "assembleRelease") finalizedBy(apk)
+            if (name == "bundleRelease") finalizedBy(aab)
+        }
     }
 }
 

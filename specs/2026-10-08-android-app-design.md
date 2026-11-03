@@ -246,9 +246,13 @@ test file is added to `ZeroBiteTests` that runs the same fixtures against the Sw
 
 ## 9. Release and distribution
 
-**Signing:** release keystore generated once, stored outside the repo (`~/.zerobite/`, backed
-up in a password manager), referenced from a gitignored `android/keystore.properties`. It
-becomes the Play upload key later (Play App Signing holds the app key). R8 + resource
+**Signing:** release builds are signed from a gitignored `android/keystore.properties`.
+1.0 went to Firebase App Distribution signed with this Mac's debug keystore
+(`~/.android/debug.keystore`), so App Distribution builds keep using that key and testers get
+updates in place; back it up, since losing it means testers must reinstall. A separate upload
+keystore for Google Play is in `~/.zerobite/` (settings in `~/.zerobite/upload-keystore.properties`,
+back both up in a password manager); Play rejects debug-signed bundles, and Play App Signing holds
+the app key, so moving testers to Play means one reinstall. R8 + resource
 shrinking on release, with keep rules for Room and kotlinx-serialization.
 
 **Versioning:** `versionName` follows the iOS marketing version (1.0); `versionCode` is a
