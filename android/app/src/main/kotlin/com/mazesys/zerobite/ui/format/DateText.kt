@@ -35,4 +35,4 @@ object DateText {
 /** The app's current language, for formatting inside composables. */
 @Composable
 @ReadOnlyComposable
-fun appLocale(): Locale = LocalConfiguration.current.locales[0] ?: Locale.getDefault()
+fun appLocale(): Locale = LocalConfiguration.current.locales[0] ?: Locale.UK
