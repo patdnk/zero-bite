@@ -252,6 +252,22 @@
         <item quantity="other">Ukryj %d wiersza</item>
     </plurals>
 
+    <!-- Live camera scanning -->
+    <string name="scan_live_looking_for_date">Szukam daty ważności…</string>
+    <string name="scan_live_use_found">Użyj znalezionych danych</string>
+    <plurals name="scan_live_lines_read">
+        <item quantity="one">Odczytano %d wiersz</item>
+        <item quantity="few">Odczytano %d wiersze</item>
+        <item quantity="many">Odczytano %d wierszy</item>
+        <item quantity="other">Odczytano %d wiersza</item>
+    </plurals>
+    <string name="scan_camera_off_title">Dostęp do aparatu jest wyłączony</string>
+    <string name="scan_camera_rationale">Zero Bite używa aparatu, by odczytać daty ważności i kody kreskowe z etykiet.</string>
+    <string name="scan_open_settings">Otwórz ustawienia</string>
+    <string name="scan_choose_photo_instead">Wybierz zdjęcie</string>
+    <string name="scan_camera_unavailable_title">Aparat niedostępny</string>
+    <string name="scan_camera_unavailable_message">Nie udało się uruchomić aparatu. Zamknij inne aplikacje, które go używają, i spróbuj ponownie.</string>
+
     <!-- Settings -->
     <string name="settings_title">Ustawienia</string>
     <string name="settings_version_overline">Zero Bite %s</string>

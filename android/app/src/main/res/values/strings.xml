@@ -233,6 +233,20 @@
         <item quantity="other">Hide %d lines</item>
     </plurals>
 
+    <!-- Live camera scanning -->
+    <string name="scan_live_looking_for_date">Looking for a best-before date…</string>
+    <string name="scan_live_use_found">Use what I\'ve found</string>
+    <plurals name="scan_live_lines_read">
+        <item quantity="one">%d line read</item>
+        <item quantity="other">%d lines read</item>
+    </plurals>
+    <string name="scan_camera_off_title">Camera access is off</string>
+    <string name="scan_camera_rationale">Zero Bite uses the camera to read best-before dates and barcodes on food labels.</string>
+    <string name="scan_open_settings">Open settings</string>
+    <string name="scan_choose_photo_instead">Choose a photo instead</string>
+    <string name="scan_camera_unavailable_title">Camera unavailable</string>
+    <string name="scan_camera_unavailable_message">The camera couldn\'t start. Close any other app that is using it and try again.</string>
+
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <!-- %s: version, e.g. "1.0 (1)" -->

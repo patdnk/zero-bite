@@ -25,6 +25,8 @@ import com.mazesys.zerobite.coordination.SheetViewModelStores
 import com.mazesys.zerobite.screens.inventory.ItemFormMode
 import com.mazesys.zerobite.screens.recipes.CookedScreen
 import com.mazesys.zerobite.screens.recipes.CookedViewModel
+import com.mazesys.zerobite.screens.scan.LiveScanViewModel
+import com.mazesys.zerobite.screens.scan.LiveScannerScreen
 import com.mazesys.zerobite.screens.scan.ScanSheet
 import com.mazesys.zerobite.screens.shared.ItemFormEntry
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
@@ -43,8 +45,10 @@ fun SheetHost(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, de
         CompositionLocalProvider(LocalViewModelStoreOwner provides sheetStores.owner(sheet.id)) {
             Box(Modifier.fillMaxSize().background(ZeroBiteTheme.colors.backgroundPrimary).systemBarsPadding().imePadding()) {
                 when (val destination = sheet.destination) {
-                    SheetDestination.Scan -> ScanSheet(dependencies, onFinished = coordinator::dismissSheet) {
-                        // The camera screen arrives in the next task.
+                    SheetDestination.Scan -> ScanSheet(dependencies, onFinished = coordinator::dismissSheet) { flow ->
+                        // Resolves in the Live entry's own store, so leaving the scanner starts the next one fresh.
+                        val live = viewModel(key = "live") { LiveScanViewModel(dependencies.clock, onFinish = flow::liveScanFinished) }
+                        LiveScannerScreen(live, dependencies.labels, onBack = flow.coordinator::pop, onUsePhoto = flow.coordinator::pop)
                     }
                     is SheetDestination.AddItem -> ItemFormEntry(ItemFormMode.Add, destination.draft, dependencies, onDone = coordinator::dismissSheet)
                     is SheetDestination.EditItem -> ItemFormEntry(ItemFormMode.Edit(destination.itemId), null, dependencies, onDone = coordinator::dismissSheet)
