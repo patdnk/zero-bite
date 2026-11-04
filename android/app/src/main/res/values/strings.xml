@@ -198,6 +198,9 @@
     <!-- Scan placeholder -->
     <string name="scan_coming_soon">Coming soon</string>
     <string name="scan_coming_soon_message">Label and barcode scanning arrives in the next build. Add food by hand for now.</string>
+    <string name="scan_error_nothing_found">No text or barcode was found. Try a sharper, closer photo of the label.</string>
+    <string name="scan_error_unreadable">That file doesn\'t look like a photo.</string>
+    <string name="scan_error_load_failed">Couldn\'t load that photo.</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

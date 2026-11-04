@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.mazesys.zerobite.core.inventory.InventoryRepository
 import com.mazesys.zerobite.core.notifications.NotificationCopy
+import com.mazesys.zerobite.core.products.OpenFoodFactsClient
+import com.mazesys.zerobite.core.products.ProductLookup
 import com.mazesys.zerobite.core.recipes.RecipeRepository
 import com.mazesys.zerobite.core.time.AppClock
 import com.mazesys.zerobite.core.time.SystemAppClock
@@ -29,10 +31,14 @@ import com.mazesys.zerobite.reminders.ReminderSync
 import com.mazesys.zerobite.scanning.LabelReading
 import com.mazesys.zerobite.scanning.MlKitLabelReader
 import com.mazesys.zerobite.ui.text.Strings
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpTimeout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.withContext
 import kotlin.uuid.Uuid
 
 fun interface IdGenerator {
@@ -45,6 +51,13 @@ fun interface IdGenerator {
 
 /** One DataStore per process, as DataStore requires. */
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
+/** Builds the real lookup on first use, so the HTTP stack isn't constructed at every cold start. */
+private class LazyProductLookup(create: () -> ProductLookup) : ProductLookup {
+    private val delegate by lazy(create)
+
+    override suspend fun lookup(barcode: String) = withContext(Dispatchers.IO) { delegate }.lookup(barcode)
+}
 
 /** Composition root: the long-lived services handed to coordinators, factories and view models. */
 class AppDependencies(
@@ -62,6 +75,8 @@ class AppDependencies(
     val strings: Strings,
     /** Reads labels from photos and from the live camera. */
     val labels: LabelReading,
+    /** Resolves a scanned barcode to a product name and category. */
+    val productLookup: ProductLookup,
     /** The current app language, kept up to date by MainActivity. */
     val language: AppLanguage = AppLanguage(),
     /** Reminder text in the current app language, read at every replan. */
@@ -75,11 +90,19 @@ class AppDependencies(
     val usageData = UsageDataSync(settings, usageData)
 
     companion object {
+        /** One HTTP client for the whole app, 20 s timeout like iOS. */
+        private fun httpClient() = HttpClient(OkHttp) {
+            install(HttpTimeout) { requestTimeoutMillis = 20_000 }
+            expectSuccess = false
+        }
+
         fun live(context: Context): AppDependencies {
             val app = context.applicationContext
             val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
             val prefs = app.getSharedPreferences("reminders", Context.MODE_PRIVATE)
             val language = AppLanguage(AppLanguage.of(app.resources.configuration))
+            // Created on first use. Later network features share it through `http.value`.
+            val http = lazy { httpClient() }
             return AppDependencies(
                 clock = SystemAppClock,
                 settings = DataStoreSettings(app.settingsDataStore, scope),
@@ -92,6 +115,7 @@ class AppDependencies(
                 notifier = AndroidNotifier(app),
                 strings = Strings { app.getString(it) },
                 labels = MlKitLabelReader(app),
+                productLookup = LazyProductLookup { OpenFoodFactsClient(http.value) },
                 language = language,
                 notificationCopy = { ResourceNotificationCopy(app.resources) },
                 usageData = FirebaseUsageDataCollection(app),

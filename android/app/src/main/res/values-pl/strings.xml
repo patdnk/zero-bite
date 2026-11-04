@@ -213,6 +213,9 @@
     <!-- Scan placeholder -->
     <string name="scan_coming_soon">Już wkrótce</string>
     <string name="scan_coming_soon_message">Skanowanie etykiet i kodów kreskowych pojawi się w następnej wersji. Na razie dodawaj produkty ręcznie.</string>
+    <string name="scan_error_nothing_found">Nie znaleziono tekstu ani kodu. Spróbuj ostrzejszego zdjęcia etykiety, zrobionego z bliska.</string>
+    <string name="scan_error_unreadable">Ten plik nie wygląda na zdjęcie.</string>
+    <string name="scan_error_load_failed">Nie udało się wczytać zdjęcia.</string>
 
     <!-- Settings -->
     <string name="settings_title">Ustawienia</string>

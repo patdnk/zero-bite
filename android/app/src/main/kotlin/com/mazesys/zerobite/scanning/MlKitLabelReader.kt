@@ -17,6 +17,7 @@ import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.mazesys.zerobite.core.model.ScanResult
 import com.mazesys.zerobite.core.scanning.LabelScanner
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -69,8 +70,11 @@ class MlKitLabelReader(private val context: Context) : LabelReading {
         // Decoding a full-size photo is disk I/O plus a large allocation: keep it off the main thread.
         val image = withContext(Dispatchers.IO) {
             try {
+                // A file that isn't an image fails here (ImageDecoder.DecodeException is an IOException).
                 InputImage.fromFilePath(context, photo)
-            } catch (e: IOException) {
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: UnreadablePhoto) {
                 throw e
             } catch (e: Exception) {
                 throw UnreadablePhoto()
@@ -89,9 +93,17 @@ class MlKitLabelReader(private val context: Context) : LabelReading {
             return@Analyzer
         }
         // The frame stays open until ML Kit is done, so CameraX drops frames instead of queueing them.
-        read(InputImage.fromMediaImage(media, proxy.imageInfo.rotationDegrees)) { result ->
-            if (result != null) onFrame(result)
-            proxy.close()
+        // Whatever fails, the proxy must close or CameraX stops delivering frames.
+        try {
+            read(InputImage.fromMediaImage(media, proxy.imageInfo.rotationDegrees)) { result ->
+                try {
+                    if (result != null) onFrame(result)
+                } finally {
+                    proxy.close()
+                }
+            }
+        } catch (e: Exception) {
+            proxy.close() // Starting the read failed, so its callback will never run: drop this frame.
         }
     }
 }

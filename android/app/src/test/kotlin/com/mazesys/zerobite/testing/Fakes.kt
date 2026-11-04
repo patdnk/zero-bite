@@ -6,8 +6,10 @@ import com.mazesys.zerobite.AppDependencies
 import com.mazesys.zerobite.IdGenerator
 import com.mazesys.zerobite.core.inventory.InventoryRepository
 import com.mazesys.zerobite.core.model.FoodItem
+import com.mazesys.zerobite.core.model.ProductInfo
 import com.mazesys.zerobite.core.model.ScanResult
 import com.mazesys.zerobite.core.notifications.PlannedNotification
+import com.mazesys.zerobite.core.products.ProductLookup
 import com.mazesys.zerobite.reminders.NotificationAccess
 import com.mazesys.zerobite.reminders.NotificationPermission
 import com.mazesys.zerobite.reminders.Notifier
@@ -23,6 +25,7 @@ import com.mazesys.zerobite.data.SampleData
 import com.mazesys.zerobite.data.SettingsRepository
 import com.mazesys.zerobite.data.SettingsSnapshot
 import com.mazesys.zerobite.privacy.UsageDataCollection
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -101,10 +104,12 @@ fun testDependencies(
     notifier: FakeNotifier = FakeNotifier(),
     usageData: FakeUsageData = FakeUsageData(),
     labels: FakeLabels = FakeLabels(),
+    productLookup: FakeProductLookup = FakeProductLookup(),
 ) = AppDependencies(
     clock = clock, settings = settings, inventory = inventory, recipes = recipes, ids = ids,
     appScope = CoroutineScope(Dispatchers.Unconfined), notifications = access, scheduler = scheduler,
     notifier = notifier, strings = EnglishStrings, labels = labels,
+    productLookup = productLookup,
     usageData = usageData, computation = Dispatchers.Unconfined,
 )
 
@@ -182,4 +187,18 @@ class FakeLabels(
         return result
     }
     override fun analyzer(onFrame: (RecognizedText) -> Unit) = ImageAnalysis.Analyzer { it.close() }
+}
+
+/** Answers `info` (or throws `failure`); with `hold`, waits until `release()`. */
+class FakeProductLookup(var info: ProductInfo? = null, var failure: Exception? = null) : ProductLookup {
+    val asked = mutableListOf<String>()
+    var hold = false
+    private val gate = CompletableDeferred<Unit>()
+    fun release() = gate.complete(Unit)
+    override suspend fun lookup(barcode: String): ProductInfo? {
+        asked += barcode
+        if (hold) gate.await()
+        failure?.let { throw it }
+        return info
+    }
 }
