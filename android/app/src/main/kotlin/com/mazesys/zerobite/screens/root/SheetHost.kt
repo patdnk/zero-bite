@@ -22,12 +22,11 @@ import com.mazesys.zerobite.AppDependencies
 import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.coordination.SheetDestination
 import com.mazesys.zerobite.coordination.SheetViewModelStores
-import com.mazesys.zerobite.core.model.ItemDraft
 import com.mazesys.zerobite.screens.inventory.ItemFormMode
-import com.mazesys.zerobite.screens.inventory.ItemFormScreen
-import com.mazesys.zerobite.screens.inventory.ItemFormViewModel
 import com.mazesys.zerobite.screens.recipes.CookedScreen
 import com.mazesys.zerobite.screens.recipes.CookedViewModel
+import com.mazesys.zerobite.screens.scan.ScanSheet
+import com.mazesys.zerobite.screens.shared.ItemFormEntry
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 
 /** Full-screen sheets that slide up over the tabs (add/edit item, scan). */
@@ -44,9 +43,11 @@ fun SheetHost(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, de
         CompositionLocalProvider(LocalViewModelStoreOwner provides sheetStores.owner(sheet.id)) {
             Box(Modifier.fillMaxSize().background(ZeroBiteTheme.colors.backgroundPrimary).systemBarsPadding().imePadding()) {
                 when (val destination = sheet.destination) {
-                    SheetDestination.Scan -> ScanPlaceholder(onClose = coordinator::dismissSheet, onAddManually = coordinator.inventory::showAddItem)
-                    is SheetDestination.AddItem -> ItemFormSheet(ItemFormMode.Add, destination.draft, coordinator, dependencies)
-                    is SheetDestination.EditItem -> ItemFormSheet(ItemFormMode.Edit(destination.itemId), null, coordinator, dependencies)
+                    SheetDestination.Scan -> ScanSheet(dependencies, onFinished = coordinator::dismissSheet) {
+                        // The camera screen arrives in the next task.
+                    }
+                    is SheetDestination.AddItem -> ItemFormEntry(ItemFormMode.Add, destination.draft, dependencies, onDone = coordinator::dismissSheet)
+                    is SheetDestination.EditItem -> ItemFormEntry(ItemFormMode.Edit(destination.itemId), null, dependencies, onDone = coordinator::dismissSheet)
                     is SheetDestination.Cooked -> CookedSheet(destination.recipeId, coordinator, dependencies)
                     SheetDestination.HowItWorks -> {
                         val replay = viewModel {
@@ -58,14 +59,6 @@ fun SheetHost(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, de
             }
         }
     }
-}
-
-@Composable
-private fun ItemFormSheet(mode: ItemFormMode, draft: ItemDraft?, coordinator: AppCoordinator, dependencies: AppDependencies) {
-    val form = viewModel {
-        ItemFormViewModel(mode, draft, dependencies.inventory, dependencies.clock, dependencies.ids, onSaved = { coordinator.dismissSheet() })
-    }
-    ItemFormScreen(form, onCancel = coordinator::dismissSheet)
 }
 
 @Composable

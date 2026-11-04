@@ -210,12 +210,47 @@
     <string name="form_notes">Notatki</string>
     <string name="form_notes_placeholder">Otwarte w poniedziałek, została połowa</string>
 
-    <!-- Scan placeholder -->
-    <string name="scan_coming_soon">Już wkrótce</string>
-    <string name="scan_coming_soon_message">Skanowanie etykiet i kodów kreskowych pojawi się w następnej wersji. Na razie dodawaj produkty ręcznie.</string>
+    <!-- Add food: scanning -->
     <string name="scan_error_nothing_found">Nie znaleziono tekstu ani kodu. Spróbuj ostrzejszego zdjęcia etykiety, zrobionego z bliska.</string>
     <string name="scan_error_unreadable">Ten plik nie wygląda na zdjęcie.</string>
     <string name="scan_error_load_failed">Nie udało się wczytać zdjęcia.</string>
+    <string name="scan_overline">Zeskanuj lub wpisz</string>
+    <string name="scan_option_camera">Skanuj aparatem</string>
+    <string name="scan_option_camera_detail">Odczytuje daty i kody na żywo</string>
+    <string name="scan_option_photo">Wybierz zdjęcie etykiety</string>
+    <string name="scan_option_photo_detail">Zdjęcie opakowania z galerii</string>
+    <string name="scan_option_type">Wpisz ręcznie</string>
+    <string name="scan_option_type_detail">Bez etykiety</string>
+    <string name="scan_hint">Wyceluj w datę ważności. Kod kreskowy pomoże uzupełnić nazwę produktu.</string>
+    <string name="scan_reading">Odczytuję etykietę…</string>
+    <string name="scan_error_title">Nie udało się odczytać</string>
+    <string name="scan_review_title">Sprawdź dane</string>
+    <string name="scan_review_overline">Zeskanowana etykieta</string>
+    <string name="scan_name_placeholder">Nazwa produktu</string>
+    <string name="scan_looking_up">Szukam kodu kreskowego…</string>
+    <string name="scan_product">Produkt</string>
+    <string name="scan_product_found">Znaleziono</string>
+    <string name="scan_expiry_date">Termin ważności</string>
+    <string name="scan_no_date">Na etykiecie nie znaleziono daty. Ustawisz ją na następnym ekranie.</string>
+    <string name="scan_pick_date">Wybierz datę ważności. Najbardziej prawdopodobne są na górze.</string>
+    <string name="scan_none_of_these">Żadna z tych</string>
+    <string name="scan_text_read">Tekst z etykiety</string>
+    <!-- A line of label text in quotation marks -->
+    <string name="scan_source_line">„%1$s”</string>
+    <!-- Spoken for the confidence bars next to a date -->
+    <string name="scan_confidence">Pewność: %1$d%%</string>
+    <plurals name="scan_lines_show">
+        <item quantity="one">Pokaż %d wiersz</item>
+        <item quantity="few">Pokaż %d wiersze</item>
+        <item quantity="many">Pokaż %d wierszy</item>
+        <item quantity="other">Pokaż %d wiersza</item>
+    </plurals>
+    <plurals name="scan_lines_hide">
+        <item quantity="one">Ukryj %d wiersz</item>
+        <item quantity="few">Ukryj %d wiersze</item>
+        <item quantity="many">Ukryj %d wierszy</item>
+        <item quantity="other">Ukryj %d wiersza</item>
+    </plurals>
 
     <!-- Settings -->
     <string name="settings_title">Ustawienia</string>

@@ -195,12 +195,43 @@
     <string name="form_notes">Notes</string>
     <string name="form_notes_placeholder">Opened on Monday, half left</string>
 
-    <!-- Scan placeholder -->
-    <string name="scan_coming_soon">Coming soon</string>
-    <string name="scan_coming_soon_message">Label and barcode scanning arrives in the next build. Add food by hand for now.</string>
+    <!-- Add food: scanning -->
     <string name="scan_error_nothing_found">No text or barcode was found. Try a sharper, closer photo of the label.</string>
     <string name="scan_error_unreadable">That file doesn\'t look like a photo.</string>
     <string name="scan_error_load_failed">Couldn\'t load that photo.</string>
+    <string name="scan_overline">Scan or type</string>
+    <string name="scan_option_camera">Scan with the camera</string>
+    <string name="scan_option_camera_detail">Reads dates and barcodes live</string>
+    <string name="scan_option_photo">Choose a photo of the label</string>
+    <string name="scan_option_photo_detail">Pick a picture of the packaging</string>
+    <string name="scan_option_type">Type it in</string>
+    <string name="scan_option_type_detail">No label to read</string>
+    <string name="scan_hint">Point at the best-before or use-by date. A barcode helps fill in the product name.</string>
+    <string name="scan_reading">Reading the label…</string>
+    <string name="scan_error_title">Couldn\'t read that</string>
+    <string name="scan_review_title">Check the details</string>
+    <string name="scan_review_overline">Scanned label</string>
+    <string name="scan_name_placeholder">Product name</string>
+    <string name="scan_looking_up">Looking up barcode…</string>
+    <string name="scan_product">Product</string>
+    <string name="scan_product_found">Found</string>
+    <string name="scan_expiry_date">Expiry date</string>
+    <string name="scan_no_date">No date was found on the label. You can set one on the next screen.</string>
+    <string name="scan_pick_date">Pick the best-before or use-by date. Most likely first.</string>
+    <string name="scan_none_of_these">None of these</string>
+    <string name="scan_text_read">Text read from the label</string>
+    <!-- A line of label text in quotation marks -->
+    <string name="scan_source_line">“%1$s”</string>
+    <!-- Spoken for the confidence bars next to a date -->
+    <string name="scan_confidence">Confidence %1$d percent</string>
+    <plurals name="scan_lines_show">
+        <item quantity="one">Show %d line</item>
+        <item quantity="other">Show %d lines</item>
+    </plurals>
+    <plurals name="scan_lines_hide">
+        <item quantity="one">Hide %d line</item>
+        <item quantity="other">Hide %d lines</item>
+    </plurals>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

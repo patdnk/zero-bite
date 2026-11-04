@@ -120,7 +120,7 @@ class RootScreenTest {
         waitFor("Details")
 
         compose.runOnUiThread { app.inventory.showScan() }
-        waitFor("Scan a label")
+        waitFor("Choose a photo of the label")
         pressBack()
         compose.waitUntil(3_000) { app.presentedSheet == null }
         compose.onNodeWithText("Details").assertExists()

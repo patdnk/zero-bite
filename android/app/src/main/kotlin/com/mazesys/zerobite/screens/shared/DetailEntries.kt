@@ -3,6 +3,10 @@ package com.mazesys.zerobite.screens.shared
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mazesys.zerobite.AppDependencies
+import com.mazesys.zerobite.core.model.ItemDraft
+import com.mazesys.zerobite.screens.inventory.ItemFormMode
+import com.mazesys.zerobite.screens.inventory.ItemFormScreen
+import com.mazesys.zerobite.screens.inventory.ItemFormViewModel
 import com.mazesys.zerobite.screens.inventory.ItemDetailScreen
 import com.mazesys.zerobite.screens.inventory.ItemDetailViewModel
 import com.mazesys.zerobite.screens.recipes.RecipeDetailScreen
@@ -43,4 +47,13 @@ fun RecipeDetailEntry(
         )
     }
     RecipeDetailScreen(detail, onBack = onBack)
+}
+
+/** The add/edit item form wired to its view model; [onDone] runs after a save and on cancel. Used by the item sheet and the add-food flow. */
+@Composable
+fun ItemFormEntry(mode: ItemFormMode, draft: ItemDraft?, dependencies: AppDependencies, onDone: () -> Unit) {
+    val form = viewModel {
+        ItemFormViewModel(mode, draft, dependencies.inventory, dependencies.clock, dependencies.ids, onSaved = { onDone() })
+    }
+    ItemFormScreen(form, onCancel = onDone)
 }
