@@ -234,6 +234,7 @@
     </plurals>
 
     <!-- Live camera scanning -->
+    <string name="scan_live_title">Scan label</string>
     <string name="scan_live_looking_for_date">Looking for a best-before date…</string>
     <string name="scan_live_use_found">Use what I\'ve found</string>
     <plurals name="scan_live_lines_read">

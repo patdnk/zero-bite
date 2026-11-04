@@ -253,6 +253,7 @@
     </plurals>
 
     <!-- Live camera scanning -->
+    <string name="scan_live_title">Zeskanuj etykietę</string>
     <string name="scan_live_looking_for_date">Szukam daty ważności…</string>
     <string name="scan_live_use_found">Użyj znalezionych danych</string>
     <plurals name="scan_live_lines_read">

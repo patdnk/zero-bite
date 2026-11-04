@@ -14,9 +14,13 @@ import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.mazesys.zerobite.core.model.DateCandidate
+import com.mazesys.zerobite.core.model.FoodCategory
+import com.mazesys.zerobite.core.model.ProductInfo
 import com.mazesys.zerobite.core.model.ScanResult
 import com.mazesys.zerobite.testing.FakeInventoryRepository
 import com.mazesys.zerobite.testing.FakeLabels
+import com.mazesys.zerobite.testing.FakeProductLookup
 import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.testDependencies
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
@@ -25,6 +29,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlinx.datetime.LocalDate
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
@@ -39,11 +44,12 @@ class ScanSheetTest {
 
     private val inventory = FakeInventoryRepository()
     private val labels = FakeLabels()
+    private val productLookup = FakeProductLookup()
     private var finished = 0
     private var flow: ScanFlowViewModel? = null
 
     private fun show(supportsLive: Boolean = true) {
-        val deps = testDependencies(inventory = inventory, labels = FakeLabels(supportsLiveScanning = supportsLive).also {
+        val deps = testDependencies(inventory = inventory, productLookup = productLookup, labels = FakeLabels(supportsLiveScanning = supportsLive).also {
             it.result = labels.result
             it.failure = labels.failure
         })
@@ -112,5 +118,40 @@ class ScanSheetTest {
         compose.onNodeWithText("No text or barcode was found. Try a sharper, closer photo of the label.").assertIsDisplayed()
         compose.onNodeWithText("OK").performClick()
         compose.onNodeWithText("Couldn't read that").assertDoesNotExist()
+    }
+
+    @Test
+    fun `a scanned photo carries the barcode, brand, name and chosen expiry into the saved item`() {
+        labels.result = ScanResult(
+            lines = listOf("GREEK YOGHURT", "USE BY 14 SEP 26", "BEST BEFORE 20 SEP 26"),
+            barcode = "5000119000000",
+            candidates = listOf(
+                DateCandidate(LocalDate(2026, 9, 14), "14 SEP 26", "USE BY 14 SEP 26", 0.9),
+                DateCandidate(LocalDate(2026, 9, 20), "20 SEP 26", "BEST BEFORE 20 SEP 26", 0.6),
+            ),
+            suggestedName = "Greek yoghurt",
+        )
+        productLookup.info = ProductInfo("5000119000000", "Natural Greek Yoghurt", "Acme Dairy", FoodCategory.DAIRY)
+        show()
+        compose.onNodeWithTag("scan.live").performClick()
+        compose.onNodeWithText("Live scanner").assertIsDisplayed()
+        compose.runOnUiThread { flow!!.coordinator.pop() }
+        compose.runOnUiThread { flow!!.process(Uri.parse("content://media/picker/0/1")) }
+        compose.waitForIdle()
+        compose.onNode(hasText("Check the details") and isHeading()).assertIsDisplayed()
+        assertEquals(listOf("5000119000000"), productLookup.asked)
+
+        compose.onNodeWithText("20 September 2026").performClick()
+        compose.onNodeWithTag("review.continue").performClick()
+        compose.waitForIdle()
+        compose.onNodeWithTag("itemForm.save").performClick()
+        compose.waitUntil(3_000) { finished == 1 }
+
+        val saved = inventory.current.single()
+        assertEquals("Natural Greek Yoghurt", saved.name)
+        assertEquals("Acme Dairy", saved.brand)
+        assertEquals("5000119000000", saved.barcode)
+        assertEquals(FoodCategory.DAIRY, saved.category)
+        assertEquals(LocalDate(2026, 9, 20), saved.expiresOn)
     }
 }

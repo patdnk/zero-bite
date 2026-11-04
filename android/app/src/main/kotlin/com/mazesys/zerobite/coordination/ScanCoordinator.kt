@@ -22,16 +22,15 @@ class ScanCoordinator(private val onFinished: () -> Unit) {
 
     val backStack: SnapshotStateList<ScanRoute> = mutableStateListOf(ScanRoute.Choose)
 
-    fun showLiveScanner() {
-        backStack.add(ScanRoute.Live)
-    }
+    fun showLiveScanner() = push(ScanRoute.Live)
 
-    fun showReview(result: ScanResult) {
-        backStack.add(ScanRoute.Review(result))
-    }
+    fun showReview(result: ScanResult) = push(ScanRoute.Review(result))
 
-    fun showForm(draft: ItemDraft) {
-        backStack.add(ScanRoute.Form(draft))
+    fun showForm(draft: ItemDraft) = push(ScanRoute.Form(draft))
+
+    /** A double tap must not stack the same screen twice. */
+    private fun push(route: ScanRoute) {
+        if (backStack.lastOrNull() != route) backStack.add(route)
     }
 
     fun pop() {

@@ -57,6 +57,7 @@ import com.mazesys.zerobite.coordination.AlertConfig
 import com.mazesys.zerobite.scanning.LabelReading
 import com.mazesys.zerobite.screens.root.AppAlert
 import com.mazesys.zerobite.ui.components.AppButton
+import com.mazesys.zerobite.ui.components.DetailTitle
 import com.mazesys.zerobite.ui.components.EmptyStateView
 import com.mazesys.zerobite.ui.components.TopBar
 import com.mazesys.zerobite.ui.components.TopBarLeading
@@ -129,6 +130,7 @@ fun LiveScannerContent(
 ) {
     Column(Modifier.fillMaxSize().background(ZeroBiteTheme.colors.backgroundPrimary)) {
         TopBar(TopBarLeading.Back(onBack))
+        DetailTitle(stringResource(R.string.scan_live_title), Modifier.padding(horizontal = Spacing.gutter, vertical = Spacing.sm))
         Box(Modifier.weight(1f).fillMaxWidth()) {
             when (access) {
                 CameraAccess.GRANTED -> {

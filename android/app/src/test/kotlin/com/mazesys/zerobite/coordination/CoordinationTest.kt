@@ -1,6 +1,8 @@
 package com.mazesys.zerobite.coordination
 
 import com.mazesys.zerobite.R
+import com.mazesys.zerobite.core.model.ItemDraft
+import com.mazesys.zerobite.core.model.ScanResult
 import com.mazesys.zerobite.testing.english
 import com.mazesys.zerobite.ui.text.uiText
 import com.mazesys.zerobite.data.SettingsSnapshot
@@ -85,5 +87,23 @@ class CoordinationTest {
         app.showAlert(AlertConfig(uiText(R.string.alert_delete_everything_title), primary = AlertButton(uiText(R.string.alert_delete_everything_action), isDestructive = true)))
         app.showItem("milk")
         assertNull(app.alert)
+    }
+
+    @Test
+    fun `a double tap does not push the same scan route twice`() {
+        val scan = ScanCoordinator(onFinished = {})
+        val result = ScanResult(lines = listOf("MILK"))
+        scan.showLiveScanner()
+        scan.showLiveScanner()
+        scan.showReview(result)
+        scan.showReview(result)
+        val draft = ItemDraft(name = "Milk", expiresOn = TestClock.today)
+        scan.showForm(draft)
+        scan.showForm(draft)
+
+        assertEquals(
+            listOf(ScanRoute.Choose, ScanRoute.Live, ScanRoute.Review(result), ScanRoute.Form(draft)),
+            scan.backStack.toList(),
+        )
     }
 }

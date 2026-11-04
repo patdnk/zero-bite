@@ -47,7 +47,7 @@ class MlKitLabelReader(private val context: Context) : LabelReading {
     }
 
     override val supportsLiveScanning: Boolean
-        get() = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+        get() = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)
 
     /** Reads text and barcodes; a failed barcode pass just means no barcode. Null if OCR failed. */
     private fun read(image: InputImage, onResult: (RecognizedText?) -> Unit) {
