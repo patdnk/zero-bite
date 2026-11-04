@@ -26,6 +26,8 @@ import com.mazesys.zerobite.reminders.Notifier
 import com.mazesys.zerobite.reminders.ReminderScheduler
 import com.mazesys.zerobite.reminders.ResourceNotificationCopy
 import com.mazesys.zerobite.reminders.ReminderSync
+import com.mazesys.zerobite.scanning.LabelReading
+import com.mazesys.zerobite.scanning.MlKitLabelReader
 import com.mazesys.zerobite.ui.text.Strings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineDispatcher
@@ -58,6 +60,8 @@ class AppDependencies(
     val notifier: Notifier,
     /** String resources in the current app language, for text that is stored rather than shown. */
     val strings: Strings,
+    /** Reads labels from photos and from the live camera. */
+    val labels: LabelReading,
     /** The current app language, kept up to date by MainActivity. */
     val language: AppLanguage = AppLanguage(),
     /** Reminder text in the current app language, read at every replan. */
@@ -87,6 +91,7 @@ class AppDependencies(
                 scheduler = AlarmReminderScheduler(app, prefs),
                 notifier = AndroidNotifier(app),
                 strings = Strings { app.getString(it) },
+                labels = MlKitLabelReader(app),
                 language = language,
                 notificationCopy = { ResourceNotificationCopy(app.resources) },
                 usageData = FirebaseUsageDataCollection(app),

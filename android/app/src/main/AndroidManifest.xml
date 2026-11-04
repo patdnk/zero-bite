@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Live scanning is optional: photos and typing work without a camera. CAMERA implies the
+         camera and autofocus features as required, so each is declared optional explicitly. -->
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <!-- Analytics without the advertising ID or Privacy Sandbox ad APIs: no ad tracking. -->
     <uses-permission
         android:name="com.google.android.gms.permission.AD_ID"

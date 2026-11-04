@@ -1,14 +1,19 @@
 package com.mazesys.zerobite.testing
 
+import android.net.Uri
+import androidx.camera.core.ImageAnalysis
 import com.mazesys.zerobite.AppDependencies
 import com.mazesys.zerobite.IdGenerator
 import com.mazesys.zerobite.core.inventory.InventoryRepository
 import com.mazesys.zerobite.core.model.FoodItem
+import com.mazesys.zerobite.core.model.ScanResult
 import com.mazesys.zerobite.core.notifications.PlannedNotification
 import com.mazesys.zerobite.reminders.NotificationAccess
 import com.mazesys.zerobite.reminders.NotificationPermission
 import com.mazesys.zerobite.reminders.Notifier
 import com.mazesys.zerobite.reminders.ReminderScheduler
+import com.mazesys.zerobite.scanning.LabelReading
+import com.mazesys.zerobite.scanning.RecognizedText
 import com.mazesys.zerobite.core.model.Recipe
 import com.mazesys.zerobite.core.recipes.IngredientAliases
 import com.mazesys.zerobite.core.recipes.RecipeRepository
@@ -95,8 +100,11 @@ fun testDependencies(
     scheduler: FakeScheduler = FakeScheduler(),
     notifier: FakeNotifier = FakeNotifier(),
     usageData: FakeUsageData = FakeUsageData(),
+    labels: FakeLabels = FakeLabels(),
 ) = AppDependencies(
-    clock, settings, inventory, recipes, ids, CoroutineScope(Dispatchers.Unconfined), access, scheduler, notifier, EnglishStrings,
+    clock = clock, settings = settings, inventory = inventory, recipes = recipes, ids = ids,
+    appScope = CoroutineScope(Dispatchers.Unconfined), notifications = access, scheduler = scheduler,
+    notifier = notifier, strings = EnglishStrings, labels = labels,
     usageData = usageData, computation = Dispatchers.Unconfined,
 )
 
@@ -159,4 +167,19 @@ class FakeUsageData : UsageDataCollection {
     override fun setEnabled(enabled: Boolean) {
         applied += enabled
     }
+}
+
+/** Returns `result` (or throws `failure`) for every photo; counts calls. */
+class FakeLabels(
+    var result: ScanResult = ScanResult(),
+    var failure: Exception? = null,
+    override val supportsLiveScanning: Boolean = true,
+) : LabelReading {
+    var scans = 0
+    override suspend fun scan(photo: Uri, today: LocalDate): ScanResult {
+        scans++
+        failure?.let { throw it }
+        return result
+    }
+    override fun analyzer(onFrame: (RecognizedText) -> Unit) = ImageAnalysis.Analyzer { it.close() }
 }
