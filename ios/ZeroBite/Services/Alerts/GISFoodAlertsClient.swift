@@ -38,7 +38,9 @@ struct GISFoodAlertsClient: FoodAlertsFetching {
     // MARK: - List
 
     /// Reads list pages until one contains an entry older than `since`. A failing list page
-    /// throws, since the result would silently miss warnings.
+    /// throws, since the result would silently miss warnings. So does an empty first page: a
+    /// 200 with no entries is an error page or a layout change, and treating it as "no
+    /// warnings" would wipe the alerts already held. An empty later page is the end of the list.
     private func listEntries(since: Date) async throws -> [GISAlertParser.ListEntry] {
         var entries: [GISAlertParser.ListEntry] = []
         var seen = Set<String>()
@@ -46,6 +48,10 @@ struct GISFoodAlertsClient: FoodAlertsFetching {
             var components = URLComponents(url: GISAlertParser.base.appendingPathComponent("web/gis/ostrzezenia"), resolvingAgainstBaseURL: false)!
             components.queryItems = [URLQueryItem(name: "page", value: String(page))]
             let pageEntries = GISAlertParser.listEntries(html: try await html(at: components.url!))
+            if pageEntries.isEmpty {
+                if page == 1 { throw URLError(.cannotParseResponse) }
+                break
+            }
             // A new warning can shift entries onto the next page between two requests.
             entries += pageEntries.filter { seen.insert($0.id).inserted }
             if pageEntries.contains(where: { $0.published < since }) { break }

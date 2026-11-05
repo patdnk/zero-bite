@@ -190,6 +190,24 @@ struct RecallStoreTests {
         #expect(reloaded.alerts.map(\.id) == [gis.id, fsaNew.id])
     }
 
+    @Test func gisErrorPageKeepsCachedGISAlerts() async throws {
+        let gis = try GISTestData.alert("gis-alert-boczek.html")
+        let fsaNew = try AlertFixtures.alert("FSA-AA-43-2026")
+        let cache = FileManager.default.temporaryDirectory.appendingPathComponent("alerts-\(UUID().uuidString).json")
+        try JSONEncoder().encode([gis]).write(to: cache)
+        // gov.pl answers 200 with an error page instead of the list.
+        let network = StubNetwork { _ in .init(body: Data("<html><body>Błąd</body></html>".utf8)) }
+        let combined = CombinedFoodAlerts(
+            clients: [.fsa: StubSource(result: .success([fsaNew])), .gis: GISFoodAlertsClient(session: network.session)],
+            enabled: { [.fsa, .gis] }
+        )
+        let store = RecallStore(client: combined, cacheURL: cache, defaults: AppSettings.ephemeral().userDefaults)
+
+        #expect(await store.refresh(force: true) == false)
+        #expect(Set(store.alerts.map(\.id)) == [gis.id, fsaNew.id])
+        #expect(store.lastErrorMessage == "Couldn't check for new food alerts. Showing the last ones we downloaded.")
+    }
+
     @Test func dismissAndNotifiedArePersisted() async throws {
         let settings = AppSettings.ephemeral()
         let store = RecallStore(client: StubClient(result: .success(try AlertFixtures.load())), cacheURL: nil, defaults: settings.userDefaults)
@@ -364,10 +382,34 @@ struct GISFoodAlertsClientTests {
         }
     }
 
+    @Test func emptyFirstPageThrows() async throws {
+        let network = StubNetwork { _ in .init(body: Data("<html><body>Błąd</body></html>".utf8)) }
+        let client = GISFoodAlertsClient(session: network.session)
+
+        await #expect(throws: URLError.self) {
+            _ = try await client.fetchAlerts(since: since, known: [])
+        }
+        #expect(network.requests.count == 1)
+    }
+
+    @Test func emptyLaterPageEndsTheList() async throws {
+        let list = try GISTestData.html("gis-list.html")
+        let network = StubNetwork { url in
+            url.query == "page=1" ? .init(body: Data(list.utf8)) : .init(body: Data("<html></html>".utf8))
+        }
+        let client = GISFoodAlertsClient(session: network.session)
+
+        // Every entry on page 1 is newer than `since`, so only the empty page 2 ends paging.
+        _ = try await client.fetchAlerts(since: TestSupport.date(2026, 1, 1), known: [])
+
+        let pages = network.requests.map(\.absoluteString).filter { $0.contains("ostrzezenia?") }
+        #expect(pages == ["https://www.gov.pl/web/gis/ostrzezenia?page=1", "https://www.gov.pl/web/gis/ostrzezenia?page=2"])
+    }
+
     @Test func downloadsAtMostThreeArticlesAtOnce() async throws {
         let list = try GISTestData.html("gis-list.html")
         let network = StubNetwork { url in
-            url.path == "/web/gis/ostrzezenia" ? .init(body: Data(list.utf8)) : .init(status: 404, delay: 0.05)
+            url.path == "/web/gis/ostrzezenia" ? .init(body: Data(list.utf8)) : .init(status: 404, delay: 0.2)
         }
         let client = GISFoodAlertsClient(session: network.session, maxPages: 1)
 

@@ -70,8 +70,6 @@ final class StubNetwork: @unchecked Sendable {
         Self.registry.withLock { Self.live[id] = self }
     }
 
-    deinit { Self.registry.withLock { _ = Self.live.removeValue(forKey: id) } }
-
     /// Every request made, in arrival order.
     var receivedRequests: [URLRequest] { state.withLock { received } }
     var requests: [URL] { receivedRequests.compactMap(\.url) }
