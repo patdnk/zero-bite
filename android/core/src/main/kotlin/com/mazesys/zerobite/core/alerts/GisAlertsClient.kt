@@ -42,6 +42,11 @@ class GisAlertsClient(private val http: HttpClient, private val maxPages: Int = 
         val knownIds = known.mapTo(HashSet()) { it.id }
         val fresh = entries.filter { it.published >= since && it.id !in knownIds }
         val downloaded = articles(fresh)
+        // New warnings were listed and none could be read: more likely an article layout change
+        // than a quiet day, and returning the old alerts as a success would hide it.
+        if (fresh.isNotEmpty() && downloaded.isEmpty()) {
+            throw GisAlertsUnavailable(HttpStatusCode.OK.value, "None of ${fresh.size} new GIS warnings could be read")
+        }
 
         // Known alerts stay while they are on the list or inside the window; older ones that
         // dropped off the list are let go.
@@ -54,18 +59,20 @@ class GisAlertsClient(private val http: HttpClient, private val maxPages: Int = 
 
     /**
      * Reads list pages until one contains an entry older than `since`. A failing list page
-     * throws, since the result would silently miss warnings; so does an empty first page, which
-     * can't be told apart from a layout change. An empty later page just ends the paging.
+     * throws, since the result would silently miss warnings; so does a first page with no rows,
+     * which can't be told apart from a layout change. A later page with no rows just ends the
+     * paging; one with rows but no food warnings (only food-contact items) does not.
      */
     private suspend fun listEntries(since: LocalDate): List<GisAlertParser.ListEntry> {
         val entries = mutableListOf<GisAlertParser.ListEntry>()
         val seen = HashSet<String>()
         for (page in 1..maxPages) {
-            val pageEntries = GisAlertParser.listEntries(html("${GisAlertParser.BASE}/web/gis/ostrzezenia", page))
-            if (pageEntries.isEmpty()) {
+            val html = html("${GisAlertParser.BASE}/web/gis/ostrzezenia", page)
+            if (GisAlertParser.listRowCount(html) == 0) {
                 if (page == 1) throw GisAlertsUnavailable(HttpStatusCode.OK.value, "GIS list page 1 has no warnings")
                 break
             }
+            val pageEntries = GisAlertParser.listEntries(html)
             // A new warning can shift entries onto the next page between two requests.
             entries += pageEntries.filter { seen.add(it.id) }
             if (pageEntries.any { it.published < since }) break

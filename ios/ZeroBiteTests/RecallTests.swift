@@ -313,7 +313,8 @@ struct GISFoodAlertsClientTests {
         let network = StubNetwork { _ in .init(body: Data(list.utf8)) }
         let client = GISFoodAlertsClient(session: network.session, maxPages: 2)
 
-        _ = try await client.fetchAlerts(since: TestSupport.date(2026, 1, 1), known: [])
+        // The articles are list pages or 404s, so the fetch fails; only the paging matters here.
+        _ = try? await client.fetchAlerts(since: TestSupport.date(2026, 1, 1), known: [])
 
         let pages = network.requests.map(\.absoluteString).filter { $0.contains("ostrzezenia?") }
         #expect(pages == ["https://www.gov.pl/web/gis/ostrzezenia?page=1", "https://www.gov.pl/web/gis/ostrzezenia?page=2"])
@@ -400,7 +401,8 @@ struct GISFoodAlertsClientTests {
         let client = GISFoodAlertsClient(session: network.session)
 
         // Every entry on page 1 is newer than `since`, so only the empty page 2 ends paging.
-        _ = try await client.fetchAlerts(since: TestSupport.date(2026, 1, 1), known: [])
+        // The articles are list pages or 404s, so the fetch fails; only the paging matters here.
+        _ = try? await client.fetchAlerts(since: TestSupport.date(2026, 1, 1), known: [])
 
         let pages = network.requests.map(\.absoluteString).filter { $0.contains("ostrzezenia?") }
         #expect(pages == ["https://www.gov.pl/web/gis/ostrzezenia?page=1", "https://www.gov.pl/web/gis/ostrzezenia?page=2"])
@@ -413,10 +415,76 @@ struct GISFoodAlertsClientTests {
         }
         let client = GISFoodAlertsClient(session: network.session, maxPages: 1)
 
-        _ = try await client.fetchAlerts(since: TestSupport.date(2026, 1, 1), known: [])
+        // None of the 404 pages is an alert, which is itself a failure; only the requests matter here.
+        _ = try? await client.fetchAlerts(since: TestSupport.date(2026, 1, 1), known: [])
 
         #expect(network.requests.count == 1 + 8)
         #expect(network.peakConcurrency == 3)
+    }
+
+    private func listRow(date: String, slug: String) -> String {
+        #"<span class="date">\#(date)</span><div class="title"><a href="/web/gis/\#(slug)">T</a></div>"#
+    }
+
+    @Test func unreadableNewArticlesThrow() async throws {
+        let list = listRow(date: "09.10.2026", slug: "ostrzezenie-publiczne-dotyczace-zywnosci-a")
+            + listRow(date: "08.10.2026", slug: "ostrzezenie-publiczne-dotyczace-zywnosci-b")
+        let network = StubNetwork { url in
+            url.path == "/web/gis/ostrzezenia" ? .init(body: Data(list.utf8)) : .init(body: Data("<html><body>Nowy układ</body></html>".utf8))
+        }
+        let client = GISFoodAlertsClient(session: network.session)
+
+        await #expect(throws: URLError.self) {
+            _ = try await client.fetchAlerts(since: TestSupport.date(2026, 10, 1), known: [])
+        }
+        #expect(network.requests.filter { !$0.absoluteString.contains("ostrzezenia?") }.count == 2)
+    }
+
+    @Test func noNewEntriesIsNotAFailure() async throws {
+        let known = try GISTestData.alert("gis-alert-boczek.html")
+        let list = listRow(date: "08.10.2026", slug: boczekSlug)
+        let network = StubNetwork { _ in .init(body: Data(list.utf8)) }
+        let client = GISFoodAlertsClient(session: network.session)
+
+        let alerts = try await client.fetchAlerts(since: TestSupport.date(2026, 10, 1), known: [known])
+
+        #expect(alerts == [known])
+    }
+
+    @Test func pageOfOnlyFoodContactItemsDoesNotEndTheList() async throws {
+        let contact = "ostrzezenie-publiczne-dotyczace-wyrobu-do-kontaktu-z-zywnoscia-x"
+        let pages = [
+            "1": listRow(date: "09.10.2026", slug: boczekSlug),
+            "2": listRow(date: "08.10.2026", slug: contact) + listRow(date: "07.10.2026", slug: contact + "-2"),
+            "3": listRow(date: "05.10.2026", slug: seryRozneSlug),
+        ]
+        let article = try GISTestData.html("gis-alert-boczek.html")
+        let network = StubNetwork { url in
+            if url.path == "/web/gis/ostrzezenia" {
+                let page = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "page" }?.value ?? ""
+                return .init(body: Data((pages[page] ?? "<html></html>").utf8))
+            }
+            return .init(body: Data(article.utf8))
+        }
+        let client = GISFoodAlertsClient(session: network.session)
+
+        let alerts = try await client.fetchAlerts(since: TestSupport.date(2026, 10, 6), known: [])
+
+        let requested = network.requests.map(\.absoluteString).filter { $0.contains("ostrzezenia?") }
+        #expect(requested == (1...3).map { "https://www.gov.pl/web/gis/ostrzezenia?page=\($0)" })
+        #expect(alerts.count == 1)
+    }
+
+    @Test func firstPageOfOnlyFoodContactItemsIsNotAnError() async throws {
+        let contact = listRow(date: "08.10.2026", slug: "ostrzezenie-publiczne-dotyczace-wyrobu-do-kontaktu-z-zywnoscia-x")
+        let network = StubNetwork { url in
+            url.query == "page=1" ? .init(body: Data(contact.utf8)) : .init(body: Data("<html></html>".utf8))
+        }
+        let client = GISFoodAlertsClient(session: network.session)
+
+        let alerts = try await client.fetchAlerts(since: TestSupport.date(2026, 10, 1), known: [])
+
+        #expect(alerts.isEmpty)
     }
 }
 

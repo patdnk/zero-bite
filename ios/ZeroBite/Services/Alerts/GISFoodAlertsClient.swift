@@ -27,6 +27,9 @@ struct GISFoodAlertsClient: FoodAlertsFetching {
         let fresh = entries.filter { $0.published >= since && !knownIDs.contains($0.id) }
         let downloaded = await articles(for: fresh)
         try Task.checkCancellation()
+        // New warnings were listed and none could be read: more likely an article layout change
+        // than a quiet day, and returning the old alerts as a success would hide it.
+        if !fresh.isEmpty && downloaded.isEmpty { throw URLError(.cannotParseResponse) }
 
         // Known alerts stay while they are on the list or inside the window; older ones that
         // dropped off the list are let go.
@@ -38,20 +41,22 @@ struct GISFoodAlertsClient: FoodAlertsFetching {
     // MARK: - List
 
     /// Reads list pages until one contains an entry older than `since`. A failing list page
-    /// throws, since the result would silently miss warnings. So does an empty first page: a
-    /// 200 with no entries is an error page or a layout change, and treating it as "no
-    /// warnings" would wipe the alerts already held. An empty later page is the end of the list.
+    /// throws, since the result would silently miss warnings. So does a first page with no rows:
+    /// a 200 with no list is an error page or a layout change, and treating it as "no warnings"
+    /// would wipe the alerts already held. A later page with no rows is the end of the list; one
+    /// with rows but no food warnings (only food-contact items) is not, and paging goes on.
     private func listEntries(since: Date) async throws -> [GISAlertParser.ListEntry] {
         var entries: [GISAlertParser.ListEntry] = []
         var seen = Set<String>()
         for page in stride(from: 1, through: maxPages, by: 1) {
             var components = URLComponents(url: GISAlertParser.base.appendingPathComponent("web/gis/ostrzezenia"), resolvingAgainstBaseURL: false)!
             components.queryItems = [URLQueryItem(name: "page", value: String(page))]
-            let pageEntries = GISAlertParser.listEntries(html: try await html(at: components.url!))
-            if pageEntries.isEmpty {
+            let body = try await html(at: components.url!)
+            if GISAlertParser.listRowCount(html: body) == 0 {
                 if page == 1 { throw URLError(.cannotParseResponse) }
                 break
             }
+            let pageEntries = GISAlertParser.listEntries(html: body)
             // A new warning can shift entries onto the next page between two requests.
             entries += pageEntries.filter { seen.insert($0.id).inserted }
             if pageEntries.contains(where: { $0.published < since }) { break }

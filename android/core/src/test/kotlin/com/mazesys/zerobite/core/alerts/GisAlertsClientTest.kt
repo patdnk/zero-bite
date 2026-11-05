@@ -186,6 +186,76 @@ class GisAlertsClientTest {
         assertEquals(entries.size, alerts.size)
     }
 
+    private fun row(date: String, slug: String) =
+        """<span class="date">$date</span><div class="title"><a href="/web/gis/$slug">T</a></div>"""
+
+    private val contactSlug = "ostrzezenie-publiczne-dotyczace-wyrobu-do-kontaktu-z-zywnoscia-x"
+
+    @Test
+    fun `unreadable new articles throw`() = runLive {
+        val list = row("09.10.2026", "ostrzezenie-publiczne-dotyczace-zywnosci-a") +
+            row("08.10.2026", "ostrzezenie-publiczne-dotyczace-zywnosci-b")
+        val requests = CopyOnWriteArrayList<String>()
+        val engine = MockEngine { request ->
+            requests += request.url.encodedPath
+            if (request.url.encodedPath == "/web/gis/ostrzezenia") respond(list, HttpStatusCode.OK)
+            else respond("<html><body>Nowy układ</body></html>", HttpStatusCode.OK)
+        }
+
+        assertFailsWith<GisAlertsUnavailable> {
+            GisAlertsClient(HttpClient(engine)).fetchAlerts(LocalDate(2026, 10, 1), emptyList())
+        }
+        assertEquals(2, requests.count { it != "/web/gis/ostrzezenia" })
+    }
+
+    @Test
+    fun `no new entries is not a failure`() = runLive {
+        val slug = "ostrzezenie-publiczne-dotyczace-zywnosci-a"
+        val known = FoodAlert(id = "GIS-$slug", title = "Known", kind = FoodAlert.Kind.RECALL, created = LocalDate(2026, 10, 8))
+        val engine = MockEngine { respond(row("08.10.2026", slug), HttpStatusCode.OK) }
+
+        val alerts = GisAlertsClient(HttpClient(engine)).fetchAlerts(LocalDate(2026, 10, 1), listOf(known))
+
+        assertEquals(listOf(known), alerts)
+    }
+
+    @Test
+    fun `a page of only food contact items does not end the list`() = runLive {
+        val food = "ostrzezenie-publiczne-dotyczace-zywnosci-a"
+        val pages = mapOf(
+            "1" to row("09.10.2026", food),
+            "2" to row("08.10.2026", contactSlug) + row("07.10.2026", "$contactSlug-2"),
+            "3" to row("05.10.2026", "$food-old"),
+        )
+        val listPages = CopyOnWriteArrayList<String>()
+        val engine = MockEngine { request ->
+            if (request.url.encodedPath == "/web/gis/ostrzezenia") {
+                val page = request.url.parameters["page"].orEmpty()
+                listPages += page
+                respond(pages[page] ?: "<html></html>", HttpStatusCode.OK)
+            } else {
+                respond(article("Chleb", "09.10.2026"), HttpStatusCode.OK)
+            }
+        }
+
+        val alerts = GisAlertsClient(HttpClient(engine)).fetchAlerts(LocalDate(2026, 10, 6), emptyList())
+
+        assertEquals(listOf("1", "2", "3"), listPages)
+        assertEquals(1, alerts.size)
+    }
+
+    @Test
+    fun `a first page of only food contact items is not an error`() = runLive {
+        val engine = MockEngine { request ->
+            if (request.url.parameters["page"] == "1") respond(row("08.10.2026", contactSlug), HttpStatusCode.OK)
+            else respond("<html></html>", HttpStatusCode.OK)
+        }
+
+        val alerts = GisAlertsClient(HttpClient(engine)).fetchAlerts(LocalDate(2026, 10, 1), emptyList())
+
+        assertTrue(alerts.isEmpty())
+    }
+
     @Test
     fun `gis client downloads at most three articles at once`() = runLive {
         val inFlight = AtomicInteger()
