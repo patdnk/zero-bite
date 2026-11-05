@@ -2,7 +2,7 @@
 //  RecallStore.swift
 //  ZeroBite
 //
-//  Fetches recent UK food alerts from the Food Standards Agency, caches them on disk, and
+//  Fetches recent food alerts (UK Food Standards Agency, Polish GIS), caches them on disk, and
 //  keeps the user's "not my batch" dismissals. Matching against the fridge is done on demand
 //  with RecallMatcher so it always reflects the current inventory.
 //
@@ -11,7 +11,9 @@ import Foundation
 import Observation
 
 protocol FoodAlertsFetching: Sendable {
-    func fetchAlerts(since: Date) async throws -> [FoodAlert]
+    /// Alerts published since `since`. `known` are the alerts already held, so a client that
+    /// has to download each one separately can skip those it has.
+    func fetchAlerts(since: Date, known: [FoodAlert]) async throws -> [FoodAlert]
 }
 
 /// Free, keyless FSA Food Alerts API (Open Government Licence v3.0).
@@ -20,7 +22,8 @@ struct FSAFoodAlertsClient: FoodAlertsFetching {
 
     var session: URLSession = .shared
 
-    func fetchAlerts(since: Date) async throws -> [FoodAlert] {
+    /// Ignores `known`: one request returns everything.
+    func fetchAlerts(since: Date, known: [FoodAlert]) async throws -> [FoodAlert] {
         var components = URLComponents(string: "https://data.food.gov.uk/food-alerts/id.json")!
         components.queryItems = [
             URLQueryItem(name: "_view", value: "full"),
@@ -107,8 +110,8 @@ final class RecallStore {
         return Date.now.timeIntervalSince(lastChecked) > Self.refreshInterval
     }
 
-    /// Fetches the last `historyDays` of alerts. Returns false if the request failed
-    /// (the cached alerts stay in place).
+    /// Fetches the last `historyDays` of alerts. Returns false if a request failed: the cached
+    /// alerts stay in place, apart from any source that did update (see `FoodAlertsPartialFailure`).
     @discardableResult
     func refresh(force: Bool = false, now: Date = .now) async -> Bool {
         guard force || needsRefresh, !isRefreshing else { return true }
@@ -116,7 +119,7 @@ final class RecallStore {
         defer { isRefreshing = false }
         let since = Calendar.current.date(byAdding: .day, value: -Self.historyDays, to: now) ?? now
         do {
-            let fetched = try await client.fetchAlerts(since: since)
+            let fetched = try await client.fetchAlerts(since: since, known: alerts)
             alerts = fetched.sorted { $0.created > $1.created }
             lastChecked = now
             lastErrorMessage = nil
@@ -124,7 +127,13 @@ final class RecallStore {
             Self.saveCache(alerts, to: cacheURL)
             return true
         } catch {
-            lastErrorMessage = String(localized: "Couldn't reach the Food Standards Agency. Showing the last alerts we downloaded.")
+            // Keep what the working sources returned, but leave `lastChecked` alone so the
+            // next launch retries.
+            if let partial = error as? FoodAlertsPartialFailure {
+                alerts = partial.alerts
+                Self.saveCache(alerts, to: cacheURL)
+            }
+            lastErrorMessage = String(localized: "Couldn't check for new food alerts. Showing the last ones we downloaded.")
             return false
         }
     }

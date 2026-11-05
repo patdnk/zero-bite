@@ -70,7 +70,12 @@ final class AppDependencies {
             return RecallStore(client: PreviewFoodAlerts(), cacheURL: nil, defaults: AppSettings.ephemeral().userDefaults)
         }
         #endif
-        return RecallStore(client: FSAFoodAlertsClient(), cacheURL: RecallStore.defaultCacheURL())
+        let client = CombinedFoodAlerts(
+            clients: [.fsa: FSAFoodAlertsClient(), .gis: GISFoodAlertsClient()],
+            // Constant until the recall sources setting (Task 4) replaces it.
+            enabled: { [.fsa] }
+        )
+        return RecallStore(client: client, cacheURL: RecallStore.defaultCacheURL())
     }
 
     /// In-memory everything, optionally pre-filled with the sample fridge.
@@ -133,7 +138,7 @@ final class AppDependencies {
 /// Canned alerts for previews and `--preview-alerts` debug runs: a recall that matches the
 /// sample fridge's milk, and a milk allergy alert.
 struct PreviewFoodAlerts: FoodAlertsFetching {
-    func fetchAlerts(since: Date) async throws -> [FoodAlert] {
+    func fetchAlerts(since: Date, known: [FoodAlert]) async throws -> [FoodAlert] {
         [
             FoodAlert(
                 id: "FSA-PRIN-PREVIEW", title: "Dairy Co recalls Semi Skimmed Milk because it may contain pieces of plastic",

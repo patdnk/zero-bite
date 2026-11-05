@@ -3,7 +3,7 @@
 //  ZeroBiteTests
 //
 //  FSA alert decoding (against a real API response), batch date parsing, recall matching
-//  and the recall store.
+//  the recall store, the GIS client and the combined sources.
 //
 
 import Foundation
@@ -141,7 +141,7 @@ struct RecallStoreTests {
 
     private struct StubClient: FoodAlertsFetching {
         let result: Result<[FoodAlert], Error>
-        func fetchAlerts(since: Date) async throws -> [FoodAlert] { try result.get() }
+        func fetchAlerts(since: Date, known: [FoodAlert]) async throws -> [FoodAlert] { try result.get() }
     }
 
     private func makeStore(_ result: Result<[FoodAlert], Error>, cacheURL: URL? = nil) -> RecallStore {
@@ -167,6 +167,29 @@ struct RecallStoreTests {
         #expect(store.alerts.isEmpty)
     }
 
+    @Test func keepsCachedGISAlertsWhenGISFails() async throws {
+        let fsaOld = try AlertFixtures.alert("FSA-PRIN-28-2026")
+        let fsaNew = try AlertFixtures.alert("FSA-AA-43-2026")
+        let gis = try GISTestData.alert("gis-alert-boczek.html")
+        let cache = FileManager.default.temporaryDirectory.appendingPathComponent("alerts-\(UUID().uuidString).json")
+        try JSONEncoder().encode([fsaOld, gis]).write(to: cache)
+
+        let combined = CombinedFoodAlerts(
+            clients: [.fsa: StubSource(result: .success([fsaNew])), .gis: StubSource(result: .failure(URLError(.timedOut)))],
+            enabled: { [.fsa, .gis] }
+        )
+        let store = RecallStore(client: combined, cacheURL: cache, defaults: AppSettings.ephemeral().userDefaults)
+        #expect(store.alerts.count == 2)
+
+        #expect(await store.refresh(force: true) == false)
+        #expect(store.alerts.map(\.id) == [gis.id, fsaNew.id])
+        #expect(store.lastErrorMessage == "Couldn't check for new food alerts. Showing the last ones we downloaded.")
+        #expect(store.lastChecked == nil)
+        // The merged list is what the next launch starts from.
+        let reloaded = RecallStore(client: combined, cacheURL: cache, defaults: AppSettings.ephemeral().userDefaults)
+        #expect(reloaded.alerts.map(\.id) == [gis.id, fsaNew.id])
+    }
+
     @Test func dismissAndNotifiedArePersisted() async throws {
         let settings = AppSettings.ephemeral()
         let store = RecallStore(client: StubClient(result: .success(try AlertFixtures.load())), cacheURL: nil, defaults: settings.userDefaults)
@@ -179,6 +202,236 @@ struct RecallStoreTests {
         let again = RecallStore(client: StubClient(result: .success([])), cacheURL: nil, defaults: settings.userDefaults)
         #expect(again.dismissedMatchIDs.contains(match.id))
         #expect(again.notifiedMatchIDs.contains(match.id))
+    }
+}
+
+// MARK: - GIS client and combined sources
+
+private final class GISTestBundleToken {}
+
+enum GISTestData {
+    static func html(_ file: String) throws -> String {
+        let name = (file as NSString).deletingPathExtension
+        let url = try #require(Bundle(for: GISTestBundleToken.self).url(forResource: name, withExtension: "html"))
+        return try String(contentsOf: url, encoding: .utf8)
+    }
+
+    /// The article snapshot parsed at the URL the list page links to.
+    static func alert(_ file: String) throws -> FoodAlert {
+        let slug = try #require(slugs[file])
+        return try #require(GISAlertParser.alert(html: html(file), url: articleURL(slug)))
+    }
+
+    static func articleURL(_ slug: String) -> URL { URL(string: "https://www.gov.pl/web/gis/" + slug)! }
+
+    /// Snapshots whose slug is also in `gis-list.html`.
+    static let slugs = [
+        "gis-alert-sery-rozne.html": "ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-serow-rozne-rodzaje",
+        "gis-alert-boczek.html": "ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-boczku-wedzonego",
+    ]
+}
+
+/// Counts calls and replies with a fixed result.
+private final class StubSource: FoodAlertsFetching, @unchecked Sendable {
+    let result: Result<[FoodAlert], Error>
+    private let lock = NSLock()
+    private var received: [[FoodAlert]] = []
+
+    init(result: Result<[FoodAlert], Error>) { self.result = result }
+
+    /// The `known` argument of each call.
+    var knownPerCall: [[FoodAlert]] { lock.withLock { received } }
+
+    func fetchAlerts(since: Date, known: [FoodAlert]) async throws -> [FoodAlert] {
+        lock.withLock { received.append(known) }
+        return try result.get()
+    }
+}
+
+struct GISFoodAlertsClientTests {
+
+    private let boczekSlug = GISTestData.slugs["gis-alert-boczek.html"]!
+    private let seryRozneSlug = GISTestData.slugs["gis-alert-sery-rozne.html"]!
+    /// Between the list's 6 October entry and its 8 October one.
+    private let since = TestSupport.date(2026, 10, 7)
+
+    /// Serves the list snapshot as page 1 and the two article snapshots that match list
+    /// entries. Every other article is a 404; `override` can answer anything first.
+    private func network(override: (@Sendable (URL) -> StubNetwork.Reply?)? = nil) throws -> StubNetwork {
+        let list = try GISTestData.html("gis-list.html")
+        let articles = try GISTestData.slugs.reduce(into: [String: String]()) { $0[$1.value] = try GISTestData.html($1.key) }
+        return StubNetwork { url in
+            if let reply = override?(url) { return reply }
+            if url.path == "/web/gis/ostrzezenia" {
+                let page = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "page" }?.value
+                return page == "1" ? .init(body: Data(list.utf8)) : .init(body: Data("<html></html>".utf8))
+            }
+            if let html = articles[url.lastPathComponent] { return .init(body: Data(html.utf8)) }
+            return .init(status: 404)
+        }
+    }
+
+    @Test func stopsPagingAtCutoff() async throws {
+        let network = try network()
+        let client = GISFoodAlertsClient(session: network.session)
+
+        let alerts = try await client.fetchAlerts(since: since, known: [])
+
+        let requests = network.requests.map(\.absoluteString)
+        #expect(requests.filter { $0.contains("ostrzezenia") } == ["https://www.gov.pl/web/gis/ostrzezenia?page=1"])
+        // The list has 5 food entries newer than `since`; the older ones are never opened.
+        let articles = requests.filter { !$0.contains("ostrzezenia?") }
+        #expect(articles.count == 5)
+        #expect(Set(articles) == Set(GISAlertParser.listEntries(html: try GISTestData.html("gis-list.html")).prefix(5).map(\.url.absoluteString)))
+        #expect(!requests.contains { $0.contains("/photo/") })
+        // Two of the five articles have a snapshot; newest first.
+        #expect(alerts.map(\.id) == ["GIS-" + seryRozneSlug, "GIS-" + boczekSlug])
+        #expect(alerts.allSatisfy { $0.source == .gis })
+    }
+
+    @Test func stopsAtMaxPages() async throws {
+        // Every page is the same list, which never reaches back past `since`.
+        let list = try GISTestData.html("gis-list.html")
+        let network = StubNetwork { _ in .init(body: Data(list.utf8)) }
+        let client = GISFoodAlertsClient(session: network.session, maxPages: 2)
+
+        _ = try await client.fetchAlerts(since: TestSupport.date(2026, 1, 1), known: [])
+
+        let pages = network.requests.map(\.absoluteString).filter { $0.contains("ostrzezenia?") }
+        #expect(pages == ["https://www.gov.pl/web/gis/ostrzezenia?page=1", "https://www.gov.pl/web/gis/ostrzezenia?page=2"])
+    }
+
+    @Test func requestsCarryUserAgentAndTimeout() async throws {
+        let network = try network()
+        let client = GISFoodAlertsClient(session: network.session)
+
+        _ = try await client.fetchAlerts(since: since, known: [])
+
+        let sent = network.receivedRequests
+        #expect(sent.count == 6)
+        #expect(sent.allSatisfy { $0.value(forHTTPHeaderField: "User-Agent") == "ZeroBite-iOS/1.0" })
+        #expect(sent.allSatisfy { $0.timeoutInterval == 20 })
+    }
+
+    @Test func reusesKnownArticles() async throws {
+        let known = try GISTestData.alert("gis-alert-boczek.html")
+        var marked = known
+        marked.shortTitle = "from the cache"
+        let network = try network()
+        let client = GISFoodAlertsClient(session: network.session)
+
+        let alerts = try await client.fetchAlerts(since: since, known: [marked])
+
+        #expect(!network.requests.contains { $0.lastPathComponent == boczekSlug })
+        #expect(alerts.first { $0.id == known.id }?.shortTitle == "from the cache")
+        #expect(alerts.count == 2)
+    }
+
+    @Test func dropsKnownAlertsOlderThanTheWindowAndOffTheList() async throws {
+        let boczek = try GISTestData.alert("gis-alert-boczek.html")
+        let stale = FoodAlert(
+            id: "GIS-gone-from-list", title: boczek.title, shortTitle: nil, kind: boczek.kind,
+            created: TestSupport.date(2026, 3, 1), url: nil, business: nil, otherBusinesses: [],
+            products: boczek.products, allergens: [], risk: nil, consumerAdvice: nil
+        )
+        let client = GISFoodAlertsClient(session: try network().session)
+
+        let alerts = try await client.fetchAlerts(since: since, known: [stale])
+
+        #expect(!alerts.contains { $0.id == stale.id })
+    }
+
+    @Test func skipsBrokenArticle() async throws {
+        let seryRozne = seryRozneSlug
+        let network = try network(override: { url in
+            url.lastPathComponent == seryRozne ? .init(status: 500) : nil
+        })
+        let client = GISFoodAlertsClient(session: network.session)
+
+        let alerts = try await client.fetchAlerts(since: since, known: [])
+
+        #expect(alerts.map(\.id) == ["GIS-" + boczekSlug])
+    }
+
+    @Test func failingListPageThrows() async throws {
+        let network = try network(override: { url in
+            url.path == "/web/gis/ostrzezenia" ? .init(status: 500) : nil
+        })
+        let client = GISFoodAlertsClient(session: network.session)
+
+        await #expect(throws: URLError.self) {
+            _ = try await client.fetchAlerts(since: since, known: [])
+        }
+    }
+
+    @Test func downloadsAtMostThreeArticlesAtOnce() async throws {
+        let list = try GISTestData.html("gis-list.html")
+        let network = StubNetwork { url in
+            url.path == "/web/gis/ostrzezenia" ? .init(body: Data(list.utf8)) : .init(status: 404, delay: 0.05)
+        }
+        let client = GISFoodAlertsClient(session: network.session, maxPages: 1)
+
+        _ = try await client.fetchAlerts(since: TestSupport.date(2026, 1, 1), known: [])
+
+        #expect(network.requests.count == 1 + 8)
+        #expect(network.peakConcurrency == 3)
+    }
+}
+
+struct CombinedFoodAlertsTests {
+
+    @Test func fetchesOnlyEnabledSources() async throws {
+        let fsa = StubSource(result: .success([try AlertFixtures.alert("FSA-AA-43-2026")]))
+        let gis = StubSource(result: .success([try GISTestData.alert("gis-alert-boczek.html")]))
+        let combined = CombinedFoodAlerts(clients: [.fsa: fsa, .gis: gis], enabled: { [.gis] })
+
+        let alerts = try await combined.fetchAlerts(since: .distantPast, known: [])
+
+        #expect(fsa.knownPerCall.isEmpty)
+        #expect(gis.knownPerCall.count == 1)
+        #expect(alerts.map(\.source) == [.gis])
+    }
+
+    @Test func handsEachClientOnlyItsOwnKnownAlerts() async throws {
+        let knownFSA = try AlertFixtures.alert("FSA-AA-43-2026")
+        let knownGIS = try GISTestData.alert("gis-alert-boczek.html")
+        let fsa = StubSource(result: .success([]))
+        let gis = StubSource(result: .success([]))
+        let combined = CombinedFoodAlerts(clients: [.fsa: fsa, .gis: gis], enabled: { [.fsa, .gis] })
+
+        _ = try await combined.fetchAlerts(since: .distantPast, known: [knownFSA, knownGIS])
+
+        #expect(fsa.knownPerCall == [[knownFSA]])
+        #expect(gis.knownPerCall == [[knownGIS]])
+    }
+
+    @Test func mergesSourcesNewestFirst() async throws {
+        let fsaAlert = try AlertFixtures.alert("FSA-AA-43-2026")
+        let gisAlert = try GISTestData.alert("gis-alert-boczek.html")
+        let combined = CombinedFoodAlerts(
+            clients: [.fsa: StubSource(result: .success([fsaAlert])), .gis: StubSource(result: .success([gisAlert]))],
+            enabled: { [.fsa, .gis] }
+        )
+
+        let alerts = try await combined.fetchAlerts(since: .distantPast, known: [])
+
+        #expect(alerts == [fsaAlert, gisAlert].sorted { $0.created > $1.created })
+    }
+
+    @Test func dropsDisabledSourceWithoutNetwork() async throws {
+        let knownFSA = try AlertFixtures.alert("FSA-AA-43-2026")
+        let knownGIS = try GISTestData.alert("gis-alert-boczek.html")
+        let failing = StubSource(result: .failure(URLError(.notConnectedToInternet)))
+        let combined = CombinedFoodAlerts(clients: [.fsa: failing, .gis: failing], enabled: { [.fsa] })
+
+        do {
+            _ = try await combined.fetchAlerts(since: .distantPast, known: [knownFSA, knownGIS])
+            Issue.record("Expected a partial failure")
+        } catch let partial as FoodAlertsPartialFailure {
+            #expect(partial.alerts == [knownFSA])
+            #expect(partial.failed == [.fsa])
+        }
+        #expect(failing.knownPerCall.count == 1)
     }
 }
 

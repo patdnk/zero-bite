@@ -487,6 +487,22 @@
         }
       }
     },
+    "Couldn't check for new food alerts. Showing the last ones we downloaded." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't check for new food alerts. Showing the last ones we downloaded."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się sprawdzić nowych alertów. Pokazujemy ostatnio pobrane."
+          }
+        }
+      }
+    },
     "Crash reports" : {
       "comment" : "Onboarding illustration: what usage data sharing sends",
       "localizations" : {
@@ -1992,22 +2008,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nie udało się wczytać zdjęcia."
-          }
-        }
-      }
-    },
-    "Couldn't reach the Food Standards Agency. Showing the last alerts we downloaded." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't reach the Food Standards Agency. Showing the last alerts we downloaded."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nie udało się połączyć z FSA. Pokazujemy ostatnio pobrane alerty."
           }
         }
       }
