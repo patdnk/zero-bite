@@ -89,7 +89,10 @@ struct RecallMatcher: Sendable {
         // Item, brand and notice are all folded the same way, so "Bonitki" on both stems alike.
         let productFolded = Self.foldedWords(product.name, language: language)
         let productWords = Self.words(product.name, language: language)
-        let businessWords = Set(alert.businesses.flatMap { Self.words($0, language: language) }).subtracting(Self.genericBusinessWords)
+        var businessWords = Set(alert.businesses.flatMap { Self.words($0, language: language) }).subtracting(Self.genericBusinessWords)
+        // Polish producers are named for what they make ("Mlecz Ser Górskie"), so a word the
+        // product itself carries says nothing about the brand and must not hide the item's name.
+        if language == .polish { businessWords.subtract(productWords) }
         let brandWords = Set(Self.words(item.brand ?? "", language: language))
         let itemWords = Self.words(item.name, language: language).filter { !businessWords.contains($0) && !brandWords.contains($0) }
 

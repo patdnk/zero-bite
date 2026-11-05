@@ -88,7 +88,10 @@ class RecallMatcher(
         // Item, brand and notice are all folded the same way, so "Bonitki" on both stems alike.
         val productFolded = foldedWords(product.name, language)
         val productWords = words(product.name, language)
-        val businessWords = alert.businesses.flatMap { words(it, language) }.toSet() - GENERIC_BUSINESS_WORDS
+        var businessWords = alert.businesses.flatMap { words(it, language) }.toSet() - GENERIC_BUSINESS_WORDS
+        // Polish producers are named for what they make ("Mlecz Ser Górskie"), so a word the
+        // product itself carries says nothing about the brand and must not hide the item's name.
+        if (language == Language.POLISH) businessWords = businessWords - productWords.toSet()
         val brandWords = words(item.brand.orEmpty(), language).toSet()
         val itemWords = words(item.name, language).filter { it !in businessWords && it !in brandWords }
 

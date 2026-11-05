@@ -29,6 +29,18 @@
       "today": "2027-04-01", "alertId": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-podwyzszony-poziom-akryloamidu-w-okreslonej-partii-herbatnikow", "productIndex": 0,
       "item": {"name": "Herbatniki", "expiresOn": "2027-04-13", "brand": "Bonitki"},
       "expect": {"confidence": "likely"}
+    },
+    {
+      "name": "a word in the producer's name does not hide the item name when the product has it too",
+      "today": "2026-10-15", "alertId": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-serow-rozne-rodzaje", "productIndex": 0,
+      "item": {"name": "Ser", "expiresOn": "2026-10-18"},
+      "expect": {"confidence": "possible", "reasons": ["name", "date"]}
+    },
+    {
+      "name": "the same holds for a two-word item name",
+      "today": "2026-11-01", "alertId": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-serow-rozne-rodzaje", "productIndex": 3,
+      "item": {"name": "Ser wędzony", "expiresOn": "2026-11-07"},
+      "expect": {"confidence": "possible", "reasons": ["name", "date"]}
     }
   ],
   "listCases": [],
@@ -47,7 +59,10 @@
     {"item": "Gałka wędzona", "product": "Ser regionalny Gałka Wędzona 250 g", "matches": true},
     {"item": "Galka wedzona", "product": "Ser regionalny Gałka Wędzona 250 g", "matches": true},
     {"item": "Herbatniki", "product": "Herbatniki Petit Beurre, 400 g", "matches": true},
-    {"item": "Kiełbasa", "product": "Bigos z mięsem i kiełbasą, 500 g", "matches": false}
+    {"item": "Kiełbasa", "product": "Bigos z mięsem i kiełbasą, 500 g", "matches": false},
+    {"item": "Pesto", "product": "Sos pesto", "matches": false},
+    {"item": "Ser", "product": "Wędzony boczek ser", "matches": false},
+    {"item": "Kami", "product": "Kama", "matches": true}
   ],
   "allergens": [],
   "concerns": [
