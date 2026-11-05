@@ -242,9 +242,28 @@ struct GoldenRecallTests {
     }
 
     @Test func recallMatching() throws {
-        let fixture = try Golden.load("recall-matching", as: Fixture.self)
-        let alerts = try AlertFixtures.load()
+        try check(Golden.load("recall-matching", as: Fixture.self), alerts: AlertFixtures.load(), language: .english)
+    }
 
+    /// The same checks over the Polish fixture, against GIS alerts parsed from the gov.pl snapshots.
+    @Test func polishRecallMatching() throws {
+        let fixture = try Golden.load("recall-matching-pl", as: Fixture.self)
+        let alerts = try Golden.load("gis-alerts", as: GISSnapshots.self).alerts.map { snapshot in
+            let name = (snapshot.file as NSString).deletingPathExtension
+            let file = try #require(Bundle(for: GoldenBundleToken.self).url(forResource: name, withExtension: "html"), "\(snapshot.file)")
+            let url = try #require(URL(string: snapshot.url))
+            return try #require(GISAlertParser.alert(html: String(contentsOf: file, encoding: .utf8), url: url), "\(snapshot.file)")
+        }
+        #expect(alerts.allSatisfy { $0.source == .gis })
+        try check(fixture, alerts: alerts, language: .polish)
+    }
+
+    private struct GISSnapshots: Decodable {
+        struct Snapshot: Decodable { let file: String; let url: String }
+        let alerts: [Snapshot]
+    }
+
+    private func check(_ fixture: Fixture, alerts: [FoodAlert], language: RecallMatcher.Language) throws {
         for c in fixture.matchCases {
             let now = Golden.day(c.today)
             let matcher = RecallMatcher(now: now, calendar: TestSupport.calendar)
@@ -278,7 +297,12 @@ struct GoldenRecallTests {
         }
 
         for c in fixture.nameMatches {
-            let result = RecallMatcher.nameMatches(itemWords: RecallMatcher.words(c.item), productWords: RecallMatcher.words(c.product))
+            let result = RecallMatcher.nameMatches(
+                itemWords: RecallMatcher.words(c.item, language: language),
+                productWords: RecallMatcher.words(c.product, language: language),
+                language: language,
+                productFoldedWords: RecallMatcher.foldedWords(c.product, language: language)
+            )
             #expect(result == c.matches, "\(c.item) ~ \(c.product)")
         }
 

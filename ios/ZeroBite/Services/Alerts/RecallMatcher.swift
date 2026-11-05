@@ -46,6 +46,9 @@ struct RecallMatch: Identifiable, Hashable, Sendable {
 
 struct RecallMatcher: Sendable {
 
+    /// The language of a notice's text. FSA notices are English, GIS notices Polish.
+    enum Language: Sendable { case english, polish }
+
     var now: Date = .now
     var calendar: Calendar = .current
     /// Older notices are ignored: products from them have long left the shelves.
@@ -77,21 +80,24 @@ struct RecallMatcher: Sendable {
 
     func match(alert: FoodAlert, product: FoodAlert.Product, item: FoodItem) -> RecallMatch? {
         var reasons = Set<RecallMatch.Reason>()
+        let language: Language = alert.source == .gis ? .polish : .english
 
         if let barcode = item.barcode?.filter(\.isNumber), barcode.count >= 8, Self.barcodes(on: product).contains(barcode) {
             reasons.insert(.barcode)
         }
 
-        let productWords = Self.words(product.name)
-        let businessWords = Set(alert.businesses.flatMap { Self.words($0) }).subtracting(Self.genericBusinessWords)
-        let brandWords = Set(Self.words(item.brand ?? ""))
-        let itemWords = Self.words(item.name).filter { !businessWords.contains($0) && !brandWords.contains($0) }
+        // Item, brand and notice are all folded the same way, so "Bonitki" on both stems alike.
+        let productFolded = Self.foldedWords(product.name, language: language)
+        let productWords = Self.words(product.name, language: language)
+        let businessWords = Set(alert.businesses.flatMap { Self.words($0, language: language) }).subtracting(Self.genericBusinessWords)
+        let brandWords = Set(Self.words(item.brand ?? "", language: language))
+        let itemWords = Self.words(item.name, language: language).filter { !businessWords.contains($0) && !brandWords.contains($0) }
 
-        if Self.nameMatches(itemWords: itemWords, productWords: productWords) {
+        if Self.nameMatches(itemWords: itemWords, productWords: productWords, language: language, productFoldedWords: productFolded) {
             reasons.insert(.name)
         }
 
-        let allItemWords = Set(Self.words(item.name)).union(brandWords)
+        let allItemWords = Set(Self.words(item.name, language: language)).union(brandWords)
         if !businessWords.isDisjoint(with: allItemWords) || (!brandWords.isEmpty && !brandWords.isDisjoint(with: productWords)) {
             reasons.insert(.brand)
         }
@@ -123,21 +129,55 @@ struct RecallMatcher: Sendable {
 
     /// A one-word item ("Brie", "Ham") must be the product's head noun, so "Milk" doesn't match
     /// "Pistachio Milk Chocolate". Longer names need every word to appear in the product name.
-    static func nameMatches(itemWords: [String], productWords: [String]) -> Bool {
-        guard !itemWords.isEmpty, let head = productWords.last else { return false }
-        if itemWords.count == 1 { return itemWords[0] == head }
-        let product = Set(productWords)
-        return itemWords.allSatisfy(product.contains)
+    ///
+    /// Polish puts the noun first ("Ser regionalny Gałka"), so a one-word item must be the
+    /// product's first word, or its second when the first is an adjective ("Zielone pesto").
+    /// That adjective check needs the unstemmed words (`productFoldedWords`, from `foldedWords`).
+    static func nameMatches(itemWords: [String], productWords: [String], language: Language = .english, productFoldedWords: [String] = []) -> Bool {
+        guard !itemWords.isEmpty else { return false }
+        if itemWords.count > 1 {
+            let product = Set(productWords)
+            return itemWords.allSatisfy(product.contains)
+        }
+        switch language {
+        case .english:
+            return itemWords[0] == productWords.last
+        case .polish:
+            guard let first = productWords.first else { return false }
+            if itemWords[0] == first { return true }
+            let startsWithAdjective = productFoldedWords.first.map { word in polishAdjectiveEndings.contains { word.hasSuffix($0) } } ?? false
+            return startsWithAdjective && productWords.count > 1 && itemWords[0] == productWords[1]
+        }
     }
 
-    /// Lowercased, accent-folded, singular content words, in order.
-    static func words(_ text: String) -> [String] {
-        let folded = text.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_GB"))
+    /// Lowercased, accent-folded, stemmed content words, in order: singular for English,
+    /// suffix-stripped for Polish.
+    static func words(_ text: String, language: Language = .english) -> [String] {
+        let folded = foldedWords(text, language: language)
+        switch language {
+        case .english: return folded.map(singular).map { synonyms[$0] ?? $0 }
+        case .polish: return folded.map(polishStem)
+        }
+    }
+
+    /// The content words before stemming: lowercased, accent-folded, without stop words or
+    /// numbers. `words` is these, stemmed, at the same positions.
+    static func foldedWords(_ text: String, language: Language = .english) -> [String] {
+        let lowered: String
+        let stops: Set<String>
+        switch language {
+        case .english:
+            lowered = text
+            stops = stopWords
+        case .polish:
+            // ł has no accent to fold, so map it by hand first.
+            lowered = text.lowercased().replacingOccurrences(of: "ł", with: "l")
+            stops = polishStopWords
+        }
+        let folded = lowered.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_GB"))
         return folded
             .components(separatedBy: CharacterSet.alphanumerics.inverted)
-            .filter { !$0.isEmpty && !stopWords.contains($0) && $0.rangeOfCharacter(from: .decimalDigits) == nil }
-            .map(singular)
-            .map { synonyms[$0] ?? $0 }
+            .filter { !$0.isEmpty && !stops.contains($0) && $0.rangeOfCharacter(from: .decimalDigits) == nil }
     }
 
     private static func singular(_ word: String) -> String {
@@ -146,6 +186,13 @@ struct RecallMatcher: Sendable {
         if word.hasSuffix("oes") { return String(word.dropLast(2)) }
         if word.hasSuffix("s") && !word.hasSuffix("ss") { return String(word.dropLast()) }
         return word
+    }
+
+    /// Drops the longest case or plural ending that still leaves three letters, so "sery" and
+    /// "ser", or "Bonitki" on a pack and on a notice, meet at the same stem.
+    private static func polishStem(_ word: String) -> String {
+        guard let suffix = polishSuffixes.first(where: { word.hasSuffix($0) && word.count - $0.count >= 3 }) else { return word }
+        return String(word.dropLast(suffix.count))
     }
 
     /// Long digit runs on the notice (product codes and barcode-style batch codes).
@@ -159,6 +206,20 @@ struct RecallMatcher: Sendable {
         "pack", "x", "g", "kg", "ml", "l", "pcs", "organic", "mini", "deluxe", "family", "range", "fresh",
         "finest", "classic", "original", "selection", "everyday", "essential", "taste", "own", "brand",
     ]
+
+    static let polishStopWords: Set<String> = [
+        "z", "ze", "i", "w", "we", "na", "do", "od", "bez", "oraz", "o", "po", "dla", "lub", "typu",
+        "smak", "smaku", "marki", "partia", "partii", "g", "kg", "ml", "l", "szt", "op",
+    ]
+
+    /// Longest first, so the first match is the longest.
+    private static let polishSuffixes = [
+        "ami", "ach", "ego", "emu", "ymi", "ich", "ych", "owi", "om", "ow", "ie", "ia", "iu", "ej",
+        "a", "e", "i", "o", "u", "y",
+    ]
+
+    /// Endings of unstemmed adjectives ("zielone", "wędzony", "regionalna", "górski").
+    private static let polishAdjectiveEndings = ["ny", "na", "ne", "owy", "owa", "owe", "ony", "ona", "one", "ski", "ska", "skie", "cki", "cka", "ckie"]
 
     static let genericBusinessWords: Set<String> = [
         "ltd", "limited", "plc", "uk", "co", "company", "foods", "food", "store", "group", "international",
@@ -187,7 +248,8 @@ struct AlertDateSpec: Hashable, Sendable {
 }
 
 /// Pulls dates out of FSA batch text such as "10, 16 and 17 July 2026", "end of 28 April 2026",
-/// "31 January 2027 02 May 2027" or "May 2027".
+/// "31 January 2027 02 May 2027" or "May 2027", and GIS batch text such as "17.07.2026 r." or
+/// "03.2028 19A".
 enum AlertDateParser {
 
     private static let monthPattern = "(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)"
@@ -198,6 +260,9 @@ enum AlertDateParser {
     )
 
     private static let numeric = try! NSRegularExpression(pattern: "\\b(\\d{1,2})[/.](\\d{1,2})[/.](\\d{2,4})\\b")
+
+    /// "03.2028" or "03/2028": a month with no day. Not the tail of a full date ("13/04/2027").
+    private static let monthOnly = try! NSRegularExpression(pattern: "(?<![\\d./])(\\d{1,2})[./](\\d{4})(?!\\d)")
 
     static func dates(in text: String) -> [AlertDateSpec] {
         let ns = text as NSString
@@ -225,6 +290,14 @@ enum AlertDateParser {
             else { continue }
             if year < 100 { year += 2000 }
             specs.append(AlertDateSpec(year: year, month: month, day: day))
+        }
+
+        for match in monthOnly.matches(in: text, range: NSRange(location: 0, length: ns.length)) {
+            guard let month = Int(ns.substring(with: match.range(at: 1))),
+                  let year = Int(ns.substring(with: match.range(at: 2))),
+                  (1...12).contains(month)
+            else { continue }
+            specs.append(AlertDateSpec(year: year, month: month, day: nil))
         }
         return specs
     }
