@@ -1,0 +1,378 @@
+{
+  "list": {
+    "file": "gis-list.html",
+    "entries": [
+      {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-stwierdzenie-substancji-psychoaktywnej-w-suplemencie-diety",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-stwierdzenie-substancji-psychoaktywnej-w-suplemencie-diety",
+        "published": "2026-10-28"
+      },
+      {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-salami",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-salami",
+        "published": "2026-10-19"
+      },
+      {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-mozliwa-obecnosc-fragmentow-szkla-w-jednej-partii-wody-butelkowanej",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-mozliwa-obecnosc-fragmentow-szkla-w-jednej-partii-wody-butelkowanej",
+        "published": "2026-10-13"
+      },
+      {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-serow-rozne-rodzaje",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-serow-rozne-rodzaje",
+        "published": "2026-10-12"
+      },
+      {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-boczku-wedzonego",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-boczku-wedzonego",
+        "published": "2026-10-08"
+      },
+      {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-escherichia-coli-produkujacej-toksyne-shiga-stec-w-dwoch-rodzajach-sera-z-surowego-mleka-krowiego",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-escherichia-coli-produkujacej-toksyne-shiga-stec-w-dwoch-rodzajach-sera-z-surowego-mleka-krowiego",
+        "published": "2026-10-06"
+      },
+      {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-cwiartki-wedzonej-z-kurczaka",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-cwiartki-wedzonej-z-kurczaka",
+        "published": "2026-09-29"
+      },
+      {
+        "id": "GIS-aktualizacja-ostrzezenia-publicznego-dotyczacego-zywnosci-z-dnia-28082026-r-mozliwa-obecnosc-toksyny-botulinowej-w-zielonym-pesto",
+        "url": "https://www.gov.pl/web/gis/aktualizacja-ostrzezenia-publicznego-dotyczacego-zywnosci-z-dnia-28082026-r-mozliwa-obecnosc-toksyny-botulinowej-w-zielonym-pesto",
+        "published": "2026-09-18"
+      }
+    ]
+  },
+  "alerts": [
+    {
+      "file": "gis-alert-bigos-update.html",
+      "url": "https://www.gov.pl/web/gis/aktualizacja-ostrzezenia-publicznego-z-dnia-03072026-dotyczacego-zywnosci-stwierdzenie-niezadeklarowanej-obecnosci-skladnika-alergennego--glutenu-w-partiach-bigosu-z-miesem-i-kielbasa",
+      "expect": {
+        "id": "GIS-aktualizacja-ostrzezenia-publicznego-z-dnia-03072026-dotyczacego-zywnosci-stwierdzenie-niezadeklarowanej-obecnosci-skladnika-alergennego--glutenu-w-partiach-bigosu-z-miesem-i-kielbasa",
+        "title": "Aktualizacja ostrzeżenia publicznego z dnia 03.07.2026 dotyczącego żywności: stwierdzenie niezadeklarowanej obecności składnika alergennego - glutenu w partiach bigosu z mięsem i kiełbasą",
+        "shortTitle": "Aktualizacja: Stwierdzenie niezadeklarowanej obecności składnika alergennego - glutenu w partiach bigosu z mięsem i kiełbasą",
+        "kind": "AA",
+        "created": "2026-07-21",
+        "url": "https://www.gov.pl/web/gis/aktualizacja-ostrzezenia-publicznego-z-dnia-03072026-dotyczacego-zywnosci-stwierdzenie-niezadeklarowanej-obecnosci-skladnika-alergennego--glutenu-w-partiach-bigosu-z-miesem-i-kielbasa",
+        "business": "Międzychód Nowicka sp. j.",
+        "otherBusinesses": [],
+        "products": [
+          {
+            "name": "Bigos z mięsem i kiełbasą, 500 g",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "10.2027 10A",
+                "bestBefore": "10.2027 10A",
+                "useBy": null,
+                "lotNumber": null
+              },
+              {
+                "batchCode": "11.2027 13A",
+                "bestBefore": "11.2027 13A",
+                "useBy": null,
+                "lotNumber": null
+              },
+              {
+                "batchCode": "12.2027 12A",
+                "bestBefore": "12.2027 12A",
+                "useBy": null,
+                "lotNumber": null
+              },
+              {
+                "batchCode": "03.2028 19A",
+                "bestBefore": "03.2028 19A",
+                "useBy": null,
+                "lotNumber": null
+              },
+              {
+                "batchCode": "03.2028 27A",
+                "bestBefore": "03.2028 27A",
+                "useBy": null,
+                "lotNumber": null
+              },
+              {
+                "batchCode": "04.2028 03A",
+                "bestBefore": "04.2028 03A",
+                "useBy": null,
+                "lotNumber": null
+              }
+            ]
+          }
+        ],
+        "allergens": [
+          "gluten"
+        ],
+        "risk": "W wyniku postępowania wyjaśniającego prowadzonego przez organy Inspekcji Weterynaryjnej w zakładzie producenta potwierdzono obecność glutenu w części próbek archiwalnych produktów oraz w kiełbasie wykorzystanej do produkcji określonych poniżej partii dania gotowego. Spożycie produktu przez osoby z nietolerancją lub alergią na gluten może wywołać u nich wystąpienie reakcji alergicznej.",
+        "consumerAdvice": "Osoby z nietolerancją glutenu lub alergią na gluten nie powinny spożywać produktu z partii określonej w tym komunikacie."
+      }
+    },
+    {
+      "file": "gis-alert-kokos-sulphites.html",
+      "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-niewlasciwa-informacja-dotyczaca-alergenu--brak-wyroznienia-obecnosci-siarczynow-na-etykiecie-produktu",
+      "expect": {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-niewlasciwa-informacja-dotyczaca-alergenu--brak-wyroznienia-obecnosci-siarczynow-na-etykiecie-produktu",
+        "title": "Ostrzeżenie publiczne dotyczące żywności: niewłaściwa informacja dotycząca alergenu - brak wyróżnienia obecności siarczynów na etykiecie produktu",
+        "shortTitle": "Niewłaściwa informacja dotycząca alergenu - brak wyróżnienia obecności siarczynów na etykiecie produktu",
+        "kind": "AA",
+        "created": "2026-07-20",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-niewlasciwa-informacja-dotyczaca-alergenu--brak-wyroznienia-obecnosci-siarczynow-na-etykiecie-produktu",
+        "business": null,
+        "otherBusinesses": [
+          "SNS Foods Sp. z o.o.",
+          "Rossmann SDP Sp. z o.o."
+        ],
+        "products": [
+          {
+            "name": "KOKOS chrupiące płatki, 45 g, marki: LEO good foods",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "VN/II/26",
+                "bestBefore": "01.05.2027",
+                "useBy": null,
+                "lotNumber": null
+              }
+            ]
+          }
+        ],
+        "allergens": [
+          "sulphites"
+        ],
+        "risk": "W wyniku kontroli urzędowej Państwowej Inspekcji Sanitarnej stwierdzono przekroczenie dopuszczalnego poziomu pochodnych dwutlenku siarki oraz niezastosowania elementów wyróżnienia (za pomocą czcionki, stylu lub koloru tła) na etykiecie produktu substancji alergennej – dwutlenku siarki. Zgodnie z oceną ryzyka przygotowaną przez ekspertów Narodowego Instytutu Zdrowia Publicznego PZH – Państwowego Instytutu Badawczego spożycie produktu o podanym numerze partii stwarza ryzyko dla zdrowia konsumentów. Spożycie produktu przez osoby z alergią na siarczyny może wywołać reakcję alergiczną.",
+        "consumerAdvice": "Nie należy spożywać partii produktu określonej w tym komunikacie."
+      }
+    },
+    {
+      "file": "gis-alert-herbatniki.html",
+      "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-podwyzszony-poziom-akryloamidu-w-okreslonej-partii-herbatnikow",
+      "expect": {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-podwyzszony-poziom-akryloamidu-w-okreslonej-partii-herbatnikow",
+        "title": "Ostrzeżenie publiczne dotyczące żywności: podwyższony poziom akryloamidu w określonej partii herbatników",
+        "shortTitle": "Podwyższony poziom akryloamidu w określonej partii herbatników",
+        "kind": "PRIN",
+        "created": "2026-06-25",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-podwyzszony-poziom-akryloamidu-w-okreslonej-partii-herbatnikow",
+        "business": null,
+        "otherBusinesses": [
+          "Bonitki",
+          "YARYCH IMPORT EKSPORT SP. Z O.O."
+        ],
+        "products": [
+          {
+            "name": "Herbatniki Petit Beurre, 400 g",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "6104037121 01-10 - 13/04/2027",
+                "bestBefore": "6104037121 01-10 - 13/04/2027",
+                "useBy": null,
+                "lotNumber": null
+              }
+            ]
+          }
+        ],
+        "allergens": [],
+        "risk": "W wyniku badań przeprowadzonych przez Państwową Inspekcję Sanitarną stwierdzono podwyższony poziom akryloamidu w jednej partii herbatników Bonitki Petit Beurre określonej poniżej. Na podstawie oceny ryzyka Narodowego Instytutu Zdrowia Publicznego PZH – Państwowego Instytutu Badawczego należy uznać, że spożycie tej partii produktu może mieć negatywny wpływ na zdrowie konsumentów.",
+        "consumerAdvice": "Nie należy spożywać partii produktu określonej w tym komunikacie."
+      }
+    },
+    {
+      "file": "gis-alert-ser-galka-ean.html",
+      "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-sera-podpuszczkowego",
+      "expect": {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-sera-podpuszczkowego",
+        "title": "Ostrzeżenie publiczne dotyczące żywności: wykrycie obecności bakterii Listeria monocytogenes w jednej partii sera podpuszczkowego",
+        "shortTitle": "Wykrycie obecności bakterii Listeria monocytogenes w jednej partii sera podpuszczkowego",
+        "kind": "PRIN",
+        "created": "2026-08-19",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-sera-podpuszczkowego",
+        "business": "PPHU Balser Marian Górz Wróblówka",
+        "otherBusinesses": [
+          "CARREFOUR POLSKA Sp. z o. o. ul. Targowa 72"
+        ],
+        "products": [
+          {
+            "name": "SER GAŁKA Z ZAKOPANEGO 280g",
+            "packSize": null,
+            "productCode": "5905784304458",
+            "batches": [
+              {
+                "batchCode": "07286",
+                "bestBefore": null,
+                "useBy": "25.09.2026",
+                "lotNumber": null
+              }
+            ]
+          }
+        ],
+        "allergens": [],
+        "risk": "Państwowa Inspekcja Sanitarna została poinformowana przez Carrefour Polska o wykryciu Listeria monocytogenes we wskazanym poniżej produkcie. Spożycie żywności zanieczyszczonej Listeria monocytogenes, może prowadzić do choroby zwanej listeriozą.",
+        "consumerAdvice": "Nie należy spożywać produktu wskazanego w komunikacie. W przypadku wystąpienia objawów choroby po spożyciu produktu objętego komunikatem, należy skontaktować się z lekarzem. Informacje na temat objawów związanych z zakażeniem Listeria monocytogenes zawarte są na stronie internetowej Głónego Inspektoratu Sanitarnego pod hasłem „LISTERIOZA”."
+      }
+    },
+    {
+      "file": "gis-alert-sery-rozne.html",
+      "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-serow-rozne-rodzaje",
+      "expect": {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-serow-rozne-rodzaje",
+        "title": "Ostrzeżenie publiczne dotyczące żywności: wykrycie obecności bakterii Listeria monocytogenes w jednej partii serów (różne rodzaje)",
+        "shortTitle": "Wykrycie obecności bakterii Listeria monocytogenes w jednej partii serów (różne rodzaje)",
+        "kind": "PRIN",
+        "created": "2026-10-12",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-serow-rozne-rodzaje",
+        "business": "Mlecz Ser Górskie Sp. z o. o. ul. ks. Juliana Łyska 7A",
+        "otherBusinesses": [
+          "HALAMA ANETA Firma Handlowo-Usługowa"
+        ],
+        "products": [
+          {
+            "name": "Ser regionalny Gałka Naturalna 250 g",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "261.2026/M",
+                "bestBefore": null,
+                "useBy": "18.10.2026",
+                "lotNumber": null
+              }
+            ]
+          },
+          {
+            "name": "Ser regionalny Gałka z czosnkiem niedźwiedzim 250 g",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "261.2026/M",
+                "bestBefore": null,
+                "useBy": "18.10.2026",
+                "lotNumber": null
+              }
+            ]
+          },
+          {
+            "name": "Ser regionalny Gałka z papryką 250 g",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "261.2026/M",
+                "bestBefore": null,
+                "useBy": "18.10.2026",
+                "lotNumber": null
+              }
+            ]
+          },
+          {
+            "name": "Ser regionalny Gałka Wędzona 250 g",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "261.2026/M",
+                "bestBefore": null,
+                "useBy": "07.11.2026",
+                "lotNumber": null
+              }
+            ]
+          },
+          {
+            "name": "Ser regionalny \"Tabliczka\" Wędzona 250 g",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "261.2026/M",
+                "bestBefore": null,
+                "useBy": "07.11.2026",
+                "lotNumber": null
+              }
+            ]
+          },
+          {
+            "name": "Ser regionalny \"Kukurydza\" Wędzona 280 g",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "261.2026/M",
+                "bestBefore": null,
+                "useBy": "07.11.2026",
+                "lotNumber": null
+              }
+            ]
+          },
+          {
+            "name": "Ser regionalny \"Korbacz\" Naturalny 1 kg",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "261.2026/M",
+                "bestBefore": null,
+                "useBy": "18.10.2026",
+                "lotNumber": null
+              }
+            ]
+          },
+          {
+            "name": "Ser regionalny \"Sietniok\" Wędzony 180 g",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "261.2026/M",
+                "bestBefore": null,
+                "useBy": "07.11.2026",
+                "lotNumber": null
+              }
+            ]
+          }
+        ],
+        "allergens": [],
+        "risk": "W wyniku działań urzędowych Inspekcji Weterynaryjnej wykryto obecność Listeria monocytogenes w 5 z 5 próbek wskazanej poniżej partii produktów. Spożycie żywności zanieczyszczonej Listeria monocytogenes może prowadzić do choroby zwanej listeriozą.",
+        "consumerAdvice": "Nie należy spożywać produktu wskazanego w komunikacie. W przypadku wystąpienia objawów choroby po spożyciu produktu objętego komunikatem, należy skontaktować się z lekarzem. Informacje na temat objawów związanych z zakażeniem Listeria monocytogenes zawarte są na stronie internetowej https://www.gov.pl/web/gis/listerioza pod hasłem „LISTERIOZA”."
+      }
+    },
+    {
+      "file": "gis-alert-boczek.html",
+      "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-boczku-wedzonego",
+      "expect": {
+        "id": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-boczku-wedzonego",
+        "title": "Ostrzeżenie publiczne dotyczące żywności: wykrycie obecności bakterii Listeria monocytogenes w jednej partii boczku wędzonego",
+        "shortTitle": "Wykrycie obecności bakterii Listeria monocytogenes w jednej partii boczku wędzonego",
+        "kind": "PRIN",
+        "created": "2026-10-08",
+        "url": "https://www.gov.pl/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-boczku-wedzonego",
+        "business": "Bell Polska Sp. z o.o.",
+        "otherBusinesses": [
+          "Transgourmet Polska Sp. z o.o."
+        ],
+        "products": [
+          {
+            "name": "Boczek wieprzowy wędzony plastry",
+            "packSize": null,
+            "productCode": null,
+            "batches": [
+              {
+                "batchCode": "40911",
+                "bestBefore": null,
+                "useBy": "06.11.2026 r.",
+                "lotNumber": null
+              }
+            ]
+          }
+        ],
+        "allergens": [],
+        "risk": "W wyniku badań właścicielskich zakładu wykryto obecność Listeria monocytogenes w 2 z 5 próbek wskazanego poniżej produktu. Postępowanie administracyjne w sprawie prowadzi Inspekcja Weterynaryjna. Spożycie żywności zanieczyszczonej Listeria monocytogenes może prowadzić do choroby zwanej listeriozą.",
+        "consumerAdvice": "Nie należy spożywać produktu wskazanego w komunikacie. W przypadku wystąpienia objawów choroby po spożyciu produktu objętego komunikatem, należy skontaktować się z lekarzem. Informacje na temat objawów związanych z zakażeniem Listeria monocytogenes zawarte są na stronie internetowej https://www.gov.pl/web/gis/listerioza pod hasłem „LISTERIOZA”."
+      }
+    }
+  ]
+}

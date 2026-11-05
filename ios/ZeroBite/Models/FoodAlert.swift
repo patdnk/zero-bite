@@ -2,11 +2,13 @@
 //  FoodAlert.swift
 //  ZeroBite
 //
-//  A UK Food Standards Agency food alert (product recall or allergy alert), reduced to what
-//  the app needs. `FSAAlertResponse` decodes the API's JSON-LD, which is loose about types
-//  (a field can be a string, an object with "@id", or an array), into this clean model.
+//  A food alert (product recall or allergy alert), reduced to what the app needs. Alerts come
+//  from the UK Food Standards Agency (`FSAAlertResponse` decodes the API's JSON-LD, which is
+//  loose about types: a field can be a string, an object with "@id", or an array) or from
+//  Poland's Chief Sanitary Inspectorate (`GISAlertParser` reads the gov.pl pages).
 //
-//  Contains public sector information licensed under the Open Government Licence v3.0.
+//  FSA: contains public sector information licensed under the Open Government Licence v3.0.
+//  GIS: text from gov.pl, Główny Inspektorat Sanitarny, CC BY-SA 4.0.
 //
 
 import Foundation
@@ -27,6 +29,12 @@ struct FoodAlert: Codable, Identifiable, Hashable, Sendable {
             case .recall, .actionRequired: String(localized: "Product recall")
             }
         }
+    }
+
+    /// Which feed an alert came from.
+    enum Source: String, Codable, Sendable, CaseIterable {
+        case fsa
+        case gis
     }
 
     struct Batch: Codable, Hashable, Sendable {
@@ -77,6 +85,9 @@ struct FoodAlert: Codable, Identifiable, Hashable, Sendable {
     var allergens: [String]
     var risk: String?
     var consumerAdvice: String?
+
+    /// GIS ids are `GIS-<slug>`; FSA ids are the API's notation (`FSA-AA-43-2026`).
+    var source: Source { id.hasPrefix("GIS-") ? .gis : .fsa }
 
     var displayTitle: String { shortTitle ?? title }
 
