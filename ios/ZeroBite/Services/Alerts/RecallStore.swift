@@ -48,7 +48,9 @@ struct FSAFoodAlertsClient: FoodAlertsFetching {
 @Observable
 final class RecallStore {
 
-    private(set) var alerts: [FoodAlert] = []
+    /// Everything downloaded, whichever feed it came from. Kept so switching a feed back on
+    /// shows its alerts again straight away.
+    private var cachedAlerts: [FoodAlert] = []
     private(set) var lastChecked: Date?
     private(set) var isRefreshing = false
     private(set) var lastErrorMessage: String?
@@ -61,6 +63,7 @@ final class RecallStore {
     private let client: any FoodAlertsFetching
     private let cacheURL: URL?
     private let defaults: UserDefaults
+    private let enabledSources: @Sendable () -> Set<FoodAlert.Source>
 
     private enum Keys {
         static let lastChecked = "recalls.lastChecked"
@@ -73,14 +76,28 @@ final class RecallStore {
     /// Don't hit the API more often than this unless the user asks.
     static let refreshInterval: TimeInterval = 6 * 60 * 60
 
-    init(client: any FoodAlertsFetching, cacheURL: URL?, defaults: UserDefaults = .standard) {
+    /// `enabledSources` is read whenever alerts are listed or matched, so switching a feed off
+    /// hides its alerts at once instead of after the next fetch.
+    init(
+        client: any FoodAlertsFetching,
+        cacheURL: URL?,
+        defaults: UserDefaults = .standard,
+        enabledSources: @escaping @Sendable () -> Set<FoodAlert.Source> = { Set(FoodAlert.Source.allCases) }
+    ) {
         self.client = client
         self.cacheURL = cacheURL
         self.defaults = defaults
+        self.enabledSources = enabledSources
         lastChecked = defaults.object(forKey: Keys.lastChecked) as? Date
         dismissedMatchIDs = Set(defaults.stringArray(forKey: Keys.dismissed) ?? [])
         notifiedMatchIDs = Set(defaults.stringArray(forKey: Keys.notified) ?? [])
-        alerts = Self.loadCache(from: cacheURL)
+        cachedAlerts = Self.loadCache(from: cacheURL)
+    }
+
+    /// The downloaded alerts from the feeds that are switched on.
+    var alerts: [FoodAlert] {
+        let enabled = enabledSources()
+        return cachedAlerts.filter { enabled.contains($0.source) }
     }
 
     static func defaultCacheURL() -> URL? {
@@ -135,19 +152,19 @@ final class RecallStore {
     private func fetchOnce(now: Date) async -> Bool {
         let since = Calendar.current.date(byAdding: .day, value: -Self.historyDays, to: now) ?? now
         do {
-            let fetched = try await client.fetchAlerts(since: since, known: alerts)
-            alerts = fetched.sorted { $0.created > $1.created }
+            let fetched = try await client.fetchAlerts(since: since, known: cachedAlerts)
+            cachedAlerts = fetched.sorted { $0.created > $1.created }
             lastChecked = now
             lastErrorMessage = nil
             defaults.set(now, forKey: Keys.lastChecked)
-            Self.saveCache(alerts, to: cacheURL)
+            Self.saveCache(cachedAlerts, to: cacheURL)
             return true
         } catch {
             // Keep what the working sources returned, but leave `lastChecked` alone so the
             // next launch retries.
             if let partial = error as? FoodAlertsPartialFailure {
-                alerts = partial.alerts
-                Self.saveCache(alerts, to: cacheURL)
+                cachedAlerts = partial.alerts
+                Self.saveCache(cachedAlerts, to: cacheURL)
             }
             lastErrorMessage = String(localized: "Couldn't check for new food alerts. Showing the last ones we downloaded.")
             return false

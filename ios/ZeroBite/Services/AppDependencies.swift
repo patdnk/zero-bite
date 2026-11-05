@@ -73,12 +73,13 @@ final class AppDependencies {
         #endif
         // UserDefaults is thread-safe; it just isn't annotated Sendable.
         nonisolated(unsafe) let defaults = defaults
+        // Read on every fetch and every listing, so the Settings choice applies at once.
+        let enabled: @Sendable () -> Set<FoodAlert.Source> = { AppSettings.storedRecallSources(in: defaults) }
         let client = CombinedFoodAlerts(
             clients: [.fsa: FSAFoodAlertsClient(), .gis: GISFoodAlertsClient()],
-            // Read on every fetch, so the Settings choice applies to the next refresh.
-            enabled: { AppSettings.storedRecallSources(in: defaults) }
+            enabled: enabled
         )
-        return RecallStore(client: client, cacheURL: RecallStore.defaultCacheURL())
+        return RecallStore(client: client, cacheURL: RecallStore.defaultCacheURL(), enabledSources: enabled)
     }
 
     /// In-memory everything, optionally pre-filled with the sample fridge.

@@ -160,6 +160,42 @@ struct RecallStoreTests {
         #expect(reloaded.alerts.count == 7)
     }
 
+    @Test func switchedOffFeedsDisappearWithoutAFetch() async throws {
+        let fsa = try AlertFixtures.alert("FSA-PRIN-28-2026")
+        let gis = try GISTestData.alert("gis-alert-boczek.html")
+        let cache = FileManager.default.temporaryDirectory.appendingPathComponent("alerts-\(UUID().uuidString).json")
+        try JSONEncoder().encode([fsa, gis]).write(to: cache)
+        let settings = AppSettings.ephemeral()
+        settings.recallSources = [.fsa, .gis]
+        // The same closure the app uses: it reads the stored choice each time.
+        nonisolated(unsafe) let defaults = settings.userDefaults
+        let store = RecallStore(
+            client: StubClient(result: .failure(URLError(.notConnectedToInternet))), cacheURL: cache,
+            defaults: AppSettings.ephemeral().userDefaults,
+            enabledSources: { AppSettings.storedRecallSources(in: defaults) }
+        )
+        let fridge = [
+            FoodItem(name: "Brie", category: .dairy, addedAt: TestSupport.date(2026, 7, 5), expiresAt: TestSupport.date(2026, 7, 16)),
+            FoodItem(name: "Boczek", category: .meat, addedAt: TestSupport.date(2026, 10, 5), expiresAt: TestSupport.date(2026, 11, 6)),
+        ]
+        let now = TestSupport.date(2026, 10, 10)
+
+        #expect(Set(store.alerts.map(\.source)) == [.fsa, .gis])
+        #expect(Set(store.matches(for: fridge, now: now).map(\.alert.source)) == [.fsa, .gis])
+
+        settings.recallSources = [.fsa]
+
+        #expect(store.alerts.map(\.id) == [fsa.id])
+        #expect(store.matches(for: fridge, now: now).map(\.alert.id) == [fsa.id])
+
+        let viewModel = FoodAlertsViewModel(recalls: store, inventory: InventoryStore.inMemory(), settings: settings)
+        viewModel.filter = .all
+        #expect(viewModel.rows.map(\.alert.id) == [fsa.id])
+
+        settings.recallSources = [.gis]
+        #expect(viewModel.rows.map(\.alert.id) == [gis.id])
+    }
+
     @Test func failedRefreshKeepsCachedAlerts() async throws {
         let store = makeStore(.failure(URLError(.notConnectedToInternet)))
         #expect(await store.refresh() == false)
