@@ -2228,7 +2228,8 @@ git commit -m "Scan labels live with CameraX, with a way out when the camera is 
 - Test: `android/app/src/test/kotlin/com/mazesys/zerobite/ui/format/DateTextTest.kt`
 
 **Interfaces:**
-- Consumes: `FoodAlertsFetching.fetchAlerts(since: LocalDate)`, `FsaAlertsClient(http)`, `FoodAlert` (`@Serializable`), `RecallMatcher(today).matches(alerts, items, dismissed)`, `RecallMatch.id` (`:core`); `AppDependencies.live`'s `http` (Task 2).
+- Consumes: `FoodAlertsFetching.fetchAlerts(since: LocalDate, known: List<FoodAlert>)`, `FsaAlertsClient(http)`, `FoodAlert` (`@Serializable`), `RecallMatcher(today).matches(alerts, items, dismissed)`, `RecallMatch.id` (`:core`); `AppDependencies.live`'s `http` (Task 2).
+- Note: `:core` already has `GisAlertsClient` (Poland's GIS warnings) and `CombinedFoodAlerts`, which merges the FSA and GIS clients behind the same `FoodAlertsFetching`. This task's store takes whichever `FoodAlertsFetching` it is given and passes its cached alerts as `known`; Task 7 of `specs/plans/2026-11-04-poland-recalls.md` wires the combined client and the Settings feed choice.
 - Produces:
   - `data class RecallMarks(lastChecked: Instant? = null, dismissed: Set<String> = emptySet(), notified: Set<String> = emptySet())`
   - `interface RecallPersistence { suspend fun loadAlerts(); suspend fun saveAlerts(alerts); suspend fun loadMarks(); suspend fun saveMarks(marks) }`
@@ -2248,11 +2249,13 @@ class MutableClock(var instant: Instant = TestClock.now, override val timeZone: 
     override fun now(): Instant = instant
 }
 
-/** FSA client double: returns `alerts` or throws `failure`, and records each `since` it was asked for. */
+/** Alerts client double: returns `alerts` or throws `failure`, and records each `since` and `known` it was asked for. */
 class FakeAlerts(var alerts: List<FoodAlert> = emptyList(), var failure: Exception? = null) : FoodAlertsFetching {
     val requests = mutableListOf<LocalDate>()
-    override suspend fun fetchAlerts(since: LocalDate): List<FoodAlert> {
+    val knownPerCall = mutableListOf<List<FoodAlert>>()
+    override suspend fun fetchAlerts(since: LocalDate, known: List<FoodAlert>): List<FoodAlert> {
         requests += since
+        knownPerCall += known
         failure?.let { throw it }
         return alerts
     }
@@ -2636,7 +2639,7 @@ class RecallStore(
         try {
             _state.update { it.copy(isRefreshing = true) }
             val fetched = try {
-                client.fetchAlerts(clock.today().minus(HISTORY_DAYS, DateTimeUnit.DAY))
+                client.fetchAlerts(clock.today().minus(HISTORY_DAYS, DateTimeUnit.DAY), _state.value.alerts)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
