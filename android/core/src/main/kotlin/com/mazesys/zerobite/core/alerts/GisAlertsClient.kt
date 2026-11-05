@@ -18,8 +18,11 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.LocalDate
 
-/** gov.pl answered with something other than a page, or didn't answer in time (`status` 0). */
-class GisAlertsUnavailable(val status: Int) : Exception("GIS food alerts returned HTTP $status")
+/**
+ * gov.pl answered with something other than a page, didn't answer in time (`status` 0), or sent
+ * a first list page with no warnings on it (a layout change or an error page served as 200).
+ */
+class GisAlertsUnavailable(val status: Int, message: String = "GIS food alerts returned HTTP $status") : Exception(message)
 
 /**
  * Fetches Poland's Chief Sanitary Inspectorate (GIS) food warnings straight from gov.pl on the
@@ -51,13 +54,18 @@ class GisAlertsClient(private val http: HttpClient, private val maxPages: Int = 
 
     /**
      * Reads list pages until one contains an entry older than `since`. A failing list page
-     * throws, since the result would silently miss warnings.
+     * throws, since the result would silently miss warnings; so does an empty first page, which
+     * can't be told apart from a layout change. An empty later page just ends the paging.
      */
     private suspend fun listEntries(since: LocalDate): List<GisAlertParser.ListEntry> {
         val entries = mutableListOf<GisAlertParser.ListEntry>()
         val seen = HashSet<String>()
         for (page in 1..maxPages) {
             val pageEntries = GisAlertParser.listEntries(html("${GisAlertParser.BASE}/web/gis/ostrzezenia", page))
+            if (pageEntries.isEmpty()) {
+                if (page == 1) throw GisAlertsUnavailable(HttpStatusCode.OK.value, "GIS list page 1 has no warnings")
+                break
+            }
             // A new warning can shift entries onto the next page between two requests.
             entries += pageEntries.filter { seen.add(it.id) }
             if (pageEntries.any { it.published < since }) break

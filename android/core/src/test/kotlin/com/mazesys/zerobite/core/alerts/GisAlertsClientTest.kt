@@ -161,6 +161,32 @@ class GisAlertsClientTest {
     }
 
     @Test
+    fun `an empty first list page throws`() = runLive {
+        val client = GisAlertsClient(
+            HttpClient(MockEngine { respond("<html><body>Błąd</body></html>", HttpStatusCode.OK) }),
+        )
+        assertFailsWith<GisAlertsUnavailable> { client.fetchAlerts(LocalDate(2026, 10, 8), emptyList()) }
+    }
+
+    @Test
+    fun `an empty later list page ends the paging`() = runLive {
+        val site = Site()
+        val engine = MockEngine { request ->
+            if (request.url.parameters["page"] == "2") {
+                site.requests += "/web/gis/ostrzezenia?page=2"
+                respond("<html><body>Brak</body></html>", HttpStatusCode.OK)
+            } else {
+                site.handler(this, request)
+            }
+        }
+
+        val alerts = GisAlertsClient(HttpClient(engine)).fetchAlerts(LocalDate(2026, 1, 1), emptyList())
+
+        assertEquals(listOf("/web/gis/ostrzezenia?page=1", "/web/gis/ostrzezenia?page=2"), site.listPages)
+        assertEquals(entries.size, alerts.size)
+    }
+
+    @Test
     fun `gis client downloads at most three articles at once`() = runLive {
         val inFlight = AtomicInteger()
         val peak = AtomicInteger()
