@@ -180,6 +180,117 @@ struct GISAlertParserTests {
         #expect(GISAlertParser.lines(ofHTML: "<p>&#x142;&unknown;&amp;lt;</p>") == ["ł&unknown;&lt;"])
     }
 
+    // MARK: Dates
+
+    /// The calendar day of a date in a time zone, as "YYYY-MM-DD".
+    private func day(_ date: Date, in zone: String) -> String {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: zone)!
+        let c = calendar.dateComponents([.year, .month, .day], from: date)
+        return String(format: "%04d-%02d-%02d", c.year!, c.month!, c.day!)
+    }
+
+    @Test func datesKeepTheirCalendarDayInTheUK() throws {
+        let golden = try GISFixtures.golden()
+        // 12 October 2026 is in British summer time, an hour behind Warsaw: midnight in Warsaw
+        // would be 11 October there.
+        let seryRozne = try #require(golden.alerts.first { $0.expect.id.contains("serow-rozne") })
+        let seryRozneURL = try #require(URL(string: seryRozne.url))
+        let alert = try #require(GISAlertParser.alert(html: try GISFixtures.html(seryRozne.file), url: seryRozneURL))
+        #expect(day(alert.created, in: "Europe/Warsaw") == "2026-10-12")
+        #expect(day(alert.created, in: "Europe/London") == "2026-10-12")
+
+        let entries = GISAlertParser.listEntries(html: try GISFixtures.html(golden.list.file))
+        #expect(!entries.isEmpty)
+        for (entry, want) in zip(entries, golden.list.entries) {
+            #expect(day(entry.published, in: "Europe/London") == want.published, "\(want.id)")
+        }
+    }
+
+    @Test func rejectsImpossibleDates() throws {
+        let row = #"<span class="date">31.02.2026</span><div class="title"><a href="/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-x">X</a></div>"#
+        #expect(GISAlertParser.listEntries(html: row).isEmpty)
+        let valid = row.replacingOccurrences(of: "31.02.2026", with: "28.02.2026")
+        #expect(GISAlertParser.listEntries(html: valid).count == 1)
+
+        let url = try #require(URL(string: "https://www.gov.pl/web/gis/x"))
+        #expect(GISAlertParser.alert(html: articleHTML(date: "31.02.2026"), url: url) == nil)
+        #expect(GISAlertParser.alert(html: articleHTML(date: "28.02.2026"), url: url) != nil)
+    }
+
+    /// The smallest page the parser accepts as an alert.
+    private func articleHTML(date: String) -> String {
+        """
+        <article id="main-content"><h2>Ostrzeżenie publiczne dotyczące żywności: x</h2>
+        <p class="event-date">\(date)</p>
+        <h3>Szczegóły dotyczące produktu:</h3><p>Nazwa produktu: <strong>Chleb</strong></p>
+        <h3>Zalecenia dla konsumentów:</h3><p>Nie jeść.</p></article>
+        """
+    }
+
+    // MARK: Links
+
+    private func listRow(date: String = "01.10.2026", href: String) -> String {
+        #"<span class="date">\#(date)</span><div class="title"><a href="\#(href)">X</a></div>"#
+    }
+
+    @Test func listIgnoresLinksOutsideGovPl() {
+        let slug = "ostrzezenie-publiczne-dotyczace-zywnosci-x"
+        let html = [
+            listRow(href: "https://example.com/web/gis/" + slug),
+            listRow(href: "https://www.gov.pl.evil.example/web/gis/" + slug),
+            listRow(href: "https://www.gov.pl@evil.example/web/gis/" + slug),
+            listRow(href: "//evil.example/web/gis/" + slug),
+            listRow(href: "https://www.gov.pl/web/gis/" + slug + "-ok"),
+            listRow(href: "/web/gis/" + slug + "-relative"),
+        ].joined()
+        let entries = GISAlertParser.listEntries(html: html)
+        #expect(entries.map(\.id) == ["GIS-" + slug + "-ok", "GIS-" + slug + "-relative"])
+        #expect(entries.allSatisfy { $0.url.host == "www.gov.pl" })
+    }
+
+    @Test func alertIdMatchesListIdForEscapedSlugs() throws {
+        let slug = "ostrzezenie-publiczne-dotyczace-zywnosci-%C5%BCurek-%28test%29"
+        let entries = GISAlertParser.listEntries(html: listRow(href: "/web/gis/" + slug + "?page=2"))
+        let entry = try #require(entries.first)
+        #expect(entry.id == "GIS-" + slug)
+        let alert = try #require(GISAlertParser.alert(html: articleHTML(date: "01.10.2026"), url: entry.url))
+        #expect(alert.id == entry.id)
+    }
+
+    @Test func listRowCountCountsEveryRow() throws {
+        let html = listRow(href: "/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-x")
+            + listRow(href: "/web/gis/ostrzezenie-publiczne-dotyczace-wyrobu-do-kontaktu-z-zywnoscia-y")
+        #expect(GISAlertParser.listRowCount(html: html) == 2)
+        #expect(GISAlertParser.listEntries(html: html).count == 1)
+        #expect(GISAlertParser.listRowCount(html: "<html></html>") == 0)
+        let snapshot = try GISFixtures.html("gis-list.html")
+        #expect(GISAlertParser.listRowCount(html: snapshot) > GISAlertParser.listEntries(html: snapshot).count)
+    }
+
+    // MARK: Business names
+
+    @Test func businessNamesStopBeforeTheAddress() throws {
+        func business(_ value: String) throws -> String? {
+            let html = """
+            <article id="main-content"><h2>Ostrzeżenie publiczne dotyczące żywności: x</h2>
+            <p class="event-date">01.10.2026</p>
+            <h3>Szczegóły dotyczące produktu:</h3><p>Nazwa produktu: <strong>Chleb</strong></p>
+            <p>Producent: <strong>\(value)</strong></p>
+            <h3>Zalecenia dla konsumentów:</h3><p>Nie jeść.</p></article>
+            """
+            let url = try #require(URL(string: "https://www.gov.pl/web/gis/x"))
+            return GISAlertParser.alert(html: html, url: url)?.business
+        }
+        #expect(try business("Mlecz Ser Górskie Sp. z o. o. ul. ks. Juliana Łyska 7A") == "Mlecz Ser Górskie Sp. z o. o.")
+        #expect(try business("Piekarnia Kowalski al. Jana Pawła 3, 00-001 Warszawa") == "Piekarnia Kowalski")
+        #expect(try business("Mleczarnia Wieś Sp. z o.o. os. Słoneczne 1") == "Mleczarnia Wieś Sp. z o.o.")
+        #expect(try business("Hurtownia pl. Wolności 2") == "Hurtownia")
+        #expect(try business("Zakład Mięsny 34-600 Limanowa") == "Zakład Mięsny")
+        #expect(try business("Zakład Mięsny Sp. z o.o., ul. Długa 1") == "Zakład Mięsny Sp. z o.o.")
+        #expect(try business("Firma Nr 12-34 Sp. j.") == "Firma Nr 12-34 Sp. j.")
+    }
+
     @Test func sourceFollowsIdPrefix() throws {
         let gis = FoodAlert(id: "GIS-x", title: "t", kind: .recall, created: .now, otherBusinesses: [],
                             products: [], allergens: [])

@@ -2,6 +2,7 @@ package com.mazesys.zerobite.core.alerts
 
 import com.mazesys.zerobite.core.model.FoodAlert
 import com.mazesys.zerobite.core.text.TextFolding
+import io.ktor.http.Url
 import kotlinx.datetime.LocalDate
 
 /**
@@ -29,18 +30,36 @@ object GisAlertParser {
     private val LIST_LINK = Regex("""<div class="title">\s*<a href="([^"]+)"""", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL))
 
     /**
+     * How many rows the list page has, food or not. An empty page is one with no rows at all; a
+     * page of only food-contact items is still a list, so paging must go on.
+     */
+    fun listRowCount(html: String): Int = html.split(DATE_MARKER).size - 1
+
+    /**
      * The food warnings on a list page, in page order (newest first). Food-contact items, which
-     * GIS mixes into the same list, are skipped.
+     * GIS mixes into the same list, are skipped, and so is any link that leaves gov.pl.
      */
     fun listEntries(html: String): List<ListEntry> =
         // Each entry is `<span class="date">DD.MM.YYYY</span>` then `<div class="title"><a href=…>`.
         html.split(DATE_MARKER).drop(1).mapNotNull { chunk ->
             val day = LIST_DATE.find(chunk)?.destructured?.let { (d, m, y) -> date(d, m, y) } ?: return@mapNotNull null
             val link = LIST_LINK.find(chunk)?.groupValues?.get(1) ?: return@mapNotNull null
-            val slug = link.nonEmptySplit('?').firstOrNull()?.nonEmptySplit('/')?.lastOrNull() ?: return@mapNotNull null
+            val slug = pathSlug(link) ?: return@mapNotNull null
             if (!isFood(slug)) return@mapNotNull null
-            ListEntry(id = "GIS-$slug", url = absolute(link), published = day)
+            val url = absolute(link)
+            if (!isGovPl(url)) return@mapNotNull null
+            ListEntry(id = "GIS-$slug", url = url, published = day)
         }
+
+    /**
+     * The last path segment of a link as written, without query or fragment and without decoding
+     * percent escapes. List entries and articles both take their id from this.
+     */
+    private fun pathSlug(link: String): String? =
+        link.substringBefore('?').substringBefore('#').nonEmptySplit('/').lastOrNull()
+
+    private fun isGovPl(url: String): Boolean =
+        runCatching { Url(url).host }.getOrNull() == Url(BASE).host
 
     private fun isFood(slug: String): Boolean =
         (slug.startsWith("ostrzezenie-publiczne-dotyczace-zywnosci") || slug.startsWith("aktualizacja-ostrzezenia-publicznego")) &&
@@ -90,7 +109,7 @@ object GisAlertParser {
 
         val isAllergy = fold("$title ${risk.orEmpty()}").contains("alergen")
         return FoodAlert(
-            id = "GIS-" + lastPathComponent(url),
+            id = "GIS-" + (pathSlug(url) ?: ""),
             title = title,
             shortTitle = shortTitle(title),
             kind = if (isAllergy) FoodAlert.Kind.ALLERGY else FoodAlert.Kind.RECALL,
@@ -104,9 +123,6 @@ object GisAlertParser {
             consumerAdvice = advice.takeIf { it.isNotEmpty() }?.joinToString(" "),
         )
     }
-
-    private fun lastPathComponent(url: String): String =
-        url.substringBefore('?').substringBefore('#').nonEmptySplit('/').lastOrNull().orEmpty()
 
     /**
      * "Wykrycie …" for "Ostrzeżenie publiczne dotyczące żywności: wykrycie …", with
@@ -184,8 +200,7 @@ object GisAlertParser {
             } else if (label == "kod kreskowy") {
                 if (products.isNotEmpty()) products[products.lastIndex] = products.last().copy(productCode = value)
             } else if (BUSINESS_LABELS.any(label::startsWith)) {
-                // Addresses and registration numbers follow the first comma.
-                val name = value.beforeFirstComma().trim(::isSpace)
+                val name = businessName(value)
                 if (name.isEmpty()) continue
                 if (label.startsWith("producent") && business == null) business = name else others += name
             } else if (products.isNotEmpty()) {
@@ -193,6 +208,18 @@ object GisAlertParser {
             }
         }
         return ProductFields(products, business, others)
+    }
+
+    private val ADDRESS_START = Regex(""" (?:ul|al|os|pl)\. |\b\d{2}-\d{3}\b""", RegexOption.IGNORE_CASE)
+
+    /**
+     * The company name of a "Producent: …" value. Addresses and registration numbers follow the
+     * first comma, or a street (" ul. ", " al. ", " os. ", " pl. ") or a postal code.
+     */
+    private fun businessName(value: String): String {
+        val name = value.beforeFirstComma()
+        val address = ADDRESS_START.find(name)
+        return (if (address != null) name.substring(0, address.range.first) else name).trim(::isSpace)
     }
 
     /** Text before the first comma; like Swift's `split(separator:)`, skips an empty first part. */

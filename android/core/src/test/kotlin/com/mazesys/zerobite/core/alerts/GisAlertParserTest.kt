@@ -145,6 +145,76 @@ class GisAlertParserTest {
         assertEquals(listOf("ł&unknown;&lt;"), GisAlertParser.lines("<p>&#x142;&unknown;&amp;lt;</p>"))
     }
 
+    private fun listRow(href: String, date: String = "01.10.2026") =
+        """<span class="date">$date</span><div class="title"><a href="$href">X</a></div>"""
+
+    /** The smallest page the parser accepts as an alert. */
+    private fun articleHtml(date: String, producer: String? = null) = """
+        <article id="main-content"><h2>Ostrzeżenie publiczne dotyczące żywności: x</h2>
+        <p class="event-date">$date</p>
+        <h3>Szczegóły dotyczące produktu:</h3><p>Nazwa produktu: <strong>Chleb</strong></p>
+        ${producer?.let { "<p>Producent: <strong>$it</strong></p>" }.orEmpty()}
+        <h3>Zalecenia dla konsumentów:</h3><p>Nie jeść.</p></article>
+    """.trimIndent()
+
+    @Test
+    fun `rejects impossible dates`() {
+        val row = listRow("/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-x", date = "31.02.2026")
+        assertTrue(GisAlertParser.listEntries(row).isEmpty())
+        assertEquals(1, GisAlertParser.listEntries(row.replace("31.02.2026", "28.02.2026")).size)
+        assertNull(GisAlertParser.alert(articleHtml("31.02.2026"), "https://www.gov.pl/web/gis/x"))
+        assertNotNull(GisAlertParser.alert(articleHtml("28.02.2026"), "https://www.gov.pl/web/gis/x"))
+    }
+
+    @Test
+    fun `list ignores links outside gov pl`() {
+        val slug = "ostrzezenie-publiczne-dotyczace-zywnosci-x"
+        val html = listOf(
+            "https://example.com/web/gis/$slug",
+            "https://www.gov.pl.evil.example/web/gis/$slug",
+            "https://www.gov.pl@evil.example/web/gis/$slug",
+            "//evil.example/web/gis/$slug",
+            "https://www.gov.pl/web/gis/$slug-ok",
+            "/web/gis/$slug-relative",
+        ).joinToString("") { listRow(it) }
+        val entries = GisAlertParser.listEntries(html)
+        assertEquals(listOf("GIS-$slug-ok", "GIS-$slug-relative"), entries.map { it.id })
+        assertTrue(entries.all { it.url.startsWith("https://www.gov.pl/") })
+    }
+
+    @Test
+    fun `alert id matches list id for escaped slugs`() {
+        val slug = "ostrzezenie-publiczne-dotyczace-zywnosci-%C5%BCurek-%28test%29"
+        val entry = GisAlertParser.listEntries(listRow("/web/gis/$slug?page=2")).single()
+        assertEquals("GIS-$slug", entry.id)
+        val alert = assertNotNull(GisAlertParser.alert(articleHtml("01.10.2026"), entry.url))
+        assertEquals(entry.id, alert.id)
+    }
+
+    @Test
+    fun `list row count counts every row`() {
+        val html = listRow("/web/gis/ostrzezenie-publiczne-dotyczace-zywnosci-x") +
+            listRow("/web/gis/ostrzezenie-publiczne-dotyczace-wyrobu-do-kontaktu-z-zywnoscia-y")
+        assertEquals(2, GisAlertParser.listRowCount(html))
+        assertEquals(1, GisAlertParser.listEntries(html).size)
+        assertEquals(0, GisAlertParser.listRowCount("<html></html>"))
+        val snapshot = Fixtures.text("gis-list.html")
+        assertTrue(GisAlertParser.listRowCount(snapshot) > GisAlertParser.listEntries(snapshot).size)
+    }
+
+    @Test
+    fun `business names stop before the address`() {
+        fun business(value: String) =
+            GisAlertParser.alert(articleHtml("01.10.2026", producer = value), "https://www.gov.pl/web/gis/x")?.business
+        assertEquals("Mlecz Ser Górskie Sp. z o. o.", business("Mlecz Ser Górskie Sp. z o. o. ul. ks. Juliana Łyska 7A"))
+        assertEquals("Piekarnia Kowalski", business("Piekarnia Kowalski al. Jana Pawła 3, 00-001 Warszawa"))
+        assertEquals("Mleczarnia Wieś Sp. z o.o.", business("Mleczarnia Wieś Sp. z o.o. os. Słoneczne 1"))
+        assertEquals("Hurtownia", business("Hurtownia pl. Wolności 2"))
+        assertEquals("Zakład Mięsny", business("Zakład Mięsny 34-600 Limanowa"))
+        assertEquals("Zakład Mięsny Sp. z o.o.", business("Zakład Mięsny Sp. z o.o., ul. Długa 1"))
+        assertEquals("Firma Nr 12-34 Sp. j.", business("Firma Nr 12-34 Sp. j."))
+    }
+
     @Test
     fun `source follows id prefix`() {
         val gis = FoodAlert(id = "GIS-x", title = "t", kind = FoodAlert.Kind.RECALL, created = LocalDate(2026, 8, 1))

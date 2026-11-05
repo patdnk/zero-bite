@@ -27,20 +27,35 @@ enum GISAlertParser {
 
     // MARK: - List page
 
+    private static let listRowMarker = "<span class=\"date\">"
+
+    /// How many rows the list page has, food or not. An empty page is one with no rows at all;
+    /// a page of only food-contact items is still a list, so paging must go on.
+    static func listRowCount(html: String) -> Int {
+        html.components(separatedBy: listRowMarker).count - 1
+    }
+
     /// The food warnings on a list page, in page order (newest first). Food-contact items,
-    /// which GIS mixes into the same list, are skipped.
+    /// which GIS mixes into the same list, are skipped, and so is any link that leaves gov.pl.
     static func listEntries(html: String) -> [ListEntry] {
         // Each entry is `<span class="date">DD.MM.YYYY</span>` then `<div class="title"><a href=…>`.
-        html.components(separatedBy: "<span class=\"date\">").dropFirst().compactMap { chunk in
+        html.components(separatedBy: listRowMarker).dropFirst().compactMap { chunk in
             guard let day = captures(#"^\s*(\d{2})\.(\d{2})\.(\d{4})\s*</span>"#, in: chunk),
                   let published = date(day: day[0], month: day[1], year: day[2]),
                   let link = captures(#"<div class="title">\s*<a href="([^"]+)""#, in: chunk),
-                  let slug = link[0].split(separator: "?").first?.split(separator: "/").last.map(String.init),
+                  let slug = pathSlug(link[0]),
                   isFood(slug: slug),
-                  let url = URL(string: link[0], relativeTo: base)?.absoluteURL
+                  let url = URL(string: link[0], relativeTo: base)?.absoluteURL,
+                  url.host == base.host
             else { return nil }
             return ListEntry(id: "GIS-" + slug, url: url, published: published)
         }
+    }
+
+    /// The last path segment of a link as written, without query or fragment and without
+    /// decoding percent escapes. List entries and articles both take their id from this.
+    private static func pathSlug(_ link: String) -> String? {
+        link.prefix { $0 != "?" && $0 != "#" }.split(separator: "/").last.map(String.init)
     }
 
     private static func isFood(slug: String) -> Bool {
@@ -78,7 +93,7 @@ enum GISAlertParser {
 
         let isAllergy = fold(title + " " + (risk ?? "")).contains("alergen")
         return FoodAlert(
-            id: "GIS-" + url.lastPathComponent,
+            id: "GIS-" + (pathSlug(url.absoluteString) ?? url.lastPathComponent),
             title: title,
             shortTitle: shortTitle(of: title),
             kind: isAllergy ? .allergy : .recall,
@@ -151,8 +166,7 @@ enum GISAlertParser {
             } else if label == "kod kreskowy" {
                 if !products.isEmpty { products[products.count - 1].productCode = value }
             } else if businessLabels.contains(where: label.hasPrefix) {
-                // Addresses and registration numbers follow the first comma.
-                let name = value.split(separator: ",", maxSplits: 1).first.map { $0.trimmingCharacters(in: .whitespaces) } ?? value
+                let name = businessName(value)
                 if name.isEmpty { continue }
                 if label.hasPrefix("producent"), business == nil {
                     business = name
@@ -164,6 +178,21 @@ enum GISAlertParser {
             }
         }
         return (products, business, others)
+    }
+
+    /// Where a company's address starts: " ul. ", " al. ", " os. " or " pl. " (street, avenue,
+    /// estate, square) or a postal code.
+    private static let addressStart = try! NSRegularExpression(pattern: #" (?:ul|al|os|pl)\. |\b\d{2}-\d{3}\b"#, options: [.caseInsensitive])
+
+    /// The company name of a "Producent: …" value. Addresses and registration numbers follow
+    /// the first comma, or a street or postal code.
+    private static func businessName(_ value: String) -> String {
+        var name = value.split(separator: ",", maxSplits: 1).first.map(String.init) ?? value
+        if let match = addressStart.firstMatch(in: name, range: NSRange(name.startIndex..., in: name)),
+           let range = Range(match.range, in: name) {
+            name = String(name[..<range.lowerBound])
+        }
+        return name.trimmingCharacters(in: .whitespaces)
     }
 
     private enum BatchField { case batchCode, bestBefore, useBy }
@@ -305,13 +334,22 @@ enum GISAlertParser {
         }
     }
 
-    /// Midnight at the start of a `DD.MM.YYYY` day in Poland, where the warnings are dated.
-    private static func date(day: String, month: String, year: String) -> Date? {
-        guard let day = Int(day), let month = Int(month), let year = Int(year),
-              (1...31).contains(day), (1...12).contains(month)
-        else { return nil }
+    /// The calendar Polish warnings are dated in.
+    private static let warsaw: Calendar = {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "Europe/Warsaw")!
-        return calendar.date(from: DateComponents(year: year, month: month, day: day))
+        return calendar
+    }()
+
+    /// Noon on a `DD.MM.YYYY` day in Poland, where the warnings are dated. Noon rather than
+    /// midnight, so the day is the same on a phone in the UK, an hour behind. Nil for numbers
+    /// that aren't a real date (31.02.2026).
+    private static func date(day: String, month: String, year: String) -> Date? {
+        guard let day = Int(day), let month = Int(month), let year = Int(year),
+              (1...31).contains(day), (1...12).contains(month),
+              let date = warsaw.date(from: DateComponents(year: year, month: month, day: day, hour: 12))
+        else { return nil }
+        let parts = warsaw.dateComponents([.year, .month, .day], from: date)
+        return parts.year == year && parts.month == month && parts.day == day ? date : nil
     }
 }
