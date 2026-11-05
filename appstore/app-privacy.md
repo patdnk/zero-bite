@@ -26,7 +26,7 @@ Everything else stays on the device or isn't collected:
 | Food list, dates, notes, settings, allergies | No (on-device SwiftData / UserDefaults) | No |
 | Label photos (camera or photo picker) | No (Vision runs on device, images aren't saved) | No |
 | Barcode lookup | The barcode number only, to Open Food Facts, to answer that request | No: not linked to the user, not stored by us |
-| Food recall alerts | Download of the FSA's public feed; nothing about the user is sent | No |
+| Food recall alerts | Download of the public alert lists of the UK FSA and/or Poland's GIS (gov.pl), as chosen in Settings; nothing about the user is sent | No |
 | Notifications | Local only | No |
 
 There are no accounts, ads or tracking. The IDFA isn't used (AdSupport and Google's identity

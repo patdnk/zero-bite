@@ -27,6 +27,33 @@ extension RecallMatch {
     }
 }
 
+/// Per-feed attribution and link copy.
+extension FoodAlert.Source {
+    /// The line under the Food alerts list.
+    var listAttribution: String {
+        switch self {
+        case .fsa: String(localized: "Alerts from the Food Standards Agency. Contains public sector information licensed under the Open Government Licence v3.0.")
+        case .gis: String(localized: "Warnings from Poland's Chief Sanitary Inspectorate (GIS), gov.pl, licensed under CC BY-SA 4.0.")
+        }
+    }
+
+    /// The source line on an alert's page; `id` is the notice reference.
+    func detailAttribution(id: String) -> String {
+        switch self {
+        case .fsa: String(localized: "Source: Food Standards Agency (\(id)). Open Government Licence v3.0.")
+        case .gis: String(localized: "Source: Chief Sanitary Inspectorate (GIS), gov.pl. CC BY-SA 4.0.")
+        }
+    }
+
+    /// The label on the button that opens the original notice.
+    var noticeLabel: String {
+        switch self {
+        case .fsa: String(localized: "FSA notice")
+        case .gis: String(localized: "GIS notice")
+        }
+    }
+}
+
 extension FoodAlert.Kind {
     var tint: Color {
         switch self {
@@ -132,7 +159,7 @@ struct RecallCard: View {
                         .accessibilityIdentifier("recall.notMine")
                     if let url = alert.url {
                         Link(destination: url) {
-                            Label("FSA notice", systemImage: "arrow.up.right")
+                            Label(alert.source.noticeLabel, systemImage: "arrow.up.right")
                         }
                         .buttonStyle(.app(.tonal, compact: true))
                     }

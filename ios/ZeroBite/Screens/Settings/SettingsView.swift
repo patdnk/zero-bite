@@ -48,12 +48,35 @@ struct SettingsView: View {
                         .opacity(viewModel.notificationsEnabled ? 1 : 0.45)
                     }
 
-                    CardSection(String(localized: "Food safety"), footer: String(localized: "Checks the Food Standards Agency for UK recalls and tells you if any of your food might be affected.")) {
+                    CardSection(String(localized: "Food safety"), footer: String(localized: "Checks official recall notices and tells you if any of your food might be affected.")) {
                         Toggle(isOn: $viewModel.recallChecksEnabled) {
-                            Text("Check UK food recalls").font(.app(.subheadline, weight: .medium))
+                            Text("Check food recalls").font(.app(.subheadline, weight: .medium))
                         }
                         .tint(Constants.BrandOrange)
                         .accessibilityIdentifier("settings.recallsToggle")
+
+                        HStack(spacing: Spacing.md) {
+                            Image(systemName: "globe.europe.africa")
+                                .font(.system(size: 14, weight: .semibold))
+                                .frame(width: 20)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Recalls from").font(.app(.subheadline, weight: .medium))
+                                Picker("Recalls from", selection: $viewModel.recallFeed) {
+                                    ForEach(SettingsViewModel.RecallFeed.allCases) { feed in
+                                        Text(feed.title).tag(feed)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .labelsHidden()
+                                .font(.app(.subheadline))
+                                .tint(Constants.BrandOrange)
+                                .accessibilityIdentifier("settings.recallSources")
+                            }
+                            Spacer(minLength: 0)
+                        }
+                        .foregroundStyle(Constants.TextPrimary)
+                        .disabled(!viewModel.recallChecksEnabled)
+                        .opacity(viewModel.recallChecksEnabled ? 1 : 0.45)
 
                         NavigationLink(value: Route.alerts) {
                             HStack(spacing: Spacing.md) {
@@ -126,7 +149,7 @@ struct SettingsView: View {
                             .disabled(viewModel.activeItemCount == 0 && viewModel.usedItemCount == 0)
                     }
 
-                    CardSection(String(localized: "About"), footer: String(localized: "Dates and barcodes are read on your device with Apple Vision. Product names come from Open Food Facts. Food alerts come from the Food Standards Agency under the Open Government Licence v3.0.")) {
+                    CardSection(String(localized: "About"), footer: String(localized: "Dates and barcodes are read on your device with Apple Vision. Product names come from Open Food Facts. Food alerts come from the Food Standards Agency (Open Government Licence v3.0) and Poland's Chief Sanitary Inspectorate (gov.pl, CC BY-SA 4.0).")) {
                         ActionRow(title: String(localized: "How Zero Bite works"), symbol: "book.pages", tint: Constants.BrandOrange) {
                             viewModel.showHowItWorks()
                         }

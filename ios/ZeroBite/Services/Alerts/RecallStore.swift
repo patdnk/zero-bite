@@ -52,6 +52,7 @@ final class RecallStore {
     private(set) var lastChecked: Date?
     private(set) var isRefreshing = false
     private(set) var lastErrorMessage: String?
+    private var refreshAgain = false
     private(set) var dismissedMatchIDs: Set<String>
 
     /// Matches the user has already been notified about, so each one alerts only once.
@@ -114,9 +115,24 @@ final class RecallStore {
     /// alerts stay in place, apart from any source that did update (see `FoodAlertsPartialFailure`).
     @discardableResult
     func refresh(force: Bool = false, now: Date = .now) async -> Bool {
-        guard force || needsRefresh, !isRefreshing else { return true }
+        guard force || needsRefresh else { return true }
+        if isRefreshing {
+            // A forced refresh asked for mid-flight (e.g. the feed choice changed) runs again
+            // afterwards, since the running one may have read the old settings.
+            if force { refreshAgain = true }
+            return true
+        }
         isRefreshing = true
         defer { isRefreshing = false }
+        var succeeded: Bool
+        repeat {
+            refreshAgain = false
+            succeeded = await fetchOnce(now: now)
+        } while refreshAgain && !Task.isCancelled
+        return succeeded
+    }
+
+    private func fetchOnce(now: Date) async -> Bool {
         let since = Calendar.current.date(byAdding: .day, value: -Self.historyDays, to: now) ?? now
         do {
             let fetched = try await client.fetchAlerts(since: since, known: alerts)

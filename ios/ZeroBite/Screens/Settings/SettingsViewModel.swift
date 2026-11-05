@@ -84,6 +84,38 @@ final class SettingsViewModel {
         }
     }
 
+    /// What the "Recalls from" menu offers, mapped onto the feeds it turns on.
+    enum RecallFeed: CaseIterable, Identifiable {
+        case uk, poland, both
+
+        var id: Self { self }
+
+        var sources: Set<FoodAlert.Source> {
+            switch self {
+            case .uk: [.fsa]
+            case .poland: [.gis]
+            case .both: [.fsa, .gis]
+            }
+        }
+
+        var title: String {
+            switch self {
+            case .uk: String(localized: "UK (FSA)")
+            case .poland: String(localized: "Poland (GIS)")
+            case .both: String(localized: "Both")
+            }
+        }
+    }
+
+    var recallFeed: RecallFeed {
+        get { RecallFeed.allCases.first { $0.sources == settings.recallSources } ?? .uk }
+        set {
+            guard newValue.sources != settings.recallSources else { return }
+            settings.recallSources = newValue.sources
+            Task { await dependencies.refreshRecalls(force: true) }
+        }
+    }
+
     func isSelected(_ allergen: Allergen) -> Bool {
         settings.allergenProfile.contains(allergen)
     }

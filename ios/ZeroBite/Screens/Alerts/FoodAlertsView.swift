@@ -57,9 +57,13 @@ struct FoodAlertsView: View {
                     }
                 }
 
-                Text("Alerts from the Food Standards Agency. Contains public sector information licensed under the Open Government Licence v3.0.")
-                    .font(.app(.caption2))
-                    .foregroundStyle(Constants.TextMuted)
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(viewModel.attributionLines, id: \.self) { line in
+                        Text(line)
+                    }
+                }
+                .font(.app(.caption2))
+                .foregroundStyle(Constants.TextMuted)
             }
             .padding(.horizontal, Spacing.gutter)
             .padding(.bottom, Spacing.xl)
@@ -134,7 +138,7 @@ struct FoodAlertDetailView: View {
                     .buttonStyle(.app(.ink))
                 }
 
-                Text("Source: Food Standards Agency (\(alert.id)). Open Government Licence v3.0.")
+                Text(alert.source.detailAttribution(id: alert.id))
                     .font(.app(.caption2))
                     .foregroundStyle(Constants.TextMuted)
             }

@@ -487,6 +487,54 @@
         }
       }
     },
+    "Both" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Both"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oba"
+          }
+        }
+      }
+    },
+    "Check food recalls" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check food recalls"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sprawdzaj wycofania żywności"
+          }
+        }
+      }
+    },
+    "Checks official recall notices and tells you if any of your food might be affected." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checks official recall notices and tells you if any of your food might be affected."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sprawdza oficjalne komunikaty o wycofaniach i daje znać, jeśli mogą dotyczyć twoich produktów."
+          }
+        }
+      }
+    },
     "Couldn't check for new food alerts. Showing the last ones we downloaded." : {
       "localizations" : {
         "en" : {
@@ -520,6 +568,22 @@
         }
       }
     },
+    "Dates and barcodes are read on your device with Apple Vision. Product names come from Open Food Facts. Food alerts come from the Food Standards Agency (Open Government Licence v3.0) and Poland's Chief Sanitary Inspectorate (gov.pl, CC BY-SA 4.0)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dates and barcodes are read on your device with Apple Vision. Product names come from Open Food Facts. Food alerts come from the Food Standards Agency (Open Government Licence v3.0) and Poland's Chief Sanitary Inspectorate (gov.pl, CC BY-SA 4.0)."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daty i kody kreskowe są odczytywane na urządzeniu przez Apple Vision. Nazwy produktów pochodzą z Open Food Facts. Alerty żywnościowe pochodzą z brytyjskiej Food Standards Agency (Open Government Licence v3.0) i polskiego Głównego Inspektoratu Sanitarnego (gov.pl, CC BY-SA 4.0)."
+          }
+        }
+      }
+    },
     "Don't share" : {
       "localizations" : {
         "en" : {
@@ -549,6 +613,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Jedzenie"
+          }
+        }
+      }
+    },
+    "GIS notice" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GIS notice"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Komunikat GIS"
           }
         }
       }
@@ -603,6 +683,22 @@
         }
       }
     },
+    "Poland (GIS)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poland (GIS)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Polska (GIS)"
+          }
+        }
+      }
+    },
     "Privacy" : {
       "localizations" : {
         "en" : {
@@ -615,6 +711,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prywatność"
+          }
+        }
+      }
+    },
+    "Pull down to check for new alerts." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pull down to check for new alerts."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pociągnij w dół, by znów sprawdzić alerty."
+          }
+        }
+      }
+    },
+    "Recalls from" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recalls from"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Źródło komunikatów"
           }
         }
       }
@@ -684,6 +812,38 @@
         }
       }
     },
+    "Source: Chief Sanitary Inspectorate (GIS), gov.pl. CC BY-SA 4.0." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source: Chief Sanitary Inspectorate (GIS), gov.pl. CC BY-SA 4.0."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Źródło: Główny Inspektorat Sanitarny (GIS), gov.pl. CC BY-SA 4.0."
+          }
+        }
+      }
+    },
+    "UK (FSA)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UK (FSA)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wielka Brytania (FSA)"
+          }
+        }
+      }
+    },
     "Usage statistics" : {
       "comment" : "Onboarding illustration: what usage data sharing sends",
       "localizations" : {
@@ -713,6 +873,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Statystyki użycia i raporty o awariach pomagają nam naprawiać błędy i ulepszać aplikację. Są wysyłane przez Google Firebase i nigdy nie zawierają twojego jedzenia, notatek, alergii ani zdjęć."
+          }
+        }
+      }
+    },
+    "Warnings from Poland's Chief Sanitary Inspectorate (GIS), gov.pl, licensed under CC BY-SA 4.0." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warnings from Poland's Chief Sanitary Inspectorate (GIS), gov.pl, licensed under CC BY-SA 4.0."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ostrzeżenia Głównego Inspektoratu Sanitarnego (GIS) z gov.pl, na licencji CC BY-SA 4.0."
           }
         }
       }
@@ -1708,22 +1884,6 @@
         }
       }
     },
-    "Check UK food recalls" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Check UK food recalls"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sprawdzaj wycofania żywności w Wielkiej Brytanii"
-          }
-        }
-      }
-    },
     "Checked %@" : {
       "localizations" : {
         "en" : {
@@ -1736,22 +1896,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sprawdzono %@"
-          }
-        }
-      }
-    },
-    "Checks the Food Standards Agency for UK recalls and tells you if any of your food might be affected." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Checks the Food Standards Agency for UK recalls and tells you if any of your food might be affected."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sprawdza komunikaty brytyjskiej FSA o wycofaniach i daje znać, jeśli mogą dotyczyć twoich produktów."
           }
         }
       }
@@ -2088,22 +2232,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dane"
-          }
-        }
-      }
-    },
-    "Dates and barcodes are read on your device with Apple Vision. Product names come from Open Food Facts. Food alerts come from the Food Standards Agency under the Open Government Licence v3.0." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dates and barcodes are read on your device with Apple Vision. Product names come from Open Food Facts. Food alerts come from the Food Standards Agency under the Open Government Licence v3.0."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Daty i kody kreskowe są odczytywane na urządzeniu przez Apple Vision. Nazwy produktów pochodzą z Open Food Facts. Alerty żywnościowe pochodzą z brytyjskiej Food Standards Agency na licencji Open Government Licence v3.0."
           }
         }
       }
@@ -4360,22 +4488,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Produkty"
-          }
-        }
-      }
-    },
-    "Pull down to check the Food Standards Agency again." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pull down to check the Food Standards Agency again."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pociągnij w dół, by znów sprawdzić alerty FSA."
           }
         }
       }

@@ -2,7 +2,7 @@
 //  FoodAlertsViewModel.swift
 //  ZeroBite
 //
-//  Recent FSA food alerts, filtered to what matters to this user: recalls that may touch
+//  Recent food alerts (UK FSA, Poland GIS), filtered to what matters to this user: recalls that may touch
 //  their fridge and allergy alerts for their allergens.
 //
 
@@ -45,6 +45,11 @@ final class FoodAlertsViewModel {
         self.inventory = inventory
         self.settings = settings
         self.now = now
+    }
+
+    /// One attribution line for each feed the user has turned on.
+    var attributionLines: [String] {
+        FoodAlert.Source.allCases.filter { settings.recallSources.contains($0) }.map(\.listAttribution)
     }
 
     var isRefreshing: Bool { recalls.isRefreshing }
@@ -93,7 +98,7 @@ final class FoodAlertsViewModel {
         if filter == .forYou {
             return String(localized: "No recall matches any of your food, and there are no allergy alerts for your allergies.")
         }
-        return String(localized: "Pull down to check the Food Standards Agency again.")
+        return String(localized: "Pull down to check for new alerts.")
     }
 
     func refresh() async {

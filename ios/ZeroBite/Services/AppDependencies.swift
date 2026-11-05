@@ -52,28 +52,31 @@ final class AppDependencies {
         } catch {
             fatalError("Could not open the inventory database: \(error)")
         }
+        let settings = AppSettings()
         return AppDependencies(
-            settings: AppSettings(),
+            settings: settings,
             inventory: InventoryStore(container: container),
             notifications: ExpiryNotificationService(),
             recipes: RecipeStore.loadBundled(),
             productLookup: OpenFoodFactsLookup(),
-            recalls: liveRecallStore(),
+            recalls: liveRecallStore(defaults: settings.userDefaults),
             usageData: FirebaseUsageDataCollection()
         )
     }
 
-    private static func liveRecallStore() -> RecallStore {
+    private static func liveRecallStore(defaults: UserDefaults) -> RecallStore {
         #if DEBUG
         // Canned alerts in a throwaway store, so they never end up in the real cache.
         if ProcessInfo.processInfo.arguments.contains("--preview-alerts") {
             return RecallStore(client: PreviewFoodAlerts(), cacheURL: nil, defaults: AppSettings.ephemeral().userDefaults)
         }
         #endif
+        // UserDefaults is thread-safe; it just isn't annotated Sendable.
+        nonisolated(unsafe) let defaults = defaults
         let client = CombinedFoodAlerts(
             clients: [.fsa: FSAFoodAlertsClient(), .gis: GISFoodAlertsClient()],
-            // Constant until the recall sources setting (Task 4) replaces it.
-            enabled: { [.fsa] }
+            // Read on every fetch, so the Settings choice applies to the next refresh.
+            enabled: { AppSettings.storedRecallSources(in: defaults) }
         )
         return RecallStore(client: client, cacheURL: RecallStore.defaultCacheURL())
     }
@@ -116,7 +119,7 @@ final class AppDependencies {
 
     // MARK: - Recalls
 
-    /// Fetches new FSA alerts (throttled unless `force`) and notifies about any new matches.
+    /// Fetches new food alerts (throttled unless `force`) and notifies about any new matches.
     func refreshRecalls(force: Bool = false) async {
         guard settings.recallChecksEnabled else { return }
         await recalls.refresh(force: force)

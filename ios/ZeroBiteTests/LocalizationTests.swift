@@ -93,4 +93,31 @@ struct LocalizationTests {
         #expect(String(localized: "Put it back in the freezer", bundle: pl, locale: plLocale) == "Odłóż z powrotem do zamrażarki")
         #expect(String(localized: "Put it back in the cupboard", bundle: pl, locale: plLocale) == "Odłóż z powrotem do szafki")
     }
+
+    @Test func polishRecallCopy() {
+        func polish(_ key: String.LocalizationValue) -> String { String(localized: key, bundle: pl, locale: plLocale) }
+        #expect(polish("Check food recalls") == "Sprawdzaj wycofania żywności")
+        #expect(polish("Recalls from") == "Źródło komunikatów")
+        #expect(polish("UK (FSA)") == "Wielka Brytania (FSA)")
+        #expect(polish("Poland (GIS)") == "Polska (GIS)")
+        #expect(polish("Both") == "Oba")
+        #expect(polish("GIS notice") == "Komunikat GIS")
+        #expect(polish("FSA notice") == "Komunikat FSA")
+        #expect(polish("Checks official recall notices and tells you if any of your food might be affected.")
+            == "Sprawdza oficjalne komunikaty o wycofaniach i daje znać, jeśli mogą dotyczyć twoich produktów.")
+        #expect(polish("Warnings from Poland's Chief Sanitary Inspectorate (GIS), gov.pl, licensed under CC BY-SA 4.0.")
+            == "Ostrzeżenia Głównego Inspektoratu Sanitarnego (GIS) z gov.pl, na licencji CC BY-SA 4.0.")
+        #expect(polish("Source: Chief Sanitary Inspectorate (GIS), gov.pl. CC BY-SA 4.0.")
+            == "Źródło: Główny Inspektorat Sanitarny (GIS), gov.pl. CC BY-SA 4.0.")
+        #expect(polish("Couldn't check for new food alerts. Showing the last ones we downloaded.")
+            == "Nie udało się sprawdzić nowych alertów. Pokazujemy ostatnio pobrane.")
+        #expect(polish("Pull down to check for new alerts.") == "Pociągnij w dół, by znów sprawdzić alerty.")
+    }
+
+    @Test func englishRecallCopy() {
+        func english(_ key: String.LocalizationValue) -> String { String(localized: key, bundle: en, locale: enLocale) }
+        #expect(english("Check food recalls") == "Check food recalls")
+        #expect(english("GIS notice") == "GIS notice")
+        #expect(english("Pull down to check for new alerts.") == "Pull down to check for new alerts.")
+    }
 }

@@ -522,3 +522,79 @@ struct FoodAlertBatchTests {
         #expect(FoodAlert.Batch(batchCode: "All batches", useBy: "All use by dates").summary == "All batches · All use by dates")
     }
 }
+
+// MARK: - Recall feed setting
+
+@MainActor
+struct RecallSourcesSettingTests {
+
+    @Test func defaultSourcesFollowRegion() {
+        #expect(AppSettings.defaultRecallSources(region: "PL") == [.gis])
+        #expect(AppSettings.defaultRecallSources(region: "GB") == [.fsa])
+        #expect(AppSettings.defaultRecallSources(region: "DE") == [.fsa])
+        #expect(AppSettings.defaultRecallSources(region: nil) == [.fsa])
+    }
+
+    @Test func unsetSettingUsesTheDeviceRegion() {
+        let defaults = UserDefaults(suiteName: "zerobite.test.\(UUID().uuidString)")!
+        #expect(AppSettings(defaults: defaults, region: "PL").recallSources == [.gis])
+        #expect(AppSettings(defaults: defaults, region: "GB").recallSources == [.fsa])
+        // The default is not stored, so it keeps following the region until the user chooses.
+        #expect(defaults.object(forKey: "recallSources") == nil)
+    }
+
+    @Test func recallSourcesPersist() {
+        let settings = AppSettings.ephemeral()
+        settings.recallSources = [.fsa, .gis]
+        let reloaded = AppSettings(defaults: settings.userDefaults, region: "GB")
+        #expect(reloaded.recallSources == [.fsa, .gis])
+        #expect(Set(settings.userDefaults.stringArray(forKey: "recallSources") ?? []) == ["fsa", "gis"])
+    }
+
+    @Test func aChoiceBeatsTheRegion() {
+        let settings = AppSettings.ephemeral()
+        settings.recallSources = [.fsa]
+        #expect(AppSettings(defaults: settings.userDefaults, region: "PL").recallSources == [.fsa])
+    }
+
+    @Test func unreadableStoredValueFallsBackToTheRegionDefault() {
+        let settings = AppSettings.ephemeral()
+        settings.userDefaults.set(["nope"], forKey: "recallSources")
+        #expect(AppSettings(defaults: settings.userDefaults, region: "PL").recallSources == [.gis])
+        settings.userDefaults.set([String](), forKey: "recallSources")
+        #expect(AppSettings(defaults: settings.userDefaults, region: "GB").recallSources == [.fsa])
+    }
+
+    @Test func settingsViewModelPicksFeedAndRefreshes() async throws {
+        let counting = CountingClient()
+        let dependencies = AppDependencies.preview(alerts: counting)
+        let viewModel = SettingsViewModel(dependencies: dependencies, coordinator: SettingsCoordinator())
+        dependencies.settings.recallSources = [.fsa]
+        #expect(viewModel.recallFeed == .uk)
+
+        viewModel.recallFeed = .both
+        #expect(dependencies.settings.recallSources == [.fsa, .gis])
+        viewModel.recallFeed = .poland
+        #expect(dependencies.settings.recallSources == [.gis])
+        #expect(viewModel.recallFeed == .poland)
+
+        // Each change forces a refresh, even inside the throttle window or while one is running.
+        try await Task.sleep(for: .milliseconds(600))
+        #expect(await counting.calls == 2)
+    }
+}
+
+private actor CallCounter {
+    var calls = 0
+    func bump() { calls += 1 }
+}
+
+private struct CountingClient: FoodAlertsFetching {
+    private let counter = CallCounter()
+    var calls: Int { get async { await counter.calls } }
+    func fetchAlerts(since: Date, known: [FoodAlert]) async throws -> [FoodAlert] {
+        await counter.bump()
+        try? await Task.sleep(for: .milliseconds(100))
+        return known
+    }
+}

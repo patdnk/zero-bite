@@ -21,6 +21,7 @@ final class AppSettings {
         static let soonThresholdDays = "soonThresholdDays"
         static let dismissedNotificationTip = "dismissedNotificationTip"
         static let recallChecksEnabled = "recallChecksEnabled"
+        static let recallSources = "recallSources"
         static let allergens = "allergens"
         static let shareUsageData = "shareUsageData"
     }
@@ -59,9 +60,26 @@ final class AppSettings {
         didSet { defaults.set(dismissedNotificationTip, forKey: Keys.dismissedNotificationTip) }
     }
 
-    /// Check the Food Standards Agency for recalls and allergy alerts.
+    /// Check the official feeds for recalls and allergy alerts.
     var recallChecksEnabled: Bool {
         didSet { defaults.set(recallChecksEnabled, forKey: Keys.recallChecksEnabled) }
+    }
+
+    /// Which feeds the recall checks read. Until the user chooses, this follows the device region.
+    var recallSources: Set<FoodAlert.Source> {
+        didSet { defaults.set(recallSources.map(\.rawValue).sorted(), forKey: Keys.recallSources) }
+    }
+
+    /// Poland reads the Chief Sanitary Inspectorate (GIS); everywhere else the UK Food Standards Agency.
+    nonisolated static func defaultRecallSources(region: String?) -> Set<FoodAlert.Source> {
+        region == "PL" ? [.gis] : [.fsa]
+    }
+
+    /// The stored feed choice, or the region default when none (or none readable) is stored.
+    /// Not main-actor bound, so the alert fetcher can read it from a background task.
+    nonisolated static func storedRecallSources(in defaults: UserDefaults, region: String? = Locale.current.region?.identifier) -> Set<FoodAlert.Source> {
+        let stored = Set((defaults.stringArray(forKey: Keys.recallSources) ?? []).compactMap(FoodAlert.Source.init(rawValue:)))
+        return stored.isEmpty ? defaultRecallSources(region: region) : stored
     }
 
     /// Allergens the user wants allergy alerts for (FSA allergen labels, e.g. "Milk", "Peanuts").
@@ -74,7 +92,7 @@ final class AppSettings {
         didSet { defaults.set(shareUsageData, forKey: Keys.shareUsageData) }
     }
 
-    init(defaults: UserDefaults = .standard) {
+    init(defaults: UserDefaults = .standard, region: String? = Locale.current.region?.identifier) {
         self.defaults = defaults
         hasCompletedWelcome = defaults.bool(forKey: Keys.hasCompletedWelcome)
         notificationsEnabled = defaults.bool(forKey: Keys.notificationsEnabled)
@@ -84,6 +102,7 @@ final class AppSettings {
         soonThresholdDays = defaults.object(forKey: Keys.soonThresholdDays) as? Int ?? 3
         dismissedNotificationTip = defaults.bool(forKey: Keys.dismissedNotificationTip)
         recallChecksEnabled = defaults.object(forKey: Keys.recallChecksEnabled) as? Bool ?? true
+        recallSources = Self.storedRecallSources(in: defaults, region: region)
         allergens = defaults.stringArray(forKey: Keys.allergens) ?? []
         shareUsageData = defaults.bool(forKey: Keys.shareUsageData)
     }
