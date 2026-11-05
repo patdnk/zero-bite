@@ -12,7 +12,11 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.datetime.LocalDate
 
 interface FoodAlertsFetching {
-    suspend fun fetchAlerts(since: LocalDate): List<FoodAlert>
+    /**
+     * Alerts published since `since`. `known` are the alerts already held, so a client that has
+     * to download each one separately can skip those it has.
+     */
+    suspend fun fetchAlerts(since: LocalDate, known: List<FoodAlert>): List<FoodAlert>
 }
 
 class FoodAlertsUnavailable(val status: Int) : Exception("FSA food alerts returned HTTP $status")
@@ -24,7 +28,8 @@ class FoodAlertsUnavailable(val status: Int) : Exception("FSA food alerts return
  */
 class FsaAlertsClient(private val http: HttpClient) : FoodAlertsFetching {
 
-    override suspend fun fetchAlerts(since: LocalDate): List<FoodAlert> {
+    /** Ignores `known`: one request returns everything. */
+    override suspend fun fetchAlerts(since: LocalDate, known: List<FoodAlert>): List<FoodAlert> {
         val response = http.get("https://data.food.gov.uk/food-alerts/id.json") {
             parameter("_view", "full")
             parameter("_sort", "-created")

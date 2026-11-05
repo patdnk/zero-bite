@@ -31,14 +31,14 @@ class FsaAlertsClientTest {
             assertEquals("200", params["_limit"])
             assertEquals("application/json", request.headers[HttpHeaders.Accept])
             respond(Fixtures.text("fsa-alerts.json"), HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
-        }.fetchAlerts(since = LocalDate(2026, 3, 14))
+        }.fetchAlerts(since = LocalDate(2026, 3, 14), known = emptyList())
         assertEquals(7, alerts.size)
     }
 
     @Test
     fun `non-200 responses throw`() = runTest {
         val error = assertFailsWith<FoodAlertsUnavailable> {
-            client { respond("", HttpStatusCode.BadRequest) }.fetchAlerts(LocalDate(2026, 3, 14))
+            client { respond("", HttpStatusCode.BadRequest) }.fetchAlerts(LocalDate(2026, 3, 14), emptyList())
         }
         assertEquals(400, error.status)
     }
@@ -46,7 +46,7 @@ class FsaAlertsClientTest {
     @Test
     fun `connection failures propagate to the caller`() = runTest {
         assertFailsWith<IllegalStateException> {
-            client { error("offline") }.fetchAlerts(LocalDate(2026, 3, 14))
+            client { error("offline") }.fetchAlerts(LocalDate(2026, 3, 14), emptyList())
         }
     }
 }

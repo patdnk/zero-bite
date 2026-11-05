@@ -4,10 +4,12 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 /**
- * A UK Food Standards Agency food alert (product recall or allergy alert), reduced to what the
- * app needs. Serializable so the fetched list can be cached on disk.
+ * A food alert (product recall or allergy alert) from the UK Food Standards Agency or Poland's
+ * Chief Sanitary Inspectorate (GIS), reduced to what the app needs. Serializable so the fetched
+ * list can be cached on disk.
  *
- * Contains public sector information licensed under the Open Government Licence v3.0.
+ * FSA: public sector information licensed under the Open Government Licence v3.0.
+ * GIS: text from gov.pl, Główny Inspektorat Sanitarny, CC BY-SA 4.0.
  */
 @Serializable
 data class FoodAlert(
@@ -24,6 +26,9 @@ data class FoodAlert(
     val risk: String? = null,
     val consumerAdvice: String? = null,
 ) {
+    /** Where an alert comes from. */
+    enum class Source { FSA, GIS }
+
     enum class Kind(val code: String, val label: String) {
         /** An allergen is missing from or wrong on the label. */
         ALLERGY("AA", "Allergy alert"),
@@ -73,6 +78,9 @@ data class FoodAlert(
         val productCode: String? = null,
         val batches: List<Batch> = emptyList(),
     )
+
+    /** GIS alert ids are prefixed "GIS-"; everything else came from the FSA. */
+    val source: Source get() = if (id.startsWith("GIS-")) Source.GIS else Source.FSA
 
     val displayTitle: String get() = shortTitle ?: title
 
