@@ -12,7 +12,8 @@ data class AlertDateSpec(val year: Int, val month: Int, val day: Int?) {
 
 /**
  * Pulls dates out of FSA batch text such as "10, 16 and 17 July 2026", "end of 28 April 2026",
- * "31 January 2027 02 May 2027" or "May 2027".
+ * "31 January 2027 02 May 2027" or "May 2027", and GIS batch text such as "17.07.2026 r." or
+ * "03.2028 19A".
  */
 object AlertDateParser {
 
@@ -25,6 +26,9 @@ object AlertDateParser {
     )
 
     private val NUMERIC = Regex("""\b(\d{1,2})[/.](\d{1,2})[/.](\d{2,4})\b""")
+
+    /** "03.2028" or "03/2028": a month with no day. Not the tail of a full date ("13/04/2027"). */
+    private val MONTH_ONLY = Regex("""(?<![\d./])(\d{1,2})[./](\d{4})(?!\d)""")
 
     private val NON_DIGITS = Regex("""\D+""")
 
@@ -52,6 +56,13 @@ object AlertDateParser {
             if (day !in 1..31 || month !in 1..12) continue
             if (year < 100) year += 2000
             specs += AlertDateSpec(year, month, day)
+        }
+
+        for (match in MONTH_ONLY.findAll(text)) {
+            val month = match.groupValues[1].toIntOrNull() ?: continue
+            val year = match.groupValues[2].toIntOrNull() ?: continue
+            if (month !in 1..12) continue
+            specs += AlertDateSpec(year, month, null)
         }
         return specs
     }

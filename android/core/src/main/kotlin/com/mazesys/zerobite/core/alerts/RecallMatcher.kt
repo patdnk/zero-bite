@@ -49,6 +49,9 @@ class RecallMatcher(
     private val lookbackDays: Int = 120,
 ) {
 
+    /** The language of a notice's text. FSA notices are English, GIS notices Polish. */
+    enum class Language { ENGLISH, POLISH }
+
     fun matches(alerts: List<FoodAlert>, items: List<FoodItem>, dismissed: Set<String> = emptySet()): List<RecallMatch> {
         val cutoff = today.minus(lookbackDays, DateTimeUnit.DAY)
         val recent = alerts.filter { it.created >= cutoff }
@@ -75,20 +78,23 @@ class RecallMatcher(
 
     fun match(alert: FoodAlert, product: FoodAlert.Product, item: FoodItem): RecallMatch? {
         val reasons = mutableSetOf<RecallMatch.Reason>()
+        val language = if (alert.source == FoodAlert.Source.GIS) Language.POLISH else Language.ENGLISH
 
         val barcode = item.barcode?.filter { it.isDigit() }
         if (barcode != null && barcode.length >= 8 && barcode in barcodes(product)) {
             reasons += RecallMatch.Reason.BARCODE
         }
 
-        val productWords = words(product.name)
-        val businessWords = alert.businesses.flatMap(::words).toSet() - GENERIC_BUSINESS_WORDS
-        val brandWords = words(item.brand.orEmpty()).toSet()
-        val itemWords = words(item.name).filter { it !in businessWords && it !in brandWords }
+        // Item, brand and notice are all folded the same way, so "Bonitki" on both stems alike.
+        val productFolded = foldedWords(product.name, language)
+        val productWords = words(product.name, language)
+        val businessWords = alert.businesses.flatMap { words(it, language) }.toSet() - GENERIC_BUSINESS_WORDS
+        val brandWords = words(item.brand.orEmpty(), language).toSet()
+        val itemWords = words(item.name, language).filter { it !in businessWords && it !in brandWords }
 
-        if (nameMatches(itemWords, productWords)) reasons += RecallMatch.Reason.NAME
+        if (nameMatches(itemWords, productWords, language, productFolded)) reasons += RecallMatch.Reason.NAME
 
-        val allItemWords = words(item.name).toSet() + brandWords
+        val allItemWords = words(item.name, language).toSet() + brandWords
         if (businessWords.any { it in allItemWords } || (brandWords.isNotEmpty() && brandWords.any { it in productWords })) {
             reasons += RecallMatch.Reason.BRAND
         }
@@ -118,21 +124,56 @@ class RecallMatcher(
         /**
          * A one-word item ("Brie", "Ham") must be the product's head noun, so "Milk" doesn't match
          * "Pistachio Milk Chocolate". Longer names need every word to appear in the product name.
+         *
+         * Polish puts the noun first ("Ser regionalny Gałka"), so a one-word item must be the
+         * product's first word, or its second when the first is an adjective ("Zielone pesto").
+         * That adjective check needs the unstemmed words (`productFoldedWords`, from [foldedWords]).
          */
-        fun nameMatches(itemWords: List<String>, productWords: List<String>): Boolean {
-            val head = productWords.lastOrNull() ?: return false
+        fun nameMatches(
+            itemWords: List<String>,
+            productWords: List<String>,
+            language: Language = Language.ENGLISH,
+            productFoldedWords: List<String> = emptyList(),
+        ): Boolean {
             if (itemWords.isEmpty()) return false
-            if (itemWords.size == 1) return itemWords[0] == head
-            val product = productWords.toSet()
-            return itemWords.all { it in product }
+            if (itemWords.size > 1) {
+                val product = productWords.toSet()
+                return itemWords.all { it in product }
+            }
+            return when (language) {
+                Language.ENGLISH -> itemWords[0] == productWords.lastOrNull()
+                Language.POLISH -> {
+                    val first = productWords.firstOrNull() ?: return false
+                    if (itemWords[0] == first) return true
+                    val startsWithAdjective = productFoldedWords.firstOrNull()
+                        ?.let { word -> POLISH_ADJECTIVE_ENDINGS.any(word::endsWith) } ?: false
+                    startsWithAdjective && productWords.size > 1 && itemWords[0] == productWords[1]
+                }
+            }
         }
 
-        /** Lowercased, accent-folded, singular content words, in order. */
-        fun words(text: String): List<String> =
-            splitAlphanumeric(TextFolding.foldDiacritics(text).lowercase())
-                .filter { it !in STOP_WORDS && it.none(Char::isDigit) }
-                .map(::singular)
-                .map { SYNONYMS[it] ?: it }
+        /**
+         * Lowercased, accent-folded, stemmed content words, in order: singular for English,
+         * suffix-stripped for Polish.
+         */
+        fun words(text: String, language: Language = Language.ENGLISH): List<String> {
+            val folded = foldedWords(text, language)
+            return when (language) {
+                Language.ENGLISH -> folded.map(::singular).map { SYNONYMS[it] ?: it }
+                Language.POLISH -> folded.map(::polishStem)
+            }
+        }
+
+        /**
+         * The content words before stemming: lowercased, accent-folded, without stop words or
+         * numbers. [words] is these, stemmed, at the same positions. ł has no accent, but
+         * [TextFolding] maps it to l with the rest.
+         */
+        fun foldedWords(text: String, language: Language = Language.ENGLISH): List<String> {
+            val stops = if (language == Language.POLISH) POLISH_STOP_WORDS else STOP_WORDS
+            return splitAlphanumeric(TextFolding.foldDiacritics(text).lowercase())
+                .filter { it !in stops && it.none(Char::isDigit) }
+        }
 
         /** Long digit runs on the notice (product codes and barcode-style batch codes). */
         fun barcodes(product: FoodAlert.Product): Set<String> {
@@ -163,11 +204,35 @@ class RecallMatcher(
             return word
         }
 
+        /**
+         * Drops the longest case or plural ending that still leaves three letters, so "sery" and
+         * "ser", or "Bonitki" on a pack and on a notice, meet at the same stem.
+         */
+        private fun polishStem(word: String): String {
+            val suffix = POLISH_SUFFIXES.firstOrNull { word.endsWith(it) && word.length - it.length >= 3 } ?: return word
+            return word.dropLast(suffix.length)
+        }
+
         val STOP_WORDS: Set<String> = setOf(
             "the", "and", "with", "of", "in", "a", "an", "for", "style", "flavour", "flavor", "flavoured",
             "pack", "x", "g", "kg", "ml", "l", "pcs", "organic", "mini", "deluxe", "family", "range", "fresh",
             "finest", "classic", "original", "selection", "everyday", "essential", "taste", "own", "brand",
         )
+
+        val POLISH_STOP_WORDS: Set<String> = setOf(
+            "z", "ze", "i", "w", "we", "na", "do", "od", "bez", "oraz", "o", "po", "dla", "lub", "typu",
+            "smak", "smaku", "marki", "partia", "partii", "g", "kg", "ml", "l", "szt", "op",
+        )
+
+        /** Longest first, so the first match is the longest. */
+        private val POLISH_SUFFIXES = listOf(
+            "ami", "ach", "ego", "emu", "ymi", "ich", "ych", "owi", "om", "ow", "ie", "ia", "iu", "ej",
+            "a", "e", "i", "o", "u", "y",
+        )
+
+        /** Endings of unstemmed adjectives ("zielone", "wędzony", "regionalna", "górski"). */
+        private val POLISH_ADJECTIVE_ENDINGS =
+            listOf("ny", "na", "ne", "owy", "owa", "owe", "ony", "ona", "one", "ski", "ska", "skie", "cki", "cka", "ckie")
 
         val GENERIC_BUSINESS_WORDS: Set<String> = setOf(
             "ltd", "limited", "plc", "uk", "co", "company", "foods", "food", "store", "group", "international",
