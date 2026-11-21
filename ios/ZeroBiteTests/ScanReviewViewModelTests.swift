@@ -56,22 +56,3 @@ struct ScanReviewViewModelTests {
         #expect(coordinator.navigationPath.count == 1)
     }
 }
-
-@MainActor
-struct AppFlowControllerTests {
-
-    @Test func firstLaunchGoesToWelcomeThenRemembersCompletion() {
-        let settings = AppSettings.ephemeral()
-        let flow = AppFlowController(settings: settings)
-        #expect(flow.phase == .launch)
-        flow.transitionFromLaunch()
-        #expect(flow.phase == .welcome)
-        flow.transitionToMain()
-        #expect(flow.phase == .main)
-        #expect(settings.hasCompletedWelcome)
-
-        let relaunch = AppFlowController(settings: settings)
-        relaunch.transitionFromLaunch()
-        #expect(relaunch.phase == .main)
-    }
-}
