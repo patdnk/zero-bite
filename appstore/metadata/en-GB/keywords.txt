@@ -1,1 +1,1 @@
-food waste,fridge,expiry,use by,best before,leftovers,pantry,freezer,recipe,recall,allergy,reminder
+fridge,pantry,freezer,use by,best before,leftovers,grocery,inventory,reminder,recipe,recall,allergy
