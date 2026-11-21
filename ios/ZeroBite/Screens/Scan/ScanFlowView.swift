@@ -7,21 +7,20 @@ import PhotosUI
 import SwiftUI
 
 struct ScanFlowView: View {
-    @Bindable var viewModel: ScanFlowViewModel
+    let coordinator: ScanCoordinator
     let dependencies: AppDependencies
 
     @State private var pickerItem: PhotosPickerItem?
 
     var body: some View {
-        @Bindable var coordinator = viewModel.coordinator
-        NavigationStack(path: $coordinator.navigationPath) {
+        NavigationStack(path: path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.lg) {
                     DetailTitle(overline: String(localized: "Scan or type"), title: String(localized: "Add food"))
 
                     VStack(spacing: Spacing.sm) {
-                        if viewModel.supportsLiveScanning {
-                            Button { viewModel.startLiveScan() } label: {
+                        if coordinator.supportsLiveScanning {
+                            Button { coordinator.send(.liveScanTapped) } label: {
                                 ScanOptionRow(symbol: "barcode.viewfinder", title: String(localized: "Scan with the camera"), subtitle: String(localized: "Reads dates and barcodes live"), isPrimary: true)
                             }
                             .buttonStyle(.plain)
@@ -32,7 +31,7 @@ struct ScanFlowView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityIdentifier("scan.photo")
-                        Button { viewModel.enterManually() } label: {
+                        Button { coordinator.send(.manualEntryTapped(now: .now)) } label: {
                             ScanOptionRow(symbol: "square.and.pencil", title: String(localized: "Type it in"), subtitle: String(localized: "No label to read"))
                         }
                         .buttonStyle(.plain)
@@ -47,50 +46,62 @@ struct ScanFlowView: View {
                 .padding(.bottom, Spacing.xl)
             }
             .pageBackground()
-            .topBar(.close { viewModel.cancel() })
+            .topBar(.close { coordinator.send(.closeTapped) })
             .navigationDestination(for: ScanRoute.self) { route in
-                destination(for: route, coordinator: coordinator)
+                destination(for: route)
             }
         }
-        .loadingOverlay(viewModel.isProcessing, message: String(localized: "Reading the label…"))
+        // The sheet was swiped away: stop any OCR or barcode lookup still running.
+        .onDisappear { coordinator.send(.dismissed) }
+        .loadingOverlay(coordinator.state.status == .processing, message: String(localized: "Reading the label…"))
         .onChange(of: pickerItem) { _, item in
             guard let item else { return }
             pickerItem = nil
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self) {
-                    await viewModel.process(imageData: data)
+                    coordinator.send(.photoChosen(data))
                 } else {
-                    viewModel.photoLoadFailed()
+                    coordinator.send(.photoLoadFailed)
                 }
             }
         }
         .alert(
             "Couldn't read that",
             isPresented: Binding(
-                get: { viewModel.errorMessage != nil },
-                set: { if !$0 { viewModel.dismissError() } }
+                get: { failure != nil },
+                set: { if !$0 { coordinator.send(.errorDismissed) } }
             )
         ) {
-            Button("OK") { viewModel.dismissError() }
+            Button("OK") { coordinator.send(.errorDismissed) }
         } message: {
-            Text(viewModel.errorMessage ?? "")
+            Text(failure?.message ?? "")
         }
     }
 
+    /// The stack's path, owned by the state machine. A back button or swipe becomes an event.
+    private var path: Binding<[ScanRoute]> {
+        Binding(get: { coordinator.state.path }, set: { coordinator.send(.pathChanged($0)) })
+    }
+
+    private var failure: ScanFlow.Failure? {
+        if case .failed(let failure) = coordinator.state.status { return failure }
+        return nil
+    }
+
     @ViewBuilder
-    private func destination(for route: ScanRoute, coordinator: ScanCoordinator) -> some View {
+    private func destination(for route: ScanRoute) -> some View {
         switch route {
         case .live:
-            LiveScannerView(onFinish: { viewModel.liveScanFinished($0) })
-        case .review(let result):
-            ScanFactory.makeReview(result: result, coordinator: coordinator, dependencies: dependencies)
+            LiveScannerView(onFinish: { coordinator.send(.liveScanFinished($0)) })
+        case .review:
+            ScanReviewView(coordinator: coordinator)
         case .form(let draft):
             InventoryFactory.makeForm(
                 mode: .add,
                 draft: draft,
                 dependencies: dependencies,
-                onCancel: { coordinator.finish() },
-                onSaved: { _ in coordinator.finish() }
+                onCancel: { coordinator.send(.closeTapped) },
+                onSaved: { _ in coordinator.send(.itemSaved) }
             )
         }
     }

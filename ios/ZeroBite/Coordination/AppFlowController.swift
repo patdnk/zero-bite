@@ -2,45 +2,73 @@
 //  AppFlowController.swift
 //  ZeroBite
 //
-//  State-driven app flow: holds the current phase and exposes transitions.
+//  The app-flow finite state machine: which root screen is shown. AppFlow is the pure
+//  machine; AppFlowController runs it and owns its one side effect (remembering that the
+//  welcome flow was completed).
 //
 
 import Foundation
 import Observation
 
-/// Which root screen is shown. The single source of truth for app-level flow.
+/// Which root screen is shown.
 enum AppFlowPhase: Equatable {
-    case launch
-    case welcome
-    case main
+    case launch   // splash
+    case welcome  // first-run onboarding
+    case main     // tabs
+}
+
+enum AppFlow: FlowMachine {
+
+    /// Inputs that can move the app between phases.
+    enum Event: Equatable, Sendable {
+        case launchFinished(hasCompletedWelcome: Bool)  // splash done
+        case welcomeFinished                            // onboarding done, with or without notifications
+    }
+
+    enum Effect: Equatable {
+        case rememberWelcomeCompleted
+    }
+
+    static func reduce(_ state: inout AppFlowPhase, _ event: Event) -> [Effect] {
+        switch (state, event) {
+        case (.launch, .launchFinished(let hasCompletedWelcome)):
+            state = hasCompletedWelcome ? .main : .welcome
+            return []
+        case (.welcome, .welcomeFinished):
+            state = .main
+            return [.rememberWelcomeCompleted]
+        default:
+            return []
+        }
+    }
 }
 
 @MainActor
 @Observable
 final class AppFlowController {
 
-    private(set) var phase: AppFlowPhase = .launch
+    private let store: FlowStore<AppFlow>
     private let settings: AppSettings
 
     init(settings: AppSettings) {
         self.settings = settings
+        store = FlowStore(.launch) { effect in
+            switch effect {
+            case .rememberWelcomeCompleted:
+                .perform { settings.hasCompletedWelcome = true }
+            }
+        }
     }
 
-    // MARK: - Transitions
+    var phase: AppFlowPhase { store.state }
 
-    /// Call when the splash is done. Skips the welcome flow once it has been completed.
-    func transitionFromLaunch() {
-        phase = settings.hasCompletedWelcome ? .main : .welcome
+    @discardableResult
+    func send(_ event: AppFlow.Event) -> Task<Void, Never> {
+        store.send(event)
     }
 
-    /// Call when the welcome flow finishes (with or without notifications enabled).
-    func transitionToMain() {
-        settings.hasCompletedWelcome = true
-        phase = .main
-    }
-
-    /// Re-run the welcome flow (e.g. from Settings).
-    func transitionToWelcome() {
-        phase = .welcome
+    /// Call when the splash is done. Reads the stored flag so the reducer stays pure.
+    func finishLaunch() {
+        send(.launchFinished(hasCompletedWelcome: settings.hasCompletedWelcome))
     }
 }

@@ -3,68 +3,157 @@ name: iOS
 on:
   push:
     branches: [main]
-    paths: ['ios/**', 'testdata/**', 'shared-assets/**', '.github/workflows/ios.yml']
+    paths: ['ios/**', 'testdata/**', 'shared-assets/**', 'scripts/check-polish-assets.py', '.github/workflows/ios.yml', '.github/actions/ios-setup/**']
   pull_request:
-    paths: ['ios/**', 'testdata/**', 'shared-assets/**', '.github/workflows/ios.yml']
+    paths: ['ios/**', 'testdata/**', 'shared-assets/**', 'scripts/check-polish-assets.py', '.github/workflows/ios.yml', '.github/actions/ios-setup/**']
+  schedule:
+    # Nightly at 2 AM UTC: catches runner image changes (Xcode, simulators) between commits.
+    - cron: '0 2 * * *'
   workflow_dispatch:
 
 concurrency:
   group: ios-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  ios:
-    runs-on: macos-26
-    timeout-minutes: 45
-    defaults:
-      run:
-        working-directory: ios
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      # The Xcode project is generated (and gitignored). GoogleService-Info.plist and Mona Sans are
-      # gitignored too; the app skips Firebase and falls back to the system font without them.
-      - name: Install XcodeGen
-        run: brew install xcodegen
-
-      - name: Generate the Xcode project
-        run: xcodegen generate
-
-      - name: Cache Swift packages
-        uses: actions/cache@v4
-        with:
-          path: ios/.spm
-          key: spm-${{ runner.os }}-${{ hashFiles('ios/project.yml') }}
-          restore-keys: spm-${{ runner.os }}-
-
-      # Runner images change their simulators over time, so take the newest iPhone available.
-      - name: Pick a simulator
+      # Linux is enough for SwiftLint and starts much faster than a macOS runner. Config: ios/.swiftlint.yml.
+      - name: SwiftLint
+        working-directory: ios
         run: |
-          UDID="$(xcrun simctl list devices available -j | python3 -c '
-          import json, re, sys
-          devices = json.load(sys.stdin)["devices"]
-          # Runtime keys look like ...SimRuntime.iOS-26-2, sometimes with a device suffix (-iPhone19-4).
-          version = lambda k: [int(n) for n in re.match(r".*\.iOS-(\d+)-(\d+)", k).groups()]
-          runtimes = sorted((k for k in devices if re.match(r".*\.iOS-\d+-\d+", k)), key=version)
-          print(next(d["udid"] for k in reversed(runtimes) for d in devices[k] if d["name"].startswith("iPhone")))
-          ')"
-          echo "Testing on $(xcrun simctl list devices | grep "$UDID")"
-          echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
+          docker run --rm -v "$PWD:/work" -w /work \
+            ghcr.io/realm/swiftlint:0.65.1 \
+            swiftlint lint --strict --reporter github-actions-logging
 
-      - name: Test
+      - name: Check the shared Polish assets
+        run: python3 scripts/check-polish-assets.py
+
+  unit-tests:
+    name: Unit tests
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up the project and simulator
+        uses: ./.github/actions/ios-setup
+
+      - name: Run unit tests
+        working-directory: ios
         run: |
           set -o pipefail
           xcodebuild test \
             -scheme ZeroBite \
             -destination "id=$SIMULATOR_UDID" \
+            -only-testing:ZeroBiteTests \
             -clonedSourcePackagesDirPath .spm \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO
 
       - name: Upload test results
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: ios-test-results
+          name: ios-unit-test-results
           path: ios/TestResults.xcresult
           retention-days: 7
+
+  e2e-tests:
+    name: E2E tests
+    runs-on: macos-26
+    timeout-minutes: 30
+    needs: [unit-tests]
+
+    # ZeroBiteUITests drives the real app in the simulator: welcome → add an item by hand → find it.
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up the project and simulator
+        uses: ./.github/actions/ios-setup
+
+      - name: Run UI tests
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -scheme ZeroBite \
+            -destination "id=$SIMULATOR_UDID" \
+            -only-testing:ZeroBiteUITests \
+            -clonedSourcePackagesDirPath .spm \
+            -resultBundlePath UITestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+
+      # The result bundle holds screenshots and the UI hierarchy at the failure.
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: ios-e2e-test-results
+          path: ios/UITestResults.xcresult
+          retention-days: 7
+
+  ci-summary:
+    name: CI summary
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, e2e-tests]
+    if: always()
+
+    steps:
+      - name: CI summary
+        run: |
+          echo "## iOS CI results"
+          echo "- Lint: ${{ needs.lint.result }}"
+          echo "- Unit tests: ${{ needs.unit-tests.result }}"
+          echo "- E2E tests: ${{ needs.e2e-tests.result }}"
+
+          if [[ "${{ needs.lint.result }}" != "success" ]]; then
+            echo "❌ Lint failed"
+            exit 1
+          fi
+
+          if [[ "${{ needs.unit-tests.result }}" != "success" ]]; then
+            echo "❌ Unit tests failed"
+            exit 1
+          fi
+
+          if [[ "${{ needs.e2e-tests.result }}" != "success" ]]; then
+            echo "❌ E2E tests failed"
+            exit 1
+          fi
+
+          echo "✅ CI passed!"
+
+  nightly-notify:
+    name: Report nightly failure
+    runs-on: ubuntu-latest
+    needs: [ci-summary]
+    if: failure() && github.event_name == 'schedule'
+    permissions:
+      issues: write
+
+    steps:
+      - name: Create issue on nightly failure
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Nightly iOS CI failed - ${new Date().toISOString().split('T')[0]}`,
+              body: `The nightly iOS CI run has failed. See the [workflow run](${context.payload.repository.html_url}/actions/runs/${context.runId}).`,
+              labels: ['ci']
+            });

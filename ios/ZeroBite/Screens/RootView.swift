@@ -15,10 +15,10 @@ struct RootView: View {
         Group {
             switch flowController.phase {
             case .launch:
-                SplashView(onFinish: { flowController.transitionFromLaunch() })
+                SplashView(onFinish: { flowController.finishLaunch() })
             case .welcome:
                 WelcomeFactory.make(dependencies: coordinator.dependencies) {
-                    flowController.transitionToMain()
+                    flowController.send(.welcomeFinished)
                 }
             case .main:
                 MainView(coordinator: coordinator)

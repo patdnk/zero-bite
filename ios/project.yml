@@ -80,18 +80,32 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.mazesys.zerobite.tests
         GENERATE_INFOPLIST_FILE: YES
+  # End-to-end: drives the real app in the simulator. CI runs it as its own job (-only-testing).
+  ZeroBiteUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: ZeroBiteUITests
+    dependencies:
+      - target: ZeroBite
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mazesys.zerobite.uitests
+        GENERATE_INFOPLIST_FILE: YES
 schemes:
   ZeroBite:
     build:
       targets:
         ZeroBite: all
         ZeroBiteTests: [test]
+        ZeroBiteUITests: [test]
     run:
       config: Debug
     test:
       config: Debug
       targets:
         - ZeroBiteTests
+        - ZeroBiteUITests
     archive:
       config: Release
       postActions:

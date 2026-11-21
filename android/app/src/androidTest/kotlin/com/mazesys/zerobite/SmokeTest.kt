@@ -27,6 +27,11 @@ class SmokeTest {
         compose.waitUntil(10_000) { exists("welcome.skip") || exists("inventory.addButton") }
         if (exists("welcome.skip")) {
             compose.onNodeWithTag("welcome.skip").performClick()
+            // Skip lands on the first question: usage data, then reminders.
+            compose.waitUntil(5_000) { exists("welcome.dontShare") || exists("welcome.notNow") }
+            if (exists("welcome.dontShare")) {
+                compose.onNodeWithTag("welcome.dontShare").performClick()
+            }
             compose.waitUntil(5_000) { exists("welcome.notNow") }
             compose.onNodeWithTag("welcome.notNow").performClick()
         }
