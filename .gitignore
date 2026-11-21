@@ -13,6 +13,8 @@ timeline.xctimeline
 playground.xcworkspace
 .swiftpm/
 *.xcresult
+# Swift packages cloned by CI (xcodebuild -clonedSourcePackagesDirPath)
+ios/.spm/
 
 # macOS
 .DS_Store
