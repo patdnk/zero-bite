@@ -31,7 +31,7 @@ android {
         applicationId = "com.mazesys.zerobite"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
+        versionCode = 3
         versionName = "1.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,6 +53,9 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.findByName("release")
+            // Bundled ML Kit ships ~17 MB of native code per ABI. Phones are ARM; x86 is only
+            // emulators and a few Chromebooks, so leave it out of the single release APK.
+            ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
         }
     }
 
