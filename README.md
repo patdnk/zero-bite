@@ -20,7 +20,7 @@ food expires, and ranks recipes by what you can cook right now — expiring item
 
 | Folder | What |
 |---|---|
-| `ios/` | The SwiftUI app (`project.yml`, `ZeroBite/`, `ZeroBiteTests/`) |
+| `ios/` | The SwiftUI app (`project.yml`, `ZeroBite/`, `ZeroBiteTests/`, `ZeroBiteUITests/`) |
 | `android/` | The Android app (Gradle: `:core` pure logic, `:app` Compose UI) |
 | `shared-assets/` | Data both apps bundle (`recipes.json`) |
 | `testdata/` | Golden fixtures run by both test suites — the cross-platform behaviour contract |
@@ -62,6 +62,11 @@ empty fridge. Run tests with ⌘U or:
 cd ios && xcodebuild test -project ZeroBite.xcodeproj -scheme ZeroBite -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
+That runs the unit tests (`ZeroBiteTests`) and the UI smoke test (`ZeroBiteUITests`); add
+`-only-testing:ZeroBiteTests` for the unit tests alone. Lint with
+[SwiftLint](https://github.com/realm/SwiftLint) from `ios/` (config in `ios/.swiftlint.yml`):
+`swiftlint lint --strict`.
+
 ### Typeface
 
 The app is set in [Mona Sans](https://github.com/github/mona-sans) (SIL OFL). The font file
@@ -92,6 +97,13 @@ cd android
 `scripts/fetch-fonts.sh` also installs Mona Sans into the Android app (it falls back to the
 system font without it). Screenshot tests use Roborazzi: `./gradlew :app:recordRoborazziDebug`
 records `android/app/src/test/screenshots/`, `verifyRoborazziDebug` compares against them.
+
+### Continuous integration
+
+`.github/workflows/ios.yml` and `android.yml` run in the same stages: **lint** (SwiftLint /
+Android Lint, plus `scripts/check-polish-assets.py`) and **unit tests** in parallel, then
+**e2e** (the smoke test on a simulator / emulator) once the unit tests pass. A **CI summary**
+job fails if any stage did, and a nightly run opens an issue when it fails.
 
 ### Keeping iOS and Android in step
 

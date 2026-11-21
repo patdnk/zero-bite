@@ -1,0 +1,44 @@
+name: iOS setup
+description: Generates the Xcode project, restores Swift packages and picks the newest iPhone simulator (SIMULATOR_UDID).
+
+runs:
+  using: composite
+  steps:
+    # The Xcode project is generated (and gitignored). GoogleService-Info.plist and Mona Sans are
+    # gitignored too; the app skips Firebase and falls back to the system font without them.
+    - name: Install XcodeGen
+      shell: bash
+      run: brew install xcodegen
+
+    - name: Generate the Xcode project
+      shell: bash
+      working-directory: ios
+      run: xcodegen generate
+
+    - name: Cache Swift packages
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ios/.spm
+        key: spm-${{ runner.os }}-${{ hashFiles('ios/project.yml') }}
+        restore-keys: spm-${{ runner.os }}-
+
+    # Runner images change their simulators over time, so take the newest iPhone available.
+    - name: Pick a simulator
+      shell: bash
+      run: |
+        UDID="$(xcrun simctl list devices available -j | python3 -c '
+        import json, re, sys
+        devices = json.load(sys.stdin)["devices"]
+        # Runtime keys look like ...SimRuntime.iOS-26-2, sometimes with a device suffix (-iPhone19-4).
+        version = lambda k: [int(n) for n in re.match(r".*\.iOS-(\d+)-(\d+)", k).groups()]
+        runtimes = sorted((k for k in devices if re.match(r".*\.iOS-\d+-\d+", k)), key=version)
+        print(next(d["udid"] for k in reversed(runtimes) for d in devices[k] if d["name"].startswith("iPhone")))
+        ')"
+        echo "Testing on $(xcrun simctl list devices | grep "$UDID")"
+        echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
+
+    # With the Mac keyboard connected the software keyboard never shows and XCUITest's typeText can
+    # lose focus. Set before xcodebuild boots the simulator.
+    - name: Use the software keyboard in the simulator
+      shell: bash
+      run: defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false

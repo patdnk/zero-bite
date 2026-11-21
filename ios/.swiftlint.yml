@@ -1,0 +1,32 @@
+# SwiftLint's default rules, minus the ones that fight the house style. CI runs it with --strict,
+# so a warning fails the lint job:
+#   docker run --rm -v "$PWD:/work" -w /work ghcr.io/realm/swiftlint:0.65.1 swiftlint lint --strict
+# (or `swiftlint lint --strict` from ios/ with a local install).
+
+included:
+  - ZeroBite
+  - ZeroBiteTests
+  - ZeroBiteUITests
+
+disabled_rules:
+  - line_length                       # long SwiftUI modifier chains and copy stay on one line
+  - trailing_comma                    # trailing commas in multi-line literals are fine
+  - identifier_name                   # design tokens (BackgroundPrimary, Spacing.sm) and en/pl
+  - nesting                           # route and coding-key enums nest inside their owners
+  - large_tuple                       # small named tuples in parsers and test tables
+  - force_try                         # only on literal regexes, which can't fail at runtime
+  - void_function_in_ternary          # `isOn ? a() : b()` in view models and actions
+  - implicit_optional_initialization  # `var x: T? = nil` keeps the memberwise init's default explicit
+  - static_over_final_class           # URLProtocol overrides in the test stub
+  - opening_brace                     # multi-line signatures put the brace on its own line
+
+# Raised from the defaults to the longest the code has today, so they still catch growth.
+file_length:
+  warning: 750
+cyclomatic_complexity:
+  warning: 20
+  ignores_case_statements: true       # flow reducers are one switch over events, by design
+function_body_length:
+  warning: 80
+type_body_length:
+  warning: 300
