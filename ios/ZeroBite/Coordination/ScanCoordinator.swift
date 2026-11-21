@@ -2,50 +2,66 @@
 //  ScanCoordinator.swift
 //  ZeroBite
 //
-//  Drives the add-item flow presented as a sheet: choose source → (live scan) → review →
-//  form → done. Created fresh for each presentation.
+//  Runs the add-food sheet's state machine (ScanFlow) and its effects: reading a photo,
+//  looking up a barcode, and closing the sheet. Created fresh for each presentation.
 //
 
 import Foundation
 import Observation
-import SwiftUI
-
-enum ScanRoute: Hashable {
-    case live
-    case review(ScanResult)
-    case form(ItemDraft)
-}
+import UIKit
 
 @MainActor
 @Observable
 final class ScanCoordinator {
 
-    var navigationPath = NavigationPath()
-    private let onFinished: () -> Void
+    typealias ReadLabel = @Sendable (Data) async throws -> ScanResult
 
-    init(onFinished: @escaping () -> Void) {
-        self.onFinished = onFinished
+    private enum EffectID: Hashable {
+        case readLabel
+        case lookUp
     }
 
-    func showLiveScanner() {
-        navigationPath.append(ScanRoute.live)
+    let supportsLiveScanning: Bool
+    private let store: FlowStore<ScanFlow>
+
+    init(
+        supportsLiveScanning: Bool,
+        productLookup: any ProductLookup,
+        readLabel: @escaping ReadLabel = { try await LabelScanner.scan(imageData: $0) },
+        onFinished: @escaping @MainActor () -> Void
+    ) {
+        self.supportsLiveScanning = supportsLiveScanning
+        store = FlowStore(ScanFlow.State()) { effect in
+            switch effect {
+            case .readLabel(let data):
+                .run(id: EffectID.readLabel) {
+                    guard let normalized = UIImage(data: data)?.normalizedJPEGData() else {
+                        return .labelReadFailed(.notAPhoto)
+                    }
+                    do {
+                        return .labelRead(try await readLabel(normalized))
+                    } catch {
+                        return .labelReadFailed(.scanner(error.localizedDescription))
+                    }
+                }
+            case .cancelReadLabel:
+                .cancel(id: EffectID.readLabel)
+            case .lookUpProduct(let barcode):
+                .run(id: EffectID.lookUp) {
+                    .productLookedUp(try? await productLookup.lookup(barcode: barcode))
+                }
+            case .cancelLookUp:
+                .cancel(id: EffectID.lookUp)
+            case .close:
+                .perform(onFinished)
+            }
+        }
     }
 
-    func showReview(_ result: ScanResult) {
-        navigationPath.append(ScanRoute.review(result))
-    }
+    var state: ScanFlow.State { store.state }
 
-    func showForm(_ draft: ItemDraft) {
-        navigationPath.append(ScanRoute.form(draft))
-    }
-
-    func pop() {
-        guard !navigationPath.isEmpty else { return }
-        navigationPath.removeLast()
-    }
-
-    /// Saved or cancelled: close the sheet.
-    func finish() {
-        onFinished()
+    @discardableResult
+    func send(_ event: ScanFlow.Event) -> Task<Void, Never> {
+        store.send(event)
     }
 }

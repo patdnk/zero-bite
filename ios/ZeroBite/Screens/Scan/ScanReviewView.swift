@@ -6,19 +6,25 @@
 import SwiftUI
 
 struct ScanReviewView: View {
-    @Bindable var viewModel: ScanReviewViewModel
+    let coordinator: ScanCoordinator
 
     @State private var showsLines = false
 
     var body: some View {
+        if let review = coordinator.state.review {
+            content(review)
+        }
+    }
+
+    private func content(_ review: ScanFlow.Review) -> some View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
                     DetailTitle(overline: String(localized: "Scanned label"), title: String(localized: "Check the details"))
 
                     VStack(alignment: .leading, spacing: Spacing.sm) {
-                        LabeledInput(label: String(localized: "Name"), placeholder: String(localized: "Product name"), text: $viewModel.name, accessibilityID: "review.name")
-                        if viewModel.isLookingUp {
+                        LabeledInput(label: String(localized: "Name"), placeholder: String(localized: "Product name"), text: Binding(get: { coordinator.state.review?.name ?? "" }, set: { coordinator.send(.nameChanged($0)) }), accessibilityID: "review.name")
+                        if review.isLookingUp {
                             HStack(spacing: Spacing.sm) {
                                 ProgressView().controlSize(.small)
                                 Text("Looking up barcode…")
@@ -30,33 +36,33 @@ struct ScanReviewView: View {
 
                     VStack(alignment: .leading, spacing: Spacing.sm) {
                         Overline(String(localized: "Category"))
-                        ChipFilter(options: FoodCategory.allCases, selection: $viewModel.category) { $0.label }
+                        ChipFilter(options: FoodCategory.allCases, selection: Binding(get: { coordinator.state.review?.category ?? .other }, set: { coordinator.send(.categoryChanged($0)) })) { $0.label }
                     }
 
-                    if viewModel.product != nil || viewModel.barcode != nil {
+                    if review.product != nil || review.result.barcode != nil {
                         CardSection(String(localized: "Product")) {
-                            if let product = viewModel.product {
+                            if let product = review.product {
                                 InfoRow(String(localized: "Found"), symbol: "checkmark.seal", value: [product.brand, product.name].compactMap { $0 }.joined(separator: " · "))
                             }
-                            if let barcode = viewModel.barcode {
+                            if let barcode = review.result.barcode {
                                 InfoRow(String(localized: "Barcode"), symbol: "barcode", value: barcode)
                             }
                         }
                     }
 
-                    expiry
+                    expiry(review)
 
-                    if !viewModel.lines.isEmpty {
+                    if !review.result.lines.isEmpty {
                         CardSection(String(localized: "Text read from the label")) {
-                            ActionRow(title: showsLines ? String(localized: "Hide \(viewModel.lines.count) lines") : String(localized: "Show \(viewModel.lines.count) lines"),
+                            ActionRow(title: showsLines ? String(localized: "Hide \(review.result.lines.count) lines") : String(localized: "Show \(review.result.lines.count) lines"),
                                       symbol: showsLines ? "chevron.up" : "chevron.down",
                                       tint: Constants.TextSecondary) {
                                 withAnimation(.snappy) { showsLines.toggle() }
                             }
                             if showsLines {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    ForEach(viewModel.lines.indices, id: \.self) { index in
-                                        Text(viewModel.lines[index])
+                                    ForEach(review.result.lines.indices, id: \.self) { index in
+                                        Text(review.result.lines[index])
                                             .font(.app(.footnote).monospaced())
                                             .foregroundStyle(Constants.TextSecondary)
                                     }
@@ -70,7 +76,7 @@ struct ScanReviewView: View {
             }
             .scrollDismissesKeyboard(.interactively)
 
-            PrimaryButton(String(localized: "Continue"), isEnabled: viewModel.canContinue) { viewModel.continueToForm() }
+            PrimaryButton(String(localized: "Continue"), isEnabled: review.canContinue) { coordinator.send(.continueTapped(now: .now)) }
                 .accessibilityIdentifier("review.continue")
                 .padding(.horizontal, Spacing.gutter)
                 .padding(.vertical, Spacing.sm)
@@ -78,12 +84,11 @@ struct ScanReviewView: View {
         }
         .pageBackground()
         .topBar(.back)
-        .task { await viewModel.loadProduct() }
     }
 
     @ViewBuilder
-    private var expiry: some View {
-        if viewModel.candidates.isEmpty {
+    private func expiry(_ review: ScanFlow.Review) -> some View {
+        if review.result.candidates.isEmpty {
             CardSection(String(localized: "Expiry date")) {
                 Text("No date was found on the label. You can set one on the next screen.")
                     .font(.app(.subheadline))
@@ -91,14 +96,14 @@ struct ScanReviewView: View {
             }
         } else {
             CardSection(String(localized: "Expiry date"), footer: String(localized: "Pick the best-before or use-by date. Most likely first.")) {
-                ForEach(viewModel.candidates) { candidate in
-                    Button { viewModel.select(candidate) } label: {
-                        candidateRow(candidate, isSelected: viewModel.selectedCandidateID == candidate.id)
+                ForEach(review.result.candidates) { candidate in
+                    Button { coordinator.send(.candidateSelected(candidate.id)) } label: {
+                        candidateRow(candidate, isSelected: review.selectedCandidateID == candidate.id)
                     }
                     .buttonStyle(.plain)
                 }
                 ActionRow(title: String(localized: "None of these"), symbol: "xmark", tint: Constants.TextSecondary) {
-                    viewModel.clearSelection()
+                    coordinator.send(.candidateSelected(nil))
                 }
             }
         }
@@ -147,7 +152,10 @@ private struct ConfidenceDots: View {
         barcode: "5000119000000",
         now: now
     )
-    NavigationStack {
-        ScanFactory.makeReview(result: result, coordinator: ScanCoordinator(onFinished: {}), dependencies: .preview())
+    let coordinator = ScanCoordinator(supportsLiveScanning: true, productLookup: AppDependencies.preview().productLookup, onFinished: {})
+    coordinator.send(.liveScanTapped)
+    coordinator.send(.liveScanFinished(result))
+    return NavigationStack {
+        ScanReviewView(coordinator: coordinator)
     }
 }

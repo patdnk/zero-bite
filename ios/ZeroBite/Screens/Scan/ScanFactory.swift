@@ -10,22 +10,13 @@ import SwiftUI
 @MainActor
 enum ScanFactory {
 
-    static func makeFlow(dependencies: AppDependencies, onFinished: @escaping () -> Void) -> some View {
-        ViewModelHost(ScanFlowViewModel(
-            coordinator: ScanCoordinator(onFinished: onFinished),
-            supportsLiveScanning: LiveScannerView.isSupported
-        )) { viewModel in
-            ScanFlowView(viewModel: viewModel, dependencies: dependencies)
-        }
-    }
-
-    static func makeReview(result: ScanResult, coordinator: ScanCoordinator, dependencies: AppDependencies) -> some View {
-        ViewModelHost(ScanReviewViewModel(
-            result: result,
+    static func makeFlow(dependencies: AppDependencies, onFinished: @escaping @MainActor () -> Void) -> some View {
+        ViewModelHost(ScanCoordinator(
+            supportsLiveScanning: LiveScannerView.isSupported,
             productLookup: dependencies.productLookup,
-            coordinator: coordinator
-        )) { viewModel in
-            ScanReviewView(viewModel: viewModel)
+            onFinished: onFinished
+        )) { coordinator in
+            ScanFlowView(coordinator: coordinator, dependencies: dependencies)
         }
     }
 }

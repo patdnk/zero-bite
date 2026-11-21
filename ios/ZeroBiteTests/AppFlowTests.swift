@@ -7,22 +7,39 @@ import Foundation
 import Testing
 @testable import ZeroBite
 
-struct AppFlowPhaseReducerTests {
+struct AppFlowReducerTests {
+
+    private func reduce(_ state: AppFlowPhase, _ event: AppFlow.Event) -> (AppFlowPhase, [AppFlow.Effect]) {
+        var state = state
+        let effects = AppFlow.reduce(&state, event)
+        return (state, effects)
+    }
 
     @Test(arguments: [(false, AppFlowPhase.welcome), (true, .main)])
     func launchGoesToWelcomeUntilItHasBeenCompleted(hasCompletedWelcome: Bool, expected: AppFlowPhase) {
-        #expect(AppFlowPhase.reduce(.launch, on: .launchFinished(hasCompletedWelcome: hasCompletedWelcome)) == expected)
+        let (state, effects) = reduce(.launch, .launchFinished(hasCompletedWelcome: hasCompletedWelcome))
+        #expect(state == expected)
+        #expect(effects.isEmpty)
     }
 
-    @Test func welcomeFinishedGoesToMain() {
-        #expect(AppFlowPhase.reduce(.welcome, on: .welcomeFinished) == .main)
+    @Test func welcomeFinishedGoesToMainAndRemembersIt() {
+        let (state, effects) = reduce(.welcome, .welcomeFinished)
+        #expect(state == .main)
+        #expect(effects == [.rememberWelcomeCompleted])
     }
 
     @Test func eventsThatDoNotApplyLeaveThePhaseUnchanged() {
-        #expect(AppFlowPhase.reduce(.welcome, on: .launchFinished(hasCompletedWelcome: true)) == .welcome)
-        #expect(AppFlowPhase.reduce(.main, on: .launchFinished(hasCompletedWelcome: false)) == .main)
-        #expect(AppFlowPhase.reduce(.launch, on: .welcomeFinished) == .launch)
-        #expect(AppFlowPhase.reduce(.main, on: .welcomeFinished) == .main)
+        let cases: [(AppFlowPhase, AppFlow.Event)] = [
+            (.welcome, .launchFinished(hasCompletedWelcome: true)),
+            (.main, .launchFinished(hasCompletedWelcome: false)),
+            (.launch, .welcomeFinished),
+            (.main, .welcomeFinished),
+        ]
+        for (phase, event) in cases {
+            let (state, effects) = reduce(phase, event)
+            #expect(state == phase)
+            #expect(effects.isEmpty)
+        }
     }
 }
 
