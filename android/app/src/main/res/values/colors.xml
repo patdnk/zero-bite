@@ -1,0 +1,5 @@
+<resources>
+    <color name="background">#FFFBF7</color>
+    <!-- The ink tile behind the mark, as on the iOS icon. -->
+    <color name="ic_launcher_background">#2B1A12</color>
+</resources>

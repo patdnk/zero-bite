@@ -1,4 +1,4 @@
-# Zero Waste
+# Zero Bite
 
 An iOS app that catalogues what's in your fridge, freezer and cupboard, reminds you before
 food expires, and ranks recipes by what you can cook right now — expiring items first.
@@ -15,6 +15,19 @@ food expires, and ranks recipes by what you can cook right now — expiring item
 - **Recipes** — 35 bundled recipes matched against your inventory with synonym-aware
   ingredient matching (cheddar ≈ cheese, red pepper ≈ bell pepper) and store-cupboard staples.
   "I cooked this" marks the used items as consumed.
+
+## Repository layout
+
+| Folder | What |
+|---|---|
+| `ios/` | The SwiftUI app (`project.yml`, `ZeroBite/`, `ZeroBiteTests/`) |
+| `android/` | The Android app (Gradle: `:core` pure logic, `:app` Compose UI) |
+| `shared-assets/` | Data both apps bundle (`recipes.json`) |
+| `testdata/` | Golden fixtures run by both test suites — the cross-platform behaviour contract |
+| `design/`, `scripts/` | Brand mark, icon and screenshot rendering, font fetching |
+| `appstore/` | App Store listing |
+| `docs/` | Website (GitHub Pages) |
+| `specs/` | Design specs and implementation plans |
 
 ## Architecture
 
@@ -37,15 +50,16 @@ matching, notification planning, the store, and the view models (Swift Testing).
 Requires Xcode 26 and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
+cd ios
 xcodegen generate
-open ZeroWaste.xcodeproj
+open ZeroBite.xcodeproj
 ```
 
-Run the `ZeroWaste` scheme on an iPhone simulator. Launch argument `--sample-data` fills an
+Run the `ZeroBite` scheme on an iPhone simulator. Launch argument `--sample-data` fills an
 empty fridge. Run tests with ⌘U or:
 
 ```bash
-xcodebuild test -project ZeroWaste.xcodeproj -scheme ZeroWaste -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+cd ios && xcodebuild test -project ZeroBite.xcodeproj -scheme ZeroBite -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
 ### Typeface
@@ -57,3 +71,31 @@ when it's missing):
 ```bash
 scripts/fetch-fonts.sh
 ```
+
+## Android
+
+The Android app lives in `android/`: `:core` holds all of Zero Bite's pure logic (no Android
+dependencies, ready to become a Kotlin Multiplatform module), and `:app` is the Jetpack
+Compose app with the same bespoke look as iOS. Label scanning and UK food alerts arrive in the next plan (see `specs/plans/`);
+everything else matches iOS.
+
+Open `android/` in Android Studio, or from the command line (JDK 17+; Android Studio's
+bundled JDK works):
+
+```bash
+cd android
+./gradlew :app:installDebug          # build and install on a running emulator/device
+./gradlew :core:check :app:testDebugUnitTest
+./gradlew :app:connectedDebugAndroidTest   # on-device smoke test
+```
+
+`scripts/fetch-fonts.sh` also installs Mona Sans into the Android app (it falls back to the
+system font without it). Screenshot tests use Roborazzi: `./gradlew :app:recordRoborazziDebug`
+records `android/app/src/test/screenshots/`, `verifyRoborazziDebug` compares against them.
+
+### Keeping iOS and Android in step
+
+`testdata/` holds golden fixtures (label text → expected dates, fridge → recipe ranking,
+items → reminders, FSA notices → recall matches). Both test suites run them:
+`ios/ZeroBiteTests/GoldenFixtureTests.swift` and the `:core` tests. Swift is the reference
+implementation: change behaviour in both, and update the fixture in the same commit.

@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Zero Bite</string>
+
+    <!-- Common actions -->
+    <string name="action_cancel">Cancel</string>
+    <string name="action_done">Done</string>
+    <string name="action_ok">OK</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_back">Back</string>
+    <string name="action_close">Close</string>
+    <string name="action_next">Next</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_not_now">Not now</string>
+    <string name="action_more">More</string>
+    <string name="action_used_it">Used it</string>
+    <string name="action_freeze">Freeze</string>
+    <string name="action_recipes">Recipes</string>
+    <string name="action_add_manually">Add manually</string>
+    <string name="action_scan_label_or_barcode">Scan label or barcode</string>
+    <string name="action_scan_label">Scan a label</string>
+    <string name="action_decrease">Decrease</string>
+    <string name="action_increase">Increase</string>
+    <string name="action_clear_search">Clear search</string>
+
+    <!-- Tabs -->
+    <string name="tab_fridge">My food</string>
+    <string name="tab_recipes">Recipes</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- Food categories -->
+    <string name="category_dairy">Dairy &amp; eggs</string>
+    <string name="category_meat">Meat</string>
+    <string name="category_fish">Fish &amp; seafood</string>
+    <string name="category_vegetables">Vegetables</string>
+    <string name="category_fruit">Fruit</string>
+    <string name="category_bakery">Bakery</string>
+    <string name="category_grains">Grains &amp; pasta</string>
+    <string name="category_condiments">Condiments</string>
+    <string name="category_drinks">Drinks</string>
+    <string name="category_leftovers">Leftovers</string>
+    <string name="category_other">Other</string>
+
+    <!-- Storage -->
+    <string name="storage_fridge">Fridge</string>
+    <string name="storage_freezer">Freezer</string>
+    <string name="storage_pantry">Cupboard</string>
+
+    <!-- Units, stored as codes (pcs, pack, slices, bag, …) and shown in the app language.
+         English keeps the stored word whatever the count. -->
+    <string name="unit_pcs">pcs</string>
+    <string name="unit_pack">pack</string>
+    <string name="unit_slices">slices</string>
+    <!-- "slices" after a whole number -->
+    <plurals name="unit_slices_count">
+        <item quantity="one">slices</item>
+        <item quantity="other">slices</item>
+    </plurals>
+    <!-- "slices" after a fraction ("1.5 slices") -->
+    <string name="unit_slices_fraction">slices</string>
+    <string name="unit_bag">bag</string>
+    <string name="unit_punnet">punnet</string>
+    <string name="unit_pints">pints</string>
+    <plurals name="unit_pints_count">
+        <item quantity="one">pints</item>
+        <item quantity="other">pints</item>
+    </plurals>
+    <string name="unit_pints_fraction">pints</string>
+    <string name="unit_loaf">loaf</string>
+    <plurals name="unit_loaf_count">
+        <item quantity="one">loaf</item>
+        <item quantity="other">loaf</item>
+    </plurals>
+    <string name="unit_loaf_fraction">loaf</string>
+    <string name="unit_bulb">bulb</string>
+    <plurals name="unit_bulb_count">
+        <item quantity="one">bulb</item>
+        <item quantity="other">bulb</item>
+    </plurals>
+    <string name="unit_bulb_fraction">bulb</string>
+
+    <!-- Expiry -->
+    <string name="status_expired">Expired</string>
+    <string name="status_today">Expires today</string>
+    <string name="status_soon">Expiring soon</string>
+    <string name="status_fresh">Fresh</string>
+    <plurals name="expiry_expired_days_ago">
+        <item quantity="one">Expired %d days ago</item>
+        <item quantity="other">Expired %d days ago</item>
+    </plurals>
+    <string name="expiry_expired_yesterday">Expired yesterday</string>
+    <string name="expiry_expires_today">Expires today</string>
+    <string name="expiry_expires_tomorrow">Expires tomorrow</string>
+    <plurals name="expiry_expires_in_days">
+        <item quantity="one">Expires in %d days</item>
+        <item quantity="other">Expires in %d days</item>
+    </plurals>
+    <string name="short_expired">Expired</string>
+    <string name="short_today">Today</string>
+    <string name="short_tomorrow">Tomorrow</string>
+    <string name="short_days">%dd</string>
+    <!-- "500 g · Fridge" -->
+    <string name="quantity_and_storage">%1$s · %2$s</string>
+
+    <!-- Food cards -->
+    <string name="use_first">Use first</string>
+    <plurals name="use_first_others">
+        <item quantity="one">%d more need attention</item>
+        <item quantity="other">%d more need attention</item>
+    </plurals>
+    <string name="countdown_today">Today</string>
+    <!-- Follows a large number: "2 days" -->
+    <plurals name="countdown_days">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
+    <!-- Follows a large number: "2 days over" -->
+    <plurals name="countdown_days_over">
+        <item quantity="one">day over</item>
+        <item quantity="other">days over</item>
+    </plurals>
+    <string name="recall_flag">Recall?</string>
+
+    <!-- Fridge -->
+    <string name="fridge_title">My food</string>
+    <string name="fridge_add_food">Add food</string>
+    <string name="fridge_empty_title">No food here yet</string>
+    <string name="fridge_empty_message">Scan a label or add something by hand. We\'ll remind you before it goes off and suggest what to cook.</string>
+    <string name="fridge_try_sample">Try it with sample food</string>
+    <string name="fridge_search_placeholder">Search your food</string>
+    <string name="fridge_filter_all">All</string>
+    <string name="fridge_nothing_stored">Nothing stored here.</string>
+    <string name="fridge_nothing_matches">Nothing matches “%s”.</string>
+    <plurals name="item_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <!-- Spoken for the count badge next to a screen title -->
+    <plurals name="item_count_badge">
+        <item quantity="one">%d items</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <string name="fridge_move_to_freezer">Move to freezer</string>
+    <string name="fridge_tip_title">Get reminded before food expires</string>
+    <string name="fridge_tip_message">We\'ll nudge you a few days before the date.</string>
+    <string name="fridge_tip_turn_on">Turn on</string>
+
+    <!-- Item detail -->
+    <string name="detail_removed_title">Item removed</string>
+    <string name="detail_removed_message">This item is no longer in My food.</string>
+    <string name="detail_delete_title">Delete this item?</string>
+    <string name="detail_details">Details</string>
+    <string name="detail_stored_in">Stored in</string>
+    <string name="detail_quantity">Quantity</string>
+    <string name="detail_expires">Expires</string>
+    <string name="detail_added">Added</string>
+    <string name="detail_barcode">Barcode</string>
+    <string name="detail_notes">Notes</string>
+    <string name="detail_put_back_fridge">Put it back in the fridge</string>
+    <string name="detail_put_back_freezer">Put it back in the freezer</string>
+    <string name="detail_put_back_pantry">Put it back in the cupboard</string>
+    <string name="detail_mark_used">Mark as used up</string>
+    <string name="detail_used_up">Used up</string>
+    <string name="detail_no_recipes">No recipe in the catalogue uses this yet.</string>
+    <!-- %s: the item name in lower case -->
+    <string name="detail_recipes_using">Recipes using %s</string>
+
+    <!-- Item form -->
+    <string name="form_title_new">New item</string>
+    <string name="form_title_edit">Edit item</string>
+    <string name="form_overline_add">Add to My food</string>
+    <string name="form_overline_edit">Edit</string>
+    <string name="form_save_add">Add item</string>
+    <string name="form_save_edit">Save changes</string>
+    <string name="form_missing">This item no longer exists.</string>
+    <string name="form_name">Name</string>
+    <string name="form_name_placeholder">Greek yogurt</string>
+    <string name="form_brand">Brand (optional, helps spot recalls)</string>
+    <string name="form_brand_placeholder">Yeo Valley</string>
+    <string name="form_category">Category</string>
+    <string name="form_stored_in">Stored in</string>
+    <string name="form_quantity">Quantity</string>
+    <string name="form_amount">Amount</string>
+    <string name="form_unit">Unit</string>
+    <string name="form_expiry">Expiry</string>
+    <!-- %s: the category in lower case -->
+    <string name="form_expiry_footer">No date on the label? Use the typical shelf life for %s.</string>
+    <string name="form_expires_on">Expires on</string>
+    <plurals name="form_typical_shelf_life">
+        <item quantity="one">Use typical shelf life (%d days)</item>
+        <item quantity="other">Use typical shelf life (%d days)</item>
+    </plurals>
+    <string name="form_notes">Notes</string>
+    <string name="form_notes_placeholder">Opened on Monday, half left</string>
+
+    <!-- Add food: scanning -->
+    <string name="scan_error_nothing_found">No text or barcode was found. Try a sharper, closer photo of the label.</string>
+    <string name="scan_error_unreadable">That file doesn\'t look like a photo.</string>
+    <string name="scan_error_load_failed">Couldn\'t load that photo.</string>
+    <string name="scan_overline">Scan or type</string>
+    <string name="scan_option_camera">Scan with the camera</string>
+    <string name="scan_option_camera_detail">Reads dates and barcodes live</string>
+    <string name="scan_option_photo">Choose a photo of the label</string>
+    <string name="scan_option_photo_detail">Pick a picture of the packaging</string>
+    <string name="scan_option_type">Type it in</string>
+    <string name="scan_option_type_detail">No label to read</string>
+    <string name="scan_hint">Point at the best-before or use-by date. A barcode helps fill in the product name.</string>
+    <string name="scan_reading">Reading the label…</string>
+    <string name="scan_error_title">Couldn\'t read that</string>
+    <string name="scan_review_title">Check the details</string>
+    <string name="scan_review_overline">Scanned label</string>
+    <string name="scan_name_placeholder">Product name</string>
+    <string name="scan_looking_up">Looking up barcode…</string>
+    <string name="scan_product">Product</string>
+    <string name="scan_product_found">Found</string>
+    <string name="scan_expiry_date">Expiry date</string>
+    <string name="scan_no_date">No date was found on the label. You can set one on the next screen.</string>
+    <string name="scan_pick_date">Pick the best-before or use-by date. Most likely first.</string>
+    <string name="scan_none_of_these">None of these</string>
+    <string name="scan_text_read">Text read from the label</string>
+    <!-- A line of label text in quotation marks -->
+    <string name="scan_source_line">“%1$s”</string>
+    <!-- Spoken for the confidence bars next to a date -->
+    <string name="scan_confidence">Confidence %1$d percent</string>
+    <plurals name="scan_lines_show">
+        <item quantity="one">Show %d line</item>
+        <item quantity="other">Show %d lines</item>
+    </plurals>
+    <plurals name="scan_lines_hide">
+        <item quantity="one">Hide %d line</item>
+        <item quantity="other">Hide %d lines</item>
+    </plurals>
+
+    <!-- Live camera scanning -->
+    <string name="scan_live_title">Scan label</string>
+    <string name="scan_live_looking_for_date">Looking for a best-before date…</string>
+    <string name="scan_live_use_found">Use what I\'ve found</string>
+    <plurals name="scan_live_lines_read">
+        <item quantity="one">%d line read</item>
+        <item quantity="other">%d lines read</item>
+    </plurals>
+    <string name="scan_camera_off_title">Camera access is off</string>
+    <string name="scan_camera_rationale">Zero Bite uses the camera to read best-before dates and barcodes on food labels.</string>
+    <string name="scan_open_settings">Open settings</string>
+    <string name="scan_choose_photo_instead">Choose a photo instead</string>
+    <string name="scan_camera_unavailable_title">Camera unavailable</string>
+    <string name="scan_camera_unavailable_message">The camera couldn\'t start. Close any other app that is using it and try again.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <!-- %s: version, e.g. "1.0 (1)" -->
+    <string name="settings_version_overline">Zero Bite %s</string>
+    <string name="settings_reminders">Reminders</string>
+    <string name="settings_reminders_footer">You\'ll get a heads-up before the date, one on the day, and one if it slips past.</string>
+    <string name="settings_expiry_reminders">Expiry reminders</string>
+    <string name="settings_allow_in_system">Allow in system settings</string>
+    <plurals name="settings_remind_days_before">
+        <item quantity="one">Remind me %d days before</item>
+        <item quantity="other">Remind me %d days before</item>
+    </plurals>
+    <string name="settings_at">At</string>
+    <string name="settings_send_test">Send a test notification</string>
+    <string name="settings_food_safety">Food safety</string>
+    <string name="settings_food_safety_footer">Checks the Food Standards Agency for UK recalls and tells you if any of your food might be affected.</string>
+    <string name="settings_check_recalls">Check UK food recalls</string>
+    <string name="settings_food_alerts">Food alerts</string>
+    <string name="settings_next_build">Arrives in the next build</string>
+    <string name="settings_your_allergies">Your allergies</string>
+    <string name="settings_allergies_footer">Allergy alerts for these show under Food alerts → For you.</string>
+    <string name="settings_fridge">My food</string>
+    <string name="settings_fridge_footer">Recipes that use food inside this window are ranked higher.</string>
+    <plurals name="settings_soon_threshold">
+        <item quantity="one">“Expiring soon” means within %d days</item>
+        <item quantity="other">“Expiring soon” means within %d days</item>
+    </plurals>
+    <string name="settings_privacy">Privacy</string>
+    <string name="settings_share_usage">Share usage and crash data</string>
+    <string name="settings_privacy_footer">Usage statistics and crash reports help us fix problems and improve the app. They\'re sent through Google Firebase and never include your food, notes, allergies or photos.</string>
+    <string name="settings_data">Data</string>
+    <string name="settings_in_your_fridge">In My food</string>
+    <string name="settings_used_up">Used up</string>
+    <string name="settings_add_sample">Add sample food</string>
+    <string name="settings_clear_history">Clear used-up history</string>
+    <string name="settings_delete_everything">Delete everything</string>
+    <string name="settings_about">About</string>
+    <string name="settings_about_footer">Dates and barcodes are read on your device. Product names come from Open Food Facts. Food alerts come from the Food Standards Agency under the Open Government Licence v3.0.</string>
+    <string name="settings_how_it_works">How Zero Bite works</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_recipes">Recipes</string>
+    <string name="alert_notifications_off_title">Notifications are off</string>
+    <string name="alert_notifications_off_message">Allow notifications for Zero Bite in your phone\'s settings to get expiry reminders.</string>
+    <string name="alert_clear_history_title">Clear used-up history?</string>
+    <plurals name="alert_clear_history_message">
+        <item quantity="one">Removes %d items you\'ve already marked as used.</item>
+        <item quantity="other">Removes %d items you\'ve already marked as used.</item>
+    </plurals>
+    <string name="alert_clear_history_action">Clear</string>
+    <string name="alert_delete_everything_title">Delete everything?</string>
+    <string name="alert_delete_everything_message">This removes every item from My food. It can\'t be undone.</string>
+    <string name="alert_delete_everything_action">Delete all</string>
+
+    <!-- Allergens -->
+    <string name="allergen_celery">Celery</string>
+    <string name="allergen_gluten">Gluten</string>
+    <string name="allergen_crustaceans">Crustaceans</string>
+    <string name="allergen_egg">Egg</string>
+    <string name="allergen_fish">Fish</string>
+    <string name="allergen_lupin">Lupin</string>
+    <string name="allergen_milk">Milk</string>
+    <string name="allergen_molluscs">Molluscs</string>
+    <string name="allergen_mustard">Mustard</string>
+    <string name="allergen_nuts">Tree nuts</string>
+    <string name="allergen_peanuts">Peanuts</string>
+    <string name="allergen_sesame">Sesame</string>
+    <string name="allergen_soya">Soya</string>
+    <string name="allergen_sulphites">Sulphites</string>
+
+    <!-- Welcome -->
+    <string name="welcome_show_me_how">Show me how</string>
+    <string name="welcome_turn_on_reminders">Turn on reminders</string>
+    <string name="welcome_share_usage_data">Share usage data</string>
+    <string name="welcome_dont_share">Don\'t share</string>
+    <string name="welcome_page_indicator">Page %1$d of %2$d</string>
+    <string name="welcome_overline_scan">1 · Scan</string>
+    <string name="welcome_overline_remind">2 · Get reminded</string>
+    <string name="welcome_overline_cook">3 · Cook</string>
+    <string name="welcome_overline_share">Privacy</string>
+    <string name="welcome_overline_reminders">Last step</string>
+    <string name="welcome_title_welcome">Waste less,\ncook more.</string>
+    <string name="welcome_title_scan">Scan the label, skip the typing.</string>
+    <string name="welcome_title_remind">Know what to use first.</string>
+    <string name="welcome_title_cook">Cook with what you have.</string>
+    <string name="welcome_title_share">Help us improve Zero Bite</string>
+    <string name="welcome_title_reminders">Want a nudge before food goes off?</string>
+    <string name="welcome_title_reminders_denied">Reminders are off.</string>
+    <string name="welcome_message_welcome">Keep track of what\'s in your fridge, freezer and cupboard, and use it up before the date.</string>
+    <string name="welcome_message_scan">Point the camera at a best-before or use-by date. A barcode fills in the product name. Everything is read on your phone.</string>
+    <string name="welcome_message_remind">Your food is sorted by urgency. The most urgent item sits at the top, with one-tap Used it and Freeze.</string>
+    <string name="welcome_message_cook">Recipes are ranked by what you already have, with food that\'s about to expire counted first.</string>
+    <string name="welcome_message_share">Share usage statistics and crash reports with us, sent through Google Firebase. They never include your food, notes, allergies or photos. You can change this at any time in Settings.</string>
+    <string name="welcome_message_reminders">We\'ll remind you a few days before the date, on the day, and if it slips past. You choose when.</string>
+    <string name="welcome_message_reminders_denied">You can turn them on any time in Settings.</string>
+    <!-- Welcome illustrations (mock app screens) -->
+    <string name="welcome_art_yogurt">Greek yogurt</string>
+    <string name="welcome_art_spinach">Spinach</string>
+    <string name="welcome_art_salmon">Salmon</string>
+    <string name="welcome_art_spaghetti">Spaghetti</string>
+    <string name="welcome_art_sourdough">Sourdough</string>
+    <string name="welcome_art_lemons">Lemons</string>
+    <string name="welcome_art_eggs">Eggs</string>
+    <string name="welcome_art_one_bag">1 bag</string>
+    <string name="welcome_art_two_pcs">2 pcs</string>
+    <string name="welcome_art_three_pcs">3 pcs</string>
+    <string name="welcome_art_one_loaf">1 loaf</string>
+    <string name="welcome_art_date_nov">3 Nov</string>
+    <string name="welcome_art_date_jun">Jun</string>
+    <string name="welcome_art_label_product">SEMI SKIMMED MILK</string>
+    <string name="welcome_art_label_size">2 PINTS · 1.136 L</string>
+    <string name="welcome_art_label_date">USE BY 12 OCT</string>
+    <string name="welcome_art_spinach_detail">1 bag · Fridge</string>
+    <string name="welcome_art_now">now</string>
+    <string name="welcome_art_notification_title">Spinach goes off tomorrow</string>
+    <string name="welcome_art_notification_body">It\'s in 3 recipes you can make tonight.</string>
+    <string name="welcome_art_recipe">Spinach and egg frittata</string>
+    <string name="welcome_art_recipe_meta">20 min · serves 2 · uses 2 expiring</string>
+    <string name="welcome_art_when_before">3 days before</string>
+    <string name="welcome_art_text_before">Greek yogurt is due on Friday</string>
+    <string name="welcome_art_when_day">On the day</string>
+    <string name="welcome_art_text_day">Use your spinach today</string>
+    <string name="welcome_art_when_after">Day after</string>
+    <string name="welcome_art_text_after">Milk went past its date yesterday</string>
+    <string name="welcome_art_usage_statistics">Usage statistics</string>
+    <string name="welcome_art_crash_reports">Crash reports</string>
+    <string name="welcome_art_never_sent">Never sent</string>
+    <string name="welcome_art_food">Food</string>
+    <string name="welcome_art_notes">Notes</string>
+    <string name="welcome_art_allergies">Allergies</string>
+    <string name="welcome_art_photos">Photos</string>
+
+    <!-- Recipes -->
+    <string name="recipes_title">Recipes</string>
+    <string name="recipes_overline">From what you have</string>
+    <string name="recipes_use_these_first">Use these first</string>
+    <string name="recipes_search_placeholder">Search recipes or ingredients</string>
+    <string name="recipes_scope_ready">Ready</string>
+    <string name="recipes_scope_nearly">Nearly</string>
+    <string name="recipes_scope_all">All</string>
+    <string name="recipes_section_ready">You can make these now</string>
+    <string name="recipes_section_nearly">Missing one or two things</string>
+    <string name="recipes_section_all">All recipes</string>
+    <plurals name="recipe_count">
+        <item quantity="one">%d recipe</item>
+        <item quantity="other">%d recipes</item>
+    </plurals>
+    <string name="recipes_empty_ready_title">Nothing to cook yet</string>
+    <string name="recipes_empty_nearly_title">No near-misses</string>
+    <string name="recipes_empty_all_title">No recipes match</string>
+    <string name="recipes_empty_search">Try a different search.</string>
+    <string name="recipes_empty_ready_message">Add a few more items, or check the “Nearly” tab for recipes that need one more ingredient.</string>
+    <string name="recipes_empty_nearly_message">Everything is either ready to cook or needs more than a couple of ingredients.</string>
+    <string name="recipes_empty_all_message">The recipe catalogue is empty.</string>
+    <string name="recipe_ready_to_cook">Ready to cook</string>
+    <!-- %s: up to two ingredient names, comma separated -->
+    <string name="recipe_missing">Missing %s</string>
+    <!-- %1$s: two ingredient names; %2$d: how many more are missing -->
+    <string name="recipe_missing_more">Missing %1$s +%2$d</string>
+    <string name="recipe_minutes">%d min</string>
+    <string name="recipe_serves">serves %d</string>
+    <string name="recipe_uses_expiring">uses %d expiring</string>
+    <string name="recipe_match_percent">%d%%</string>
+    <string name="recipe_match_percent_description">You have %d percent of the ingredients</string>
+    <string name="recipe_card_meta">%1$d min · %2$d%% of ingredients</string>
+    <!-- %2$s: "Ready to cook" or "Missing …" -->
+    <string name="recipe_row_meta">%1$d min · %2$s</string>
+    <string name="recipe_not_found_title">Recipe not found</string>
+    <string name="recipe_not_found_message">It may have been removed from the catalogue.</string>
+    <string name="recipe_percent_in_fridge">You have %d%% of the ingredients</string>
+    <string name="recipe_stat_minutes">min</string>
+    <!-- Follows a number: "2 servings" -->
+    <plurals name="recipe_stat_servings">
+        <item quantity="one">serving</item>
+        <item quantity="other">servings</item>
+    </plurals>
+    <!-- Follows a number: "2 expiring" -->
+    <string name="recipe_stat_expiring">expiring</string>
+    <string name="recipe_ingredients">Ingredients</string>
+    <string name="recipe_method">Method</string>
+    <string name="recipe_cooked_button">I cooked this — update My food</string>
+    <string name="recipe_have_everything">You have everything you need.</string>
+    <!-- %s: missing ingredient names, comma separated -->
+    <string name="recipe_missing_sentence">Missing %s.</string>
+    <!-- %1$s: item name; %2$s: short expiry label -->
+    <string name="recipe_you_have">You have %1$s · %2$s</string>
+    <string name="recipe_store_cupboard">Store cupboard</string>
+    <string name="recipe_optional">Optional — skip it</string>
+    <string name="recipe_not_in_fridge">You don\'t have this</string>
+    <string name="cooked_title">Nice one! What did you use up?</string>
+    <string name="cooked_overline">Cooked</string>
+    <string name="cooked_footer">Ticked items are marked as used. Anything unticked stays in My food — edit its quantity if you only used some.</string>
+    <string name="cooked_update_fridge">Update My food</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_expiry_name">Expiry reminders</string>
+    <string name="notification_channel_expiry_description">A heads-up before food expires, on the day, and if it slips past.</string>
+    <string name="notification_test_title">Zero Bite reminders are on</string>
+    <string name="notification_test_body">This is how you\'ll hear about food that\'s about to expire.</string>
+    <!-- Expiry reminders: %1$s is the item name, %2$d the days left (2 or more; 1 uses "tomorrow"). -->
+    <string name="reminder_soon_title_tomorrow">%1$s expires tomorrow</string>
+    <plurals name="reminder_soon_title_days">
+        <item quantity="one">%1$s expires in %2$d day</item>
+        <item quantity="other">%1$s expires in %2$d days</item>
+    </plurals>
+    <string name="reminder_soon_body">Plan a meal around it — Zero Bite has recipe ideas.</string>
+    <string name="reminder_today_title">%1$s expires today</string>
+    <string name="reminder_today_body">Use it today or freeze it.</string>
+    <string name="reminder_expired_title">%1$s has expired</string>
+    <string name="reminder_expired_body">Check it and update your list.</string>
+
+    <!-- Sample fridge ("Try it with sample food") -->
+    <string name="sample_greek_yogurt">Greek yogurt</string>
+    <string name="sample_spinach">Spinach</string>
+    <string name="sample_chicken_breast">Chicken breast</string>
+    <string name="sample_milk">Semi-skimmed milk</string>
+    <string name="sample_mushrooms">Mushrooms</string>
+    <string name="sample_sourdough">Sourdough bread</string>
+    <string name="sample_cherry_tomatoes">Cherry tomatoes</string>
+    <string name="sample_red_pepper">Red pepper</string>
+    <string name="sample_bacon">Bacon</string>
+    <string name="sample_lemon">Lemon</string>
+    <string name="sample_bananas">Bananas</string>
+    <string name="sample_carrots">Carrots</string>
+    <string name="sample_onion">Onion</string>
+    <string name="sample_eggs">Eggs</string>
+    <string name="sample_cheddar">Cheddar cheese</string>
+    <string name="sample_potatoes">Potatoes</string>
+    <string name="sample_garlic">Garlic</string>
+    <string name="sample_butter">Butter</string>
+    <string name="sample_salmon">Salmon fillets</string>
+    <string name="sample_rice">Basmati rice</string>
+    <string name="sample_spaghetti">Spaghetti</string>
+</resources>

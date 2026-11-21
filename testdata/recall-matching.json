@@ -1,0 +1,88 @@
+{
+  "matchCases": [
+    {
+      "name": "barcode on the notice is a likely match",
+      "today": "2026-07-12", "alertId": "FSA-PRIN-28-2026", "productIndex": 0,
+      "item": { "name": "Cheese", "expiresOn": "2026-08-01", "barcode": "5099874213772" },
+      "expect": { "confidence": "likely", "reasonsInclude": ["barcode"] }
+    },
+    {
+      "name": "head noun with a matching date is possible",
+      "today": "2026-07-12", "alertId": "FSA-PRIN-28-2026", "productIndex": 0,
+      "item": { "name": "Brie", "expiresOn": "2026-07-16" },
+      "expect": { "confidence": "possible", "reasons": ["name", "date"] }
+    },
+    {
+      "name": "name, brand and date is likely",
+      "today": "2026-07-12", "alertId": "FSA-PRIN-28-2026", "productIndex": 1,
+      "item": { "name": "French brie", "expiresOn": "2026-07-17", "brand": "Traditional Cheese Company" },
+      "expect": { "confidence": "likely", "reasonsInclude": ["name", "brand", "date"] }
+    },
+    {
+      "name": "name only with a different batch date is ignored",
+      "today": "2026-07-12", "alertId": "FSA-PRIN-28-2026", "productIndex": 1,
+      "item": { "name": "Brie", "expiresOn": "2026-09-03" },
+      "expect": null
+    },
+    {
+      "name": "a single word must be the product's head noun",
+      "today": "2026-07-12", "alertId": "FSA-PRIN-47-2026-update-1", "productIndex": null,
+      "item": { "name": "Milk", "expiresOn": "2026-07-20" },
+      "expect": null
+    }
+  ],
+  "listCases": [
+    {
+      "name": "finds the brie recall",
+      "today": "2026-07-12",
+      "items": [{ "id": "brie", "name": "Brie", "expiresOn": "2026-07-16" }],
+      "firstAlertId": "FSA-PRIN-28-2026"
+    },
+    {
+      "name": "dismissed match is skipped",
+      "today": "2026-07-12",
+      "items": [{ "id": "brie", "name": "Brie", "expiresOn": "2026-07-16" }],
+      "dismissed": [{ "alertId": "FSA-PRIN-28-2026", "itemId": "brie" }],
+      "firstAlertId": null
+    },
+    {
+      "name": "consumed items are skipped",
+      "today": "2026-07-12",
+      "items": [{ "id": "brie", "name": "Brie", "expiresOn": "2026-07-16", "consumed": true }],
+      "firstAlertId": null
+    },
+    {
+      "name": "alerts older than the lookback are ignored",
+      "today": "2027-03-01",
+      "items": [{ "id": "brie", "name": "Brie", "expiresOn": "2026-07-16" }],
+      "firstAlertId": null
+    }
+  ],
+  "alertDates": [
+    { "text": "16 July 2026", "expected": [{ "year": 2026, "month": 7, "day": 16 }] },
+    { "text": "10, 16 and 17 July 2026", "expected": [{ "year": 2026, "month": 7, "day": 10 }, { "year": 2026, "month": 7, "day": 16 }, { "year": 2026, "month": 7, "day": 17 }] },
+    { "text": "end of 28 April 2026", "expected": [{ "year": 2026, "month": 4, "day": 28 }] },
+    { "text": "May 2027", "expected": [{ "year": 2027, "month": 5, "day": null }] },
+    { "text": "31 January 2027 02 May 2027", "expected": [{ "year": 2027, "month": 1, "day": 31 }, { "year": 2027, "month": 5, "day": 2 }] },
+    { "text": "12/08/2026", "expected": [{ "year": 2026, "month": 8, "day": 12 }] },
+    { "text": "16\u00a0July\u00a02026", "expected": [{ "year": 2026, "month": 7, "day": 16 }] },
+    { "text": "All best before dates", "expected": [] }
+  ],
+  "nameMatches": [
+    { "item": "ham", "product": "Brady Family Crumb Irish Ham", "matches": true },
+    { "item": "Greek yoghurts", "product": "Greek Style Yogurt 500g", "matches": true },
+    { "item": "Milk", "product": "Pistachio Milk Chocolate", "matches": false }
+  ],
+  "allergens": [
+    { "allergen": "gluten", "label": "Wheat", "matches": true },
+    { "allergen": "gluten", "label": "Barley", "matches": true },
+    { "allergen": "nuts", "label": "Hazelnut", "matches": true },
+    { "allergen": "nuts", "label": "Peanuts", "matches": false },
+    { "allergen": "milk", "label": "Milk", "matches": true },
+    { "allergen": "milk", "label": "Egg", "matches": false }
+  ],
+  "concerns": [
+    { "alertId": "FSA-AA-43-2026", "allergens": ["milk", "egg"], "expected": ["milk"] },
+    { "alertId": "FSA-PRIN-28-2026", "allergens": ["milk"], "expected": [] }
+  ]
+}

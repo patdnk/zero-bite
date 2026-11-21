@@ -1,0 +1,71 @@
+{
+  "matchCases": [
+    {
+      "name": "barcode on the notice is a likely match",
+      "today": "2026-09-01", "alertId": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-sera-podpuszczkowego", "productIndex": 0,
+      "item": {"name": "Ser", "expiresOn": "2026-12-01", "barcode": "5905784304458"},
+      "expect": {"confidence": "likely", "reasonsInclude": ["barcode"]}
+    },
+    {
+      "name": "head noun with a matching date is possible",
+      "today": "2026-09-01", "alertId": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-sera-podpuszczkowego", "productIndex": 0,
+      "item": {"name": "Ser", "expiresOn": "2026-09-25"},
+      "expect": {"confidence": "possible", "reasons": ["name", "date"]}
+    },
+    {
+      "name": "month-only batch dates match any day of the month",
+      "today": "2027-10-01", "alertId": "GIS-aktualizacja-ostrzezenia-publicznego-z-dnia-03072026-dotyczacego-zywnosci-stwierdzenie-niezadeklarowanej-obecnosci-skladnika-alergennego--glutenu-w-partiach-bigosu-z-miesem-i-kielbasa", "productIndex": 0,
+      "item": {"name": "Bigos", "expiresOn": "2027-10-31"},
+      "expect": {"confidence": "possible", "reasonsInclude": ["name", "date"]}
+    },
+    {
+      "name": "a date outside every batch month is ignored",
+      "today": "2027-05-01", "alertId": "GIS-aktualizacja-ostrzezenia-publicznego-z-dnia-03072026-dotyczacego-zywnosci-stwierdzenie-niezadeklarowanej-obecnosci-skladnika-alergennego--glutenu-w-partiach-bigosu-z-miesem-i-kielbasa", "productIndex": 0,
+      "item": {"name": "Bigos", "expiresOn": "2027-05-15"},
+      "expect": null
+    },
+    {
+      "name": "brand on the notice, name and date is likely",
+      "today": "2027-04-01", "alertId": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-podwyzszony-poziom-akryloamidu-w-okreslonej-partii-herbatnikow", "productIndex": 0,
+      "item": {"name": "Herbatniki", "expiresOn": "2027-04-13", "brand": "Bonitki"},
+      "expect": {"confidence": "likely"}
+    },
+    {
+      "name": "a word in the producer's name does not hide the item name when the product has it too",
+      "today": "2026-10-15", "alertId": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-serow-rozne-rodzaje", "productIndex": 0,
+      "item": {"name": "Ser", "expiresOn": "2026-10-18"},
+      "expect": {"confidence": "possible", "reasons": ["name", "date"]}
+    },
+    {
+      "name": "the same holds for a two-word item name",
+      "today": "2026-11-01", "alertId": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-wykrycie-obecnosci-bakterii-listeria-monocytogenes-w-jednej-partii-serow-rozne-rodzaje", "productIndex": 3,
+      "item": {"name": "Ser wędzony", "expiresOn": "2026-11-07"},
+      "expect": {"confidence": "possible", "reasons": ["name", "date"]}
+    }
+  ],
+  "listCases": [],
+  "alertDates": [
+    {"text": "03.2028 19A", "expected": [{"year": 2028, "month": 3, "day": null}]},
+    {"text": "17.07.2026 r. oraz 11.07.2026 r.", "expected": [{"year": 2026, "month": 7, "day": 17}, {"year": 2026, "month": 7, "day": 11}]},
+    {"text": "6104037121 01-10 - 13/04/2027", "expected": [{"year": 2027, "month": 4, "day": 13}]},
+    {"text": "261.2026/M", "expected": []}
+  ],
+  "nameMatches": [
+    {"item": "Ser", "product": "SER GAŁKA Z ZAKOPANEGO 280g", "matches": true},
+    {"item": "Sery", "product": "Ser regionalny Gałka Naturalna 250 g", "matches": true},
+    {"item": "Boczek", "product": "Boczek wędzony", "matches": true},
+    {"item": "Pesto", "product": "Zielone pesto", "matches": true},
+    {"item": "Mleko", "product": "Czekolada mleczna", "matches": false},
+    {"item": "Gałka wędzona", "product": "Ser regionalny Gałka Wędzona 250 g", "matches": true},
+    {"item": "Galka wedzona", "product": "Ser regionalny Gałka Wędzona 250 g", "matches": true},
+    {"item": "Herbatniki", "product": "Herbatniki Petit Beurre, 400 g", "matches": true},
+    {"item": "Kiełbasa", "product": "Bigos z mięsem i kiełbasą, 500 g", "matches": false},
+    {"item": "Pesto", "product": "Sos pesto", "matches": false},
+    {"item": "Ser", "product": "Wędzony boczek ser", "matches": false},
+    {"item": "Kami", "product": "Kama", "matches": true}
+  ],
+  "allergens": [],
+  "concerns": [
+    {"alertId": "GIS-ostrzezenie-publiczne-dotyczace-zywnosci-niewlasciwa-informacja-dotyczaca-alergenu--brak-wyroznienia-obecnosci-siarczynow-na-etykiecie-produktu", "allergens": ["sulphites", "milk"], "expected": ["sulphites"]}
+  ]
+}

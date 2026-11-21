@@ -1,0 +1,125 @@
+package com.mazesys.zerobite
+
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
+import com.mazesys.zerobite.core.inventory.InventoryRepository
+import com.mazesys.zerobite.core.notifications.NotificationCopy
+import com.mazesys.zerobite.core.products.OpenFoodFactsClient
+import com.mazesys.zerobite.core.products.ProductLookup
+import com.mazesys.zerobite.core.recipes.RecipeRepository
+import com.mazesys.zerobite.core.time.AppClock
+import com.mazesys.zerobite.core.time.SystemAppClock
+import com.mazesys.zerobite.data.AppLanguage
+import com.mazesys.zerobite.data.BundledRecipeRepository
+import com.mazesys.zerobite.data.DataStoreSettings
+import com.mazesys.zerobite.data.RoomInventoryRepository
+import com.mazesys.zerobite.data.SettingsRepository
+import com.mazesys.zerobite.data.ZeroBiteDatabase
+import com.mazesys.zerobite.privacy.FirebaseUsageDataCollection
+import com.mazesys.zerobite.privacy.UsageDataCollection
+import com.mazesys.zerobite.privacy.UsageDataSync
+import com.mazesys.zerobite.reminders.AlarmReminderScheduler
+import com.mazesys.zerobite.reminders.AndroidNotificationAccess
+import com.mazesys.zerobite.reminders.AndroidNotifier
+import com.mazesys.zerobite.reminders.NotificationAccess
+import com.mazesys.zerobite.reminders.Notifier
+import com.mazesys.zerobite.reminders.ReminderScheduler
+import com.mazesys.zerobite.reminders.ResourceNotificationCopy
+import com.mazesys.zerobite.reminders.ReminderSync
+import com.mazesys.zerobite.scanning.LabelReading
+import com.mazesys.zerobite.scanning.MlKitLabelReader
+import com.mazesys.zerobite.ui.text.Strings
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpTimeout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.withContext
+import kotlin.uuid.Uuid
+
+fun interface IdGenerator {
+    fun next(): String
+
+    companion object {
+        val Random = IdGenerator { Uuid.random().toString() }
+    }
+}
+
+/** One DataStore per process, as DataStore requires. */
+private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
+/** Builds the real lookup on first use, so the HTTP stack isn't constructed at every cold start. */
+private class LazyProductLookup(create: () -> ProductLookup) : ProductLookup {
+    private val delegate by lazy(create)
+
+    override suspend fun lookup(barcode: String) = withContext(Dispatchers.IO) { delegate }.lookup(barcode)
+}
+
+/** Composition root: the long-lived services handed to coordinators, factories and view models. */
+class AppDependencies(
+    val clock: AppClock,
+    val settings: SettingsRepository,
+    val inventory: InventoryRepository,
+    val recipes: RecipeRepository,
+    val ids: IdGenerator,
+    /** Outlives screens: background syncs (reminders, recalls) run here. */
+    val appScope: CoroutineScope,
+    val notifications: NotificationAccess,
+    val scheduler: ReminderScheduler,
+    val notifier: Notifier,
+    /** String resources in the current app language, for text that is stored rather than shown. */
+    val strings: Strings,
+    /** Reads labels from photos and from the live camera. */
+    val labels: LabelReading,
+    /** Resolves a scanned barcode to a product name and category. */
+    val productLookup: ProductLookup,
+    /** The current app language, kept up to date by MainActivity. */
+    val language: AppLanguage = AppLanguage(),
+    /** Reminder text in the current app language, read at every replan. */
+    notificationCopy: () -> NotificationCopy = { NotificationCopy.ENGLISH },
+    /** Usage statistics and crash reports, switched by the "share usage data" setting. */
+    usageData: UsageDataCollection = UsageDataCollection {},
+    /** Where CPU-heavy work that must stay off the main thread runs, such as ranking recipes against the fridge. */
+    val computation: CoroutineDispatcher = Dispatchers.Default,
+) {
+    val reminders = ReminderSync(inventory, settings, clock, notifications, scheduler, notificationCopy)
+    val usageData = UsageDataSync(settings, usageData)
+
+    companion object {
+        /** One HTTP client for the whole app, 20 s timeout like iOS. */
+        private fun httpClient() = HttpClient(OkHttp) {
+            install(HttpTimeout) { requestTimeoutMillis = 20_000 }
+            expectSuccess = false
+        }
+
+        fun live(context: Context): AppDependencies {
+            val app = context.applicationContext
+            val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            val prefs = app.getSharedPreferences("reminders", Context.MODE_PRIVATE)
+            val language = AppLanguage(AppLanguage.of(app.resources.configuration))
+            // Created on first use. Later network features share it through `http.value`.
+            val http = lazy { httpClient() }
+            return AppDependencies(
+                clock = SystemAppClock,
+                settings = DataStoreSettings(app.settingsDataStore, scope),
+                inventory = RoomInventoryRepository(ZeroBiteDatabase.open(app).foodItems()),
+                recipes = BundledRecipeRepository(app.assets, language.code),
+                ids = IdGenerator.Random,
+                appScope = scope,
+                notifications = AndroidNotificationAccess(app, prefs),
+                scheduler = AlarmReminderScheduler(app, prefs),
+                notifier = AndroidNotifier(app),
+                strings = Strings { app.getString(it) },
+                labels = MlKitLabelReader(app),
+                productLookup = LazyProductLookup { OpenFoodFactsClient(http.value) },
+                language = language,
+                notificationCopy = { ResourceNotificationCopy(app.resources) },
+                usageData = FirebaseUsageDataCollection(app),
+            )
+        }
+    }
+}

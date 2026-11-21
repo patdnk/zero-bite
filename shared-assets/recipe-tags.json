@@ -1,0 +1,26 @@
+{
+  "en": {
+    "batch": "batch",
+    "breakfast": "breakfast",
+    "dessert": "dessert",
+    "dinner": "dinner",
+    "leftovers": "leftovers",
+    "lunch": "lunch",
+    "no-cook": "no-cook",
+    "quick": "quick",
+    "side": "side",
+    "vegetarian": "vegetarian"
+  },
+  "pl": {
+    "batch": "na zapas",
+    "breakfast": "śniadanie",
+    "dessert": "deser",
+    "dinner": "obiad",
+    "leftovers": "z resztek",
+    "lunch": "lunch",
+    "no-cook": "bez gotowania",
+    "quick": "szybkie",
+    "side": "dodatek",
+    "vegetarian": "wegetariańskie"
+  }
+}

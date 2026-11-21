@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.ZeroBite" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
+    </style>
+
+    <style name="Theme.ZeroBite.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background</item>
+        <item name="postSplashScreenTheme">@style/Theme.ZeroBite</item>
+    </style>
+</resources>
