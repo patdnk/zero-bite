@@ -103,7 +103,9 @@ records `android/app/src/test/screenshots/`, `verifyRoborazziDebug` compares aga
 `.github/workflows/ios.yml` and `android.yml` run in the same stages: **lint** (SwiftLint /
 Android Lint, plus `scripts/check-polish-assets.py`) and **unit tests** in parallel, then
 **e2e** (the smoke test on a simulator / emulator) once the unit tests pass. A **CI summary**
-job fails if any stage did, and a nightly run opens an issue when it fails.
+job fails if any stage did, and a nightly run opens an issue when it fails. Pushes and pull
+requests run a workflow only when they touch its platform folder (`ios/` or `android/`) or the
+workflow itself; changes to `testdata/` or `shared-assets/` alone are left to the nightly run.
 
 ### Keeping iOS and Android in step
 
