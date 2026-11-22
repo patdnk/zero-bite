@@ -117,12 +117,14 @@ class ExpiryDateParser(private val today: LocalDate) {
     }
 
     companion object {
+        /** English, then Polish; the Polish words also match without diacritics, as OCR often drops them. */
         private val KEYWORD = Regex(
-            """\b(best before end|best before|best by|bbe|bb|use by|use before|expiry|expires|expire|exp|display until|sell by|consume by|eat by)(?![a-z])""",
+            """\b(best before end|best before|best by|bbe|bb|use by|use before|expiry|expires|expire|exp|display until|sell by|consume by|eat by|(?:spo|zu)[żz]y[ćc] (?:do|przed)|(?:termin|data) (?:przydatno|wa[żz]no)[śs]ci|przydatn[a-z]* do|wa[żz]n[ey] do|minimaln[a-z]* trwa[łl]o[śs](?:ci|[ćc]))(?![a-z])""",
             RegexOption.IGNORE_CASE,
         )
+        /** English, then Polish. `produkc…` also covers OCR slips like "produkcy"; plain "pakowane" is packaging text, not a date. */
         private val MANUFACTURE = Regex(
-            """\b(packed on|packed|manufactured|mfg|mfd|prod\.?|production|batch|lot)(?![a-z])""",
+            """\b(packed on|packed|manufactured|mfg|mfd|prod\.?|production|batch|lot|produkc[a-z]*|wyprodukowan[a-z]*|wyprod\.?|data pakowania|partii|partia)(?![a-z])""",
             RegexOption.IGNORE_CASE,
         )
         private val MONTH_NAMES = listOf("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
