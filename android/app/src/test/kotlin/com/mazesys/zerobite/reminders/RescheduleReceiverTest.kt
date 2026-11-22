@@ -14,11 +14,13 @@ import kotlinx.datetime.plus
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.assertTrue
 import kotlin.time.Clock
 
 @RunWith(RobolectricTestRunner::class)
+@Config(application = ZeroBiteApplication::class)
 class RescheduleReceiverTest {
 
     private val app = ApplicationProvider.getApplicationContext<ZeroBiteApplication>()

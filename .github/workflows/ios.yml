@@ -1,11 +1,13 @@
 name: iOS
 
 on:
+  # Only iOS changes (and this workflow) trigger it. Shared folders (testdata/, shared-assets/) are
+  # covered by the nightly run.
   push:
     branches: [main]
-    paths: ['ios/**', 'testdata/**', 'shared-assets/**', 'scripts/check-polish-assets.py', '.github/workflows/ios.yml', '.github/actions/ios-setup/**']
+    paths: ['ios/**', '.github/workflows/ios.yml', '.github/actions/ios-setup/**']
   pull_request:
-    paths: ['ios/**', 'testdata/**', 'shared-assets/**', 'scripts/check-polish-assets.py', '.github/workflows/ios.yml', '.github/actions/ios-setup/**']
+    paths: ['ios/**', '.github/workflows/ios.yml', '.github/actions/ios-setup/**']
   schedule:
     # Nightly at 2 AM UTC: catches runner image changes (Xcode, simulators) between commits.
     - cron: '0 2 * * *'

@@ -1,11 +1,13 @@
 name: Android
 
 on:
+  # Only Android changes (and this workflow) trigger it. Shared folders (testdata/, shared-assets/) are
+  # covered by the nightly run.
   push:
     branches: [main]
-    paths: ['android/**', 'testdata/**', 'shared-assets/**', 'scripts/check-polish-assets.py', '.github/workflows/android.yml']
+    paths: ['android/**', '.github/workflows/android.yml']
   pull_request:
-    paths: ['android/**', 'testdata/**', 'shared-assets/**', 'scripts/check-polish-assets.py', '.github/workflows/android.yml']
+    paths: ['android/**', '.github/workflows/android.yml']
   schedule:
     # Nightly at 2:30 AM UTC: catches runner image and emulator changes between commits.
     - cron: '30 2 * * *'
