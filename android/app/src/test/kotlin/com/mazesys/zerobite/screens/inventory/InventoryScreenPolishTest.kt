@@ -8,7 +8,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
-import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.data.SettingsSnapshot
 import com.mazesys.zerobite.testing.FakeAccess
 import com.mazesys.zerobite.testing.FakeInventoryRepository
@@ -16,6 +15,7 @@ import com.mazesys.zerobite.testing.FakeSettings
 import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.SequentialIds
 import com.mazesys.zerobite.testing.TestClock
+import com.mazesys.zerobite.testing.testMain
 import com.mazesys.zerobite.ui.text.Strings
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 import org.junit.Rule
@@ -38,10 +38,10 @@ class InventoryScreenPolishTest {
     @Test
     fun `my food reads in polish`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val app = AppCoordinator { TestClock.today }
+        val coordinator = testMain()
         val vm = InventoryViewModel(
             FakeInventoryRepository(), FakeSettings(SettingsSnapshot(dismissedNotificationTip = true)), TestClock.fixed(),
-            SequentialIds(), app.inventory, FakeAccess(), Strings { context.getString(it) },
+            SequentialIds(), coordinator.inventory, FakeAccess(), Strings { context.getString(it) },
         )
         compose.setContent { ZeroBiteTheme { InventoryScreen(vm) } }
 

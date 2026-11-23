@@ -23,7 +23,6 @@ import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,10 +31,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mazesys.zerobite.R
-import com.mazesys.zerobite.coordination.AlertButton
-import com.mazesys.zerobite.coordination.AlertConfig
+import com.mazesys.zerobite.coordination.ScanCoordinator
+import com.mazesys.zerobite.coordination.ScanCoordinator.Event
+import com.mazesys.zerobite.coordination.ScanCoordinator.Failure
+import com.mazesys.zerobite.coordination.ScanCoordinator.Status
+import com.mazesys.zerobite.core.time.AppClock
+import com.mazesys.zerobite.screens.root.AlertButton
+import com.mazesys.zerobite.screens.root.AlertConfig
 import com.mazesys.zerobite.screens.root.AppAlert
 import com.mazesys.zerobite.ui.components.AppCard
 import com.mazesys.zerobite.ui.components.DetailTitle
@@ -50,26 +53,26 @@ import com.mazesys.zerobite.ui.theme.medium
 
 /** First screen of the add-food sheet: camera, photo or typing. */
 @Composable
-fun ScanFlowScreen(viewModel: ScanFlowViewModel) {
-    val phase by viewModel.phase.collectAsStateWithLifecycle()
+fun ScanFlowScreen(coordinator: ScanCoordinator, clock: AppClock) {
+    val status = coordinator.state.status
     val colors = ZeroBiteTheme.colors
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) viewModel.process(uri)
+        if (uri != null) coordinator.eventLoop(Event.DidChoosePhoto(uri, clock.today()))
     }
 
     Box(Modifier.fillMaxSize().background(colors.backgroundPrimary)) {
         Column(Modifier.fillMaxSize()) {
-            TopBar(TopBarLeading.Close(viewModel::cancel))
+            TopBar(TopBarLeading.Close { coordinator.eventLoop(Event.DidTapClose) })
             Column(
                 Modifier.verticalScroll(rememberScrollState()).padding(start = Spacing.gutter, end = Spacing.gutter, bottom = Spacing.xl),
                 verticalArrangement = Arrangement.spacedBy(Spacing.lg),
             ) {
                 DetailTitle(title = stringResource(R.string.fridge_add_food), overline = stringResource(R.string.scan_overline))
                 Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                    if (viewModel.supportsLiveScanning) {
+                    if (coordinator.supportsLiveScanning) {
                         ScanOptionRow(
                             Icons.Rounded.QrCodeScanner, stringResource(R.string.scan_option_camera), stringResource(R.string.scan_option_camera_detail),
-                            isPrimary = true, onClick = viewModel::startLiveScan, modifier = Modifier.testTag("scan.live"),
+                            isPrimary = true, onClick = { coordinator.eventLoop(Event.DidTapLiveScan) }, modifier = Modifier.testTag("scan.live"),
                         )
                     }
                     ScanOptionRow(
@@ -79,22 +82,29 @@ fun ScanFlowScreen(viewModel: ScanFlowViewModel) {
                     )
                     ScanOptionRow(
                         Icons.Rounded.EditNote, stringResource(R.string.scan_option_type), stringResource(R.string.scan_option_type_detail),
-                        onClick = viewModel::enterManually, modifier = Modifier.testTag("scan.manual"),
+                        onClick = { coordinator.eventLoop(Event.DidTapManualEntry(clock.today())) }, modifier = Modifier.testTag("scan.manual"),
                     )
                 }
                 Text(stringResource(R.string.scan_hint), style = ZeroBiteTheme.type.caption, color = colors.textSecondary)
             }
         }
-        LoadingOverlay(phase == ScanPhase.Processing, stringResource(R.string.scan_reading))
+        LoadingOverlay(status == Status.Processing, stringResource(R.string.scan_reading))
     }
 
-    (phase as? ScanPhase.Failed)?.let { failed ->
+    (status as? Status.Failed)?.let { failed ->
         AppAlert(
-            AlertConfig(title = uiText(R.string.scan_error_title), message = failed.message, primary = AlertButton(uiText(R.string.action_ok))),
-            onDismiss = viewModel::dismissError,
+            AlertConfig(title = uiText(R.string.scan_error_title), message = uiText(failed.failure.messageRes), primary = AlertButton(uiText(R.string.action_ok))),
+            onDismiss = { coordinator.eventLoop(Event.DidDismissError) },
         )
     }
 }
+
+private val Failure.messageRes: Int
+    get() = when (this) {
+        Failure.NOTHING_FOUND -> R.string.scan_error_nothing_found
+        Failure.UNREADABLE -> R.string.scan_error_unreadable
+        Failure.LOAD_FAILED -> R.string.scan_error_load_failed
+    }
 
 @Composable
 private fun ScanOptionRow(

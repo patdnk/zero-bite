@@ -20,24 +20,31 @@ fun InventoryTab(
     dependencies: AppDependencies,
     modifier: Modifier = Modifier,
 ) {
+    fun send(event: InventoryCoordinator.Event) {
+        coordinator.eventLoop(event)
+    }
     NavDisplay(
-        backStack = coordinator.backStack,
+        backStack = coordinator.state.backStack,
         modifier = modifier,
-        onBack = { coordinator.pop() },
+        onBack = { send(InventoryCoordinator.Event.DidTapBack) },
         entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
         entryProvider = entryProvider {
             entry<InventoryRoute.Fridge> { InventoryScreen(listViewModel) }
             entry<InventoryRoute.ItemDetail> { route ->
                 ItemDetailEntry(
                     route.itemId, dependencies,
-                    onEdit = coordinator::showEditItem, onShowRecipe = coordinator::showRecipe,
-                    onDeleted = coordinator::pop, onBack = coordinator::pop,
+                    onEdit = { send(InventoryCoordinator.Event.DidTapEditItem(it)) },
+                    onShowRecipe = { send(InventoryCoordinator.Event.DidSelectRecipe(it)) },
+                    onDeleted = { send(InventoryCoordinator.Event.DidDeleteItem) },
+                    onBack = { send(InventoryCoordinator.Event.DidTapBack) },
                 )
             }
             entry<InventoryRoute.RecipeDetail> { route ->
                 RecipeDetailEntry(
                     route.recipeId, dependencies,
-                    onShowItem = coordinator::showItem, onCooked = coordinator::showCooked, onBack = coordinator::pop,
+                    onShowItem = { send(InventoryCoordinator.Event.DidSelectItem(it)) },
+                    onCooked = { send(InventoryCoordinator.Event.DidTapCooked(it)) },
+                    onBack = { send(InventoryCoordinator.Event.DidTapBack) },
                 )
             }
         },

@@ -12,7 +12,6 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.reminders.LocalPermissionRequester
 import com.mazesys.zerobite.reminders.NotificationPermission
 import com.mazesys.zerobite.reminders.PermissionRequester
@@ -20,9 +19,9 @@ import com.mazesys.zerobite.testing.FakeAccess
 import com.mazesys.zerobite.testing.FakeInventoryRepository
 import com.mazesys.zerobite.testing.FakeSettings
 import com.mazesys.zerobite.testing.MainDispatcherRule
-import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.sampleFridge
 import com.mazesys.zerobite.testing.testDependencies
+import com.mazesys.zerobite.testing.testMain
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 import org.junit.Rule
 import org.junit.Test
@@ -30,6 +29,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -44,16 +44,18 @@ class SettingsScreenTest {
 
     private val access = FakeAccess(NotificationPermission.NOT_ASKED)
 
+    private val inventory = FakeInventoryRepository(sampleFridge())
+
     private fun show(dark: Boolean = false) {
-        val app = AppCoordinator { TestClock.today }
-        val vm = SettingsViewModel(
-            testDependencies(inventory = FakeInventoryRepository(sampleFridge()), settings = FakeSettings(), access = access),
-            app.settings, "1.0 (1)",
-        )
+        val dependencies = testDependencies(inventory = inventory, settings = FakeSettings(), access = access)
+        val vm = SettingsViewModel(dependencies, testMain(dependencies).settings, "1.0 (1)")
         val grant = PermissionRequester { access.current = NotificationPermission.GRANTED; true }
         compose.setContent {
             ZeroBiteTheme(darkTheme = dark) {
-                CompositionLocalProvider(LocalPermissionRequester provides grant) { SettingsScreen(vm) }
+                CompositionLocalProvider(LocalPermissionRequester provides grant) {
+                    SettingsScreen(vm)
+                    SettingsAlertHost(vm)
+                }
             }
         }
     }
@@ -81,6 +83,21 @@ class SettingsScreenTest {
         compose.onNodeWithText("Privacy").performScrollTo().assertExists()
         compose.onNodeWithTag("settings.shareUsageToggle").performScrollTo().assertIsOff().performClick()
         compose.onNodeWithTag("settings.shareUsageToggle").assertIsOn()
+    }
+
+    @Test
+    fun `delete everything asks first, and cancel keeps the food`() {
+        show()
+        compose.onNodeWithText("Delete everything").performScrollTo().performClick()
+        compose.onNodeWithText("Delete everything?").assertExists()
+        compose.onNodeWithText("Cancel").performClick()
+        compose.onNodeWithText("Delete everything?").assertDoesNotExist()
+        assertTrue(inventory.current.isNotEmpty())
+
+        compose.onNodeWithText("Delete everything").performScrollTo().performClick()
+        compose.onNodeWithText("Delete all").performClick()
+        compose.waitForIdle()
+        assertTrue(inventory.current.isEmpty())
     }
 
     @Test

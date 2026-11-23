@@ -8,12 +8,11 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.testing.FakeInventoryRepository
 import com.mazesys.zerobite.testing.MainDispatcherRule
-import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.sampleFridge
 import com.mazesys.zerobite.testing.testDependencies
+import com.mazesys.zerobite.testing.testMain
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 import org.junit.Rule
 import org.junit.Test
@@ -35,14 +34,14 @@ class InventoryTabTest {
     @Test
     fun `opens detail from the grid and comes back`() {
         val dependencies = testDependencies(inventory = FakeInventoryRepository(sampleFridge()))
-        val app = AppCoordinator { TestClock.today }
-        val list = InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, app.inventory, FakeAccess(), dependencies.strings)
-        compose.setContent { ZeroBiteTheme { InventoryTab(app.inventory, list, dependencies) } }
+        val coordinator = testMain(dependencies)
+        val list = InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, coordinator.inventory, FakeAccess(), dependencies.strings)
+        compose.setContent { ZeroBiteTheme { InventoryTab(coordinator.inventory, list, dependencies) } }
 
         compose.onNodeWithText("Spinach").performClick()
         compose.onNodeWithText("Details").assertIsDisplayed()
         compose.onNodeWithContentDescription("Back").performClick()
         compose.onNode(hasText("My food") and isHeading()).assertIsDisplayed()
-        assertEquals(1, app.inventory.backStack.size)
+        assertEquals(1, coordinator.inventory.state.backStack.size)
     }
 }

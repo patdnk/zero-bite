@@ -5,13 +5,22 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import com.mazesys.zerobite.coordination.AlertConfig
+import com.mazesys.zerobite.ui.text.UiText
 import com.mazesys.zerobite.ui.text.resolve
 import com.mazesys.zerobite.ui.theme.Radius
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 import com.mazesys.zerobite.ui.theme.semibold
 
-/** App-level alerts raised through AppCoordinator.showAlert. */
+data class AlertButton(val title: UiText, val isDestructive: Boolean = false, val action: () -> Unit = {})
+
+data class AlertConfig(
+    val title: UiText,
+    val message: UiText? = null,
+    val primary: AlertButton,
+    val secondary: AlertButton? = null,
+)
+
+/** The app's alert dialog: a title, an optional message and one or two buttons. */
 @Composable
 fun AppAlert(config: AlertConfig, onDismiss: () -> Unit) {
     val colors = ZeroBiteTheme.colors

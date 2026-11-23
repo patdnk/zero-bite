@@ -10,7 +10,6 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.coordination.RecipesRoute
 import com.mazesys.zerobite.testing.FakeInventoryRepository
 import com.mazesys.zerobite.testing.FakeRecipes
@@ -19,6 +18,7 @@ import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.recipeFridge
 import com.mazesys.zerobite.testing.testRecipes
+import com.mazesys.zerobite.testing.testMain
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
@@ -40,10 +40,10 @@ class RecipesScreenTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private val app = AppCoordinator { TestClock.today }
+    private val coordinator = testMain()
 
     private fun show(dark: Boolean = false) {
-        val vm = RecipesViewModel(FakeInventoryRepository(recipeFridge()), FakeSettings(), FakeRecipes(testRecipes()), TestClock.fixed(), app.recipes, Dispatchers.Unconfined)
+        val vm = RecipesViewModel(FakeInventoryRepository(recipeFridge()), FakeSettings(), FakeRecipes(testRecipes()), TestClock.fixed(), coordinator.recipes, Dispatchers.Unconfined)
         compose.setContent { ZeroBiteTheme(darkTheme = dark) { RecipesScreen(vm) } }
     }
 
@@ -54,7 +54,7 @@ class RecipesScreenTest {
         compose.onNodeWithText("Use these first").assertIsDisplayed()
         compose.onNodeWithText("You can make these now").assertIsDisplayed()
         compose.onNodeWithText("Omelette").performClick()
-        assertEquals(RecipesRoute.RecipeDetail("omelette"), app.recipes.backStack.last())
+        assertEquals(RecipesRoute.RecipeDetail("omelette"), coordinator.recipes.state.backStack.last())
     }
 
     @Test

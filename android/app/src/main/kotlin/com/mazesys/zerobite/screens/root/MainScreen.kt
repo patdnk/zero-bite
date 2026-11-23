@@ -2,6 +2,7 @@ package com.mazesys.zerobite.screens.root
 
 import androidx.compose.ui.res.stringResource
 import com.mazesys.zerobite.BuildConfig
+import com.mazesys.zerobite.screens.settings.SettingsAlertHost
 import com.mazesys.zerobite.screens.settings.SettingsScreen
 import com.mazesys.zerobite.screens.settings.SettingsViewModel
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -28,7 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mazesys.zerobite.AppDependencies
-import com.mazesys.zerobite.coordination.AppCoordinator
+import com.mazesys.zerobite.coordination.MainCoordinator
 import com.mazesys.zerobite.coordination.AppTab
 import com.mazesys.zerobite.coordination.SheetViewModelStores
 import com.mazesys.zerobite.screens.inventory.InventoryTab
@@ -46,10 +47,10 @@ private fun mainTabs() = listOf(
     TabItem(AppTab.SETTINGS, stringResource(AppTab.SETTINGS.title), Icons.Outlined.Settings, Icons.Rounded.Settings),
 )
 
-/** Tabs bound to AppCoordinator, plus app-level sheets and alerts. */
+/** Tabs bound to MainCoordinator, plus the sheet on top of them. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, dependencies: AppDependencies) {
+fun MainScreen(coordinator: MainCoordinator, sheetStores: SheetViewModelStores, dependencies: AppDependencies) {
     // Tab roots live in the activity's store so they survive switching tabs.
     val inventoryList = viewModel(key = "inventory") {
         InventoryViewModel(dependencies.inventory, dependencies.settings, dependencies.clock, dependencies.ids, coordinator.inventory, dependencies.notifications, dependencies.strings)
@@ -61,17 +62,19 @@ fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, d
         SettingsViewModel(dependencies, coordinator.settings, "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
     }
     val tabState = rememberSaveableStateHolder()
-    val presentedId = coordinator.presentedSheet?.id
+    val state = coordinator.state
+    val presentedId = state.sheet?.id
     LaunchedEffect(presentedId) { sheetStores.retainOnly(presentedId) }
+    val openTab: (AppTab) -> Unit = { coordinator.eventLoop(MainCoordinator.Event.DidSelectTab(it)) }
 
     // Android convention: back on another tab returns to the start tab before leaving the app.
-    BackHandler(enabled = coordinator.selectedTab != AppTab.FRIDGE) { coordinator.selectTab(AppTab.FRIDGE) }
+    BackHandler(enabled = state.selectedTab != AppTab.FRIDGE) { openTab(AppTab.FRIDGE) }
 
     Box(Modifier.fillMaxSize().background(ZeroBiteTheme.colors.backgroundPrimary)) {
         Column(Modifier.fillMaxSize().imePadding()) {
             Box(Modifier.weight(1f).statusBarsPadding()) {
-                tabState.SaveableStateProvider(coordinator.selectedTab) {
-                    when (coordinator.selectedTab) {
+                tabState.SaveableStateProvider(state.selectedTab) {
+                    when (state.selectedTab) {
                         AppTab.FRIDGE -> InventoryTab(coordinator.inventory, inventoryList, dependencies)
                         AppTab.RECIPES -> RecipesTab(coordinator.recipes, recipesList, dependencies)
                         AppTab.SETTINGS -> SettingsScreen(settingsScreen)
@@ -80,10 +83,10 @@ fun MainScreen(coordinator: AppCoordinator, sheetStores: SheetViewModelStores, d
             }
             // Hidden while typing so the bottom search field sits directly on the keyboard.
             if (!WindowInsets.isImeVisible) {
-                AppTabBar(mainTabs(), coordinator.selectedTab, coordinator::selectTab, Modifier.navigationBarsPadding())
+                AppTabBar(mainTabs(), state.selectedTab, openTab, Modifier.navigationBarsPadding())
             }
         }
         SheetHost(coordinator, sheetStores, dependencies)
-        coordinator.alert?.let { AppAlert(it, coordinator::dismissAlert) }
     }
+    SettingsAlertHost(settingsScreen)
 }

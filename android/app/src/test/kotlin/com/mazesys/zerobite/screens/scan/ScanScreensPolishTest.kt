@@ -7,12 +7,11 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import com.mazesys.zerobite.coordination.ScanCoordinator
 import com.mazesys.zerobite.core.scanning.LabelScanner
-import com.mazesys.zerobite.testing.FakeLabels
-import com.mazesys.zerobite.testing.FakeProductLookup
 import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.TestClock
+import com.mazesys.zerobite.testing.testReview
+import com.mazesys.zerobite.testing.testScan
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 import org.junit.Rule
 import org.junit.Test
@@ -33,8 +32,8 @@ class ScanScreensPolishTest {
 
     @Test
     fun `the sources read in polish`() {
-        val vm = ScanFlowViewModel(ScanCoordinator {}, supportsLiveScanning = true, scanner = FakeLabels(), clock = TestClock.fixed())
-        compose.setContent { ZeroBiteTheme { ScanFlowScreen(vm) } }
+        val scan = testScan()
+        compose.setContent { ZeroBiteTheme { ScanFlowScreen(scan, TestClock.fixed()) } }
 
         compose.onNode(hasText("Dodaj produkt") and isHeading()).assertIsDisplayed()
         compose.onNodeWithText("Skanuj aparatem").assertIsDisplayed()
@@ -45,8 +44,8 @@ class ScanScreensPolishTest {
     @Test
     fun `the review reads in polish`() {
         val result = LabelScanner.analyse(listOf("SEMI SKIMMED MILK", "USE BY 12 SEP 2026"), null, TestClock.today)
-        val vm = ScanReviewViewModel(result, FakeProductLookup(), TestClock.fixed(), onContinue = {})
-        compose.setContent { ZeroBiteTheme { ScanReviewScreen(vm, onBack = {}) } }
+        val scan = testReview(result)
+        compose.setContent { ZeroBiteTheme { ScanReviewScreen(scan, TestClock.fixed()) } }
 
         compose.onNode(hasText("Sprawdź dane") and isHeading()).assertIsDisplayed()
         compose.onNodeWithText("12 września 2026").assertExists()

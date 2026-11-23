@@ -20,24 +20,31 @@ fun RecipesTab(
     dependencies: AppDependencies,
     modifier: Modifier = Modifier,
 ) {
+    fun send(event: RecipesCoordinator.Event) {
+        coordinator.eventLoop(event)
+    }
     NavDisplay(
-        backStack = coordinator.backStack,
+        backStack = coordinator.state.backStack,
         modifier = modifier,
-        onBack = { coordinator.pop() },
+        onBack = { send(RecipesCoordinator.Event.DidTapBack) },
         entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
         entryProvider = entryProvider {
             entry<RecipesRoute.Catalogue> { RecipesScreen(listViewModel) }
             entry<RecipesRoute.RecipeDetail> { route ->
                 RecipeDetailEntry(
                     route.recipeId, dependencies,
-                    onShowItem = coordinator::showItem, onCooked = coordinator::showCooked, onBack = coordinator::pop,
+                    onShowItem = { send(RecipesCoordinator.Event.DidSelectItem(it)) },
+                    onCooked = { send(RecipesCoordinator.Event.DidTapCooked(it)) },
+                    onBack = { send(RecipesCoordinator.Event.DidTapBack) },
                 )
             }
             entry<RecipesRoute.ItemDetail> { route ->
                 ItemDetailEntry(
                     route.itemId, dependencies,
-                    onEdit = coordinator::showEditItem, onShowRecipe = coordinator::showRecipe,
-                    onDeleted = coordinator::pop, onBack = coordinator::pop,
+                    onEdit = { send(RecipesCoordinator.Event.DidTapEditItem(it)) },
+                    onShowRecipe = { send(RecipesCoordinator.Event.DidSelectRecipe(it)) },
+                    onDeleted = { send(RecipesCoordinator.Event.DidDeleteItem) },
+                    onBack = { send(RecipesCoordinator.Event.DidTapBack) },
                 )
             }
         },

@@ -49,11 +49,14 @@ fun RecipeDetailEntry(
     RecipeDetailScreen(detail, onBack = onBack)
 }
 
-/** The add/edit item form wired to its view model; [onDone] runs after a save and on cancel. Used by the item sheet and the add-food flow. */
+/**
+ * The add/edit item form wired to its view model; [onDone] runs after a save, [onCancel] on cancel (by default the same).
+ * Used by the item sheet and the add-food flow.
+ */
 @Composable
-fun ItemFormEntry(mode: ItemFormMode, draft: ItemDraft?, dependencies: AppDependencies, onDone: () -> Unit) {
+fun ItemFormEntry(mode: ItemFormMode, draft: ItemDraft?, dependencies: AppDependencies, onDone: () -> Unit, onCancel: () -> Unit = onDone) {
     val form = viewModel {
         ItemFormViewModel(mode, draft, dependencies.inventory, dependencies.clock, dependencies.ids, onSaved = { onDone() })
     }
-    ItemFormScreen(form, onCancel = onDone)
+    ItemFormScreen(form, onCancel = onCancel)
 }
