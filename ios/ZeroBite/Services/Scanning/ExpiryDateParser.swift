@@ -20,15 +20,18 @@ struct ExpiryDateParser: Sendable {
 
     // MARK: - Vocabulary
 
-    /// Words that mark a line as being about the expiry date.
+    /// Words that mark a line as being about the expiry date: English, then Polish ("najlepiej spożyć
+    /// przed", "należy spożyć do", "zużyć do", "termin ważności"…). The Polish ones also match without diacritics, as OCR often drops them.
     static let keywordRegex = try! NSRegularExpression(
-        pattern: #"\b(best before end|best before|best by|bbe|bb|use by|use before|expiry|expires|expire|exp|display until|sell by|consume by|eat by)(?![a-z])"#,
+        pattern: #"\b(best before end|best before|best by|bbe|bb|use by|use before|expiry|expires|expire|exp|display until|sell by|consume by|eat by|(?:spo|zu)[żz]y[ćc] (?:do|przed)|(?:termin|data) (?:przydatno|wa[żz]no)[śs]ci|przydatn[a-z]* do|wa[żz]n[ey] do|minimaln[a-z]* trwa[łl]o[śs](?:ci|[ćc]))(?![a-z])"#,
         options: [.caseInsensitive]
     )
 
-    /// Words that mark a line as a packing / manufacture date (not what we want).
+    /// Words that mark a line as a packing / manufacture date (not what we want), English then Polish
+    /// ("data produkcji", "wyprodukowano", "data pakowania", "nr partii"). `produkc…` also covers OCR slips like
+    /// "produkcy"; plain "pakowane" is left out because "pakowane w atmosferze ochronnej" is packaging text, not a date.
     static let manufactureRegex = try! NSRegularExpression(
-        pattern: #"\b(packed on|packed|manufactured|mfg|mfd|prod\.?|production|batch|lot)(?![a-z])"#,
+        pattern: #"\b(packed on|packed|manufactured|mfg|mfd|prod\.?|production|batch|lot|produkc[a-z]*|wyprodukowan[a-z]*|wyprod\.?|data pakowania|partii|partia)(?![a-z])"#,
         options: [.caseInsensitive]
     )
 

@@ -26,6 +26,15 @@
     { "name": "lowercase label", "lines": ["use by 12 sep 2026"], "best": "2026-09-12" },
     { "name": "leap day in a leap year", "lines": ["USE BY 29/02/2028"], "best": "2028-02-29" },
     { "name": "leap day in a common year is impossible", "lines": ["USE BY 29/02/2027"], "best": null, "count": 0 },
-    { "name": "non-breaking spaces between day, month and year", "lines": ["USE BY 15\u00a0SEP\u00a026"], "best": "2026-09-15" }
+    { "name": "non-breaking spaces between day, month and year", "lines": ["USE BY 15\u00a0SEP\u00a026"], "best": "2026-09-15" },
+    { "name": "Polish best-before beats the production date", "lines": ["MLEKO ŁOWICKIE 2%", "Data produkcji: 01.09.2026", "Najlepiej spożyć przed: 12.09.2026"], "best": "2026-09-12" },
+    { "name": "Polish use-by beats the production date", "lines": ["Wyprodukowano: 02.09.2026", "Należy spożyć do: 03.10.2026"], "best": "2026-10-03" },
+    { "name": "Polish keywords without diacritics, as OCR often reads them", "lines": ["Nalezy spozyc do 28.09.2026", "Data produkcy 01.09.2026"], "best": "2026-09-28" },
+    { "name": "Polish keyword on the line before the date", "lines": ["Termin przydatności do spożycia:", "15.09.2026", "Data pakowania: 05.09.2026"], "best": "2026-09-15" },
+    { "name": "upper-case Polish label", "lines": ["DATA MINIMALNEJ TRWAŁOŚCI: 20.09.2026", "NR PARTII: 03.09.2026"], "best": "2026-09-20" },
+    { "name": "upper-case Polish keyword with diacritics decides on its own", "lines": ["15.09.2026", "NALEŻY SPOŻYĆ DO: 03.10.2026"], "best": "2026-10-03" },
+    { "name": "Polish use-by on meat and fish", "lines": ["10.09.2026", "Zużyć do: 18.09.2026"], "best": "2026-09-18" },
+    { "name": "Polish expiry date as termin ważności", "lines": ["11.09.2026", "Termin ważności: 25.09.2026"], "best": "2026-09-25" },
+    { "name": "Polish protective-atmosphere packaging text doesn't count as a packing date", "lines": ["10.09.2026", "Pakowane w atmosferze ochronnej. Spożyć do 20.09.2026"], "best": "2026-09-20" }
   ]
 }
