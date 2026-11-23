@@ -2,12 +2,12 @@
 //  InventoryCoordinator.swift
 //  ZeroBite
 //
-//  Navigation within the Fridge tab.
+//  The Fridge tab's navigation stack. Sheets (scan, add, edit, cooked) belong to
+//  MainCoordinator, so this asks for them with parent?.eventLoop(event: .didRequestSheet).
 //
 
 import Foundation
 import Observation
-import SwiftUI
 
 enum InventoryRoute: Hashable {
     case itemDetail(UUID)
@@ -16,45 +16,73 @@ enum InventoryRoute: Hashable {
 
 @MainActor
 @Observable
-final class InventoryCoordinator {
+final class InventoryCoordinator: EventDrivenCoordinator {
 
-    var navigationPath = NavigationPath()
-    weak var parent: AppCoordinator?
+    weak var parent: MainCoordinator?
+    let loop = EventLoop<State, Event, Command>(State())
 
-    init(parent: AppCoordinator? = nil) {
+    init(parent: MainCoordinator? = nil) {
         self.parent = parent
     }
 
-    func showItem(id: UUID) {
-        navigationPath.append(InventoryRoute.itemDetail(id))
+    func execute(_ command: Command) -> CommandTask<Event> {
+        switch command {
+        case .willPresent(let sheet):
+            .perform { [weak self] in self?.parent?.eventLoop(event: .didRequestSheet(sheet)) }
+        }
+    }
+}
+
+extension InventoryCoordinator {
+
+    struct State: Equatable {
+        var path: [InventoryRoute] = []
     }
 
-    func showRecipe(id: String) {
-        navigationPath.append(InventoryRoute.recipe(id))
+    enum Event: Equatable, Sendable {
+        case didSelectItem(UUID)
+        case didSelectRecipe(String)
+        /// The navigation stack changed its own path (back button, swipe back).
+        case didChangePath([InventoryRoute])
+        /// The item on screen was deleted: leave its page.
+        case didDeleteItem
+        /// A notification was tapped: show just that item.
+        case didRequestItem(UUID)
+        case didTapScan
+        case didTapAddItem(now: Date)
+        case didTapEditItem(UUID)
+        case didTapCooked(recipeID: String)
     }
 
-    func showScan() {
-        parent?.presentSheet(.scan)
+    enum Command: Equatable {
+        case willPresent(MainCoordinator.Sheet)
     }
 
-    func showAddItem() {
-        parent?.presentSheet(.addItem(ItemDraft()))
-    }
-
-    func showEditItem(id: UUID) {
-        parent?.presentSheet(.editItem(id))
-    }
-
-    func showCooked(recipeID: String) {
-        parent?.presentSheet(.cooked(recipeID: recipeID))
-    }
-
-    func pop() {
-        guard !navigationPath.isEmpty else { return }
-        navigationPath.removeLast()
-    }
-
-    func popToRoot() {
-        navigationPath.removeLast(navigationPath.count)
+    nonisolated static func stateMachine(_ state: inout State, _ event: Event) -> [Command] {
+        switch event {
+        case .didSelectItem(let id):
+            state.path.append(.itemDetail(id))
+            return []
+        case .didSelectRecipe(let id):
+            state.path.append(.recipe(id))
+            return []
+        case .didChangePath(let path):
+            state.path = path
+            return []
+        case .didDeleteItem:
+            if !state.path.isEmpty { state.path.removeLast() }
+            return []
+        case .didRequestItem(let id):
+            state.path = [.itemDetail(id)]
+            return []
+        case .didTapScan:
+            return [.willPresent(.scan)]
+        case .didTapAddItem(let now):
+            return [.willPresent(.addItem(ItemDraft(now: now)))]
+        case .didTapEditItem(let id):
+            return [.willPresent(.editItem(id))]
+        case .didTapCooked(let recipeID):
+            return [.willPresent(.cooked(recipeID: recipeID))]
+        }
     }
 }

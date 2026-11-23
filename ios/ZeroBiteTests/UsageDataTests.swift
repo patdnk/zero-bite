@@ -47,7 +47,7 @@ struct UsageDataTests {
     @Test func settingsToggleTellsTheCollectorStraightAway() {
         let usageData = RecordingUsageDataCollection()
         let dependencies = AppDependencies.preview(withSampleData: false, usageData: usageData)
-        let viewModel = SettingsViewModel(dependencies: dependencies, coordinator: SettingsCoordinator())
+        let viewModel = SettingsViewModel(dependencies: dependencies, coordinator: SettingsCoordinator(inventory: dependencies.inventory))
 
         #expect(!viewModel.shareUsageData)
         viewModel.shareUsageData = true

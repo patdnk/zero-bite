@@ -144,10 +144,7 @@ final class SettingsViewModel {
             let granted = await notifications.requestAuthorization()
             settings.notificationsEnabled = granted
             if !granted {
-                coordinator.showInfo(
-                    title: String(localized: "Notifications are off"),
-                    message: String(localized: "Allow notifications for Zero Bite in the Settings app to get expiry reminders.")
-                )
+                coordinator.eventLoop(event: .didFindNotificationsDenied)
             }
         } else {
             settings.notificationsEnabled = false
@@ -191,25 +188,11 @@ final class SettingsViewModel {
     }
 
     func clearUsedHistory() {
-        let used = store.consumedItems
-        guard !used.isEmpty else { return }
-        coordinator.confirm(
-            title: String(localized: "Clear used-up history?"),
-            message: String(localized: "Removes \(used.count) items you've already marked as used."),
-            actionTitle: String(localized: "Clear")
-        ) { [store] in
-            for item in used { store.delete(item) }
-        }
+        coordinator.eventLoop(event: .didTapClearUsedHistory(itemIDs: store.consumedItems.map(\.id)))
     }
 
     func deleteEverything() {
-        coordinator.confirm(
-            title: String(localized: "Delete everything?"),
-            message: String(localized: "This removes every item from My food. It can't be undone."),
-            actionTitle: String(localized: "Delete all")
-        ) { [store] in
-            store.deleteAll()
-        }
+        coordinator.eventLoop(event: .didTapDeleteEverything)
     }
 
     private func resync() {
@@ -217,6 +200,6 @@ final class SettingsViewModel {
     }
 
     func showHowItWorks() {
-        coordinator.showHowItWorks()
+        coordinator.eventLoop(event: .didTapHowItWorks)
     }
 }

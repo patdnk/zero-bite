@@ -2,12 +2,11 @@
 //  RecipesCoordinator.swift
 //  ZeroBite
 //
-//  Navigation within the Recipes tab.
+//  The Recipes tab's navigation stack. Sheets (edit, cooked) belong to MainCoordinator.
 //
 
 import Foundation
 import Observation
-import SwiftUI
 
 enum RecipesRoute: Hashable {
     case recipe(String)
@@ -16,37 +15,62 @@ enum RecipesRoute: Hashable {
 
 @MainActor
 @Observable
-final class RecipesCoordinator {
+final class RecipesCoordinator: EventDrivenCoordinator {
 
-    var navigationPath = NavigationPath()
-    weak var parent: AppCoordinator?
+    weak var parent: MainCoordinator?
+    let loop = EventLoop<State, Event, Command>(State())
 
-    init(parent: AppCoordinator? = nil) {
+    init(parent: MainCoordinator? = nil) {
         self.parent = parent
     }
 
-    func showRecipe(id: String) {
-        navigationPath.append(RecipesRoute.recipe(id))
+    func execute(_ command: Command) -> CommandTask<Event> {
+        switch command {
+        case .willPresent(let sheet):
+            .perform { [weak self] in self?.parent?.eventLoop(event: .didRequestSheet(sheet)) }
+        }
+    }
+}
+
+extension RecipesCoordinator {
+
+    struct State: Equatable {
+        var path: [RecipesRoute] = []
     }
 
-    func showItem(id: UUID) {
-        navigationPath.append(RecipesRoute.itemDetail(id))
+    enum Event: Equatable, Sendable {
+        case didSelectRecipe(String)
+        case didSelectItem(UUID)
+        /// The navigation stack changed its own path (back button, swipe back).
+        case didChangePath([RecipesRoute])
+        /// The item on screen was deleted: leave its page.
+        case didDeleteItem
+        case didTapEditItem(UUID)
+        case didTapCooked(recipeID: String)
     }
 
-    func showCooked(recipeID: String) {
-        parent?.presentSheet(.cooked(recipeID: recipeID))
+    enum Command: Equatable {
+        case willPresent(MainCoordinator.Sheet)
     }
 
-    func showEditItem(id: UUID) {
-        parent?.presentSheet(.editItem(id))
-    }
-
-    func pop() {
-        guard !navigationPath.isEmpty else { return }
-        navigationPath.removeLast()
-    }
-
-    func popToRoot() {
-        navigationPath.removeLast(navigationPath.count)
+    nonisolated static func stateMachine(_ state: inout State, _ event: Event) -> [Command] {
+        switch event {
+        case .didSelectRecipe(let id):
+            state.path.append(.recipe(id))
+            return []
+        case .didSelectItem(let id):
+            state.path.append(.itemDetail(id))
+            return []
+        case .didChangePath(let path):
+            state.path = path
+            return []
+        case .didDeleteItem:
+            if !state.path.isEmpty { state.path.removeLast() }
+            return []
+        case .didTapEditItem(let id):
+            return [.willPresent(.editItem(id))]
+        case .didTapCooked(let recipeID):
+            return [.willPresent(.cooked(recipeID: recipeID))]
+        }
     }
 }

@@ -20,7 +20,7 @@ struct ScanFlowView: View {
 
                     VStack(spacing: Spacing.sm) {
                         if coordinator.supportsLiveScanning {
-                            Button { coordinator.send(.liveScanTapped) } label: {
+                            Button { coordinator.eventLoop(event: .didTapLiveScan) } label: {
                                 ScanOptionRow(symbol: "barcode.viewfinder", title: String(localized: "Scan with the camera"), subtitle: String(localized: "Reads dates and barcodes live"), isPrimary: true)
                             }
                             .buttonStyle(.plain)
@@ -31,7 +31,7 @@ struct ScanFlowView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityIdentifier("scan.photo")
-                        Button { coordinator.send(.manualEntryTapped(now: .now)) } label: {
+                        Button { coordinator.eventLoop(event: .didTapManualEntry(now: .now)) } label: {
                             ScanOptionRow(symbol: "square.and.pencil", title: String(localized: "Type it in"), subtitle: String(localized: "No label to read"))
                         }
                         .buttonStyle(.plain)
@@ -46,22 +46,20 @@ struct ScanFlowView: View {
                 .padding(.bottom, Spacing.xl)
             }
             .pageBackground()
-            .topBar(.close { coordinator.send(.closeTapped) })
+            .topBar(.close { coordinator.eventLoop(event: .didTapClose) })
             .navigationDestination(for: ScanRoute.self) { route in
                 destination(for: route)
             }
         }
-        // The sheet was swiped away: stop any OCR or barcode lookup still running.
-        .onDisappear { coordinator.send(.dismissed) }
         .loadingOverlay(coordinator.state.status == .processing, message: String(localized: "Reading the label…"))
         .onChange(of: pickerItem) { _, item in
             guard let item else { return }
             pickerItem = nil
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self) {
-                    coordinator.send(.photoChosen(data))
+                    coordinator.eventLoop(event: .didChoosePhoto(data))
                 } else {
-                    coordinator.send(.photoLoadFailed)
+                    coordinator.eventLoop(event: .didFailToLoadPhoto)
                 }
             }
         }
@@ -69,10 +67,10 @@ struct ScanFlowView: View {
             "Couldn't read that",
             isPresented: Binding(
                 get: { failure != nil },
-                set: { if !$0 { coordinator.send(.errorDismissed) } }
+                set: { if !$0 { coordinator.eventLoop(event: .didDismissError) } }
             )
         ) {
-            Button("OK") { coordinator.send(.errorDismissed) }
+            Button("OK") { coordinator.eventLoop(event: .didDismissError) }
         } message: {
             Text(failure?.message ?? "")
         }
@@ -80,10 +78,10 @@ struct ScanFlowView: View {
 
     /// The stack's path, owned by the state machine. A back button or swipe becomes an event.
     private var path: Binding<[ScanRoute]> {
-        Binding(get: { coordinator.state.path }, set: { coordinator.send(.pathChanged($0)) })
+        Binding(get: { coordinator.state.path }, set: { coordinator.eventLoop(event: .didChangePath($0)) })
     }
 
-    private var failure: ScanFlow.Failure? {
+    private var failure: ScanCoordinator.Failure? {
         if case .failed(let failure) = coordinator.state.status { return failure }
         return nil
     }
@@ -92,7 +90,7 @@ struct ScanFlowView: View {
     private func destination(for route: ScanRoute) -> some View {
         switch route {
         case .live:
-            LiveScannerView(onFinish: { coordinator.send(.liveScanFinished($0)) })
+            LiveScannerView(onFinish: { coordinator.eventLoop(event: .didFinishLiveScan($0)) })
         case .review:
             ScanReviewView(coordinator: coordinator)
         case .form(let draft):
@@ -100,8 +98,8 @@ struct ScanFlowView: View {
                 mode: .add,
                 draft: draft,
                 dependencies: dependencies,
-                onCancel: { coordinator.send(.closeTapped) },
-                onSaved: { _ in coordinator.send(.itemSaved) }
+                onCancel: { coordinator.eventLoop(event: .didTapClose) },
+                onSaved: { _ in coordinator.eventLoop(event: .didSaveItem) }
             )
         }
     }
@@ -136,5 +134,6 @@ private struct ScanOptionRow: View {
 }
 
 #Preview {
-    ScanFactory.makeFlow(dependencies: .preview(), onFinished: {})
+    let dependencies = AppDependencies.preview()
+    ScanFactory.makeFlow(coordinator: ScanFactory.makeCoordinator(parent: nil, dependencies: dependencies), dependencies: dependencies)
 }

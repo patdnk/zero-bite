@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct AppTabBar: View {
-    @Binding var selection: AppCoordinator.AppTab
-    var tabs: [AppCoordinator.AppTab] = AppCoordinator.AppTab.allCases
+    @Binding var selection: MainCoordinator.Tab
+    var tabs: [MainCoordinator.Tab] = MainCoordinator.Tab.allCases
 
     @Namespace private var indicator
 
@@ -57,7 +57,7 @@ struct AppTabBar: View {
 }
 
 #Preview {
-    @Previewable @State var selection = AppCoordinator.AppTab.fridge
+    @Previewable @State var selection = MainCoordinator.Tab.fridge
     VStack {
         Spacer()
         AppTabBar(selection: $selection)

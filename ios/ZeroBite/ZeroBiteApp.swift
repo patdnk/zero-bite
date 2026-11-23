@@ -10,8 +10,6 @@ import UserNotifications
 struct ZeroBiteApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
-    @State private var dependencies: AppDependencies
-    @State private var flowController: AppFlowController
     @State private var coordinator: AppCoordinator
     private let notificationDelegate = NotificationDelegate()
 
@@ -22,12 +20,10 @@ struct ZeroBiteApp: App {
         // Firebase is configured here only if the user has already agreed to share usage data.
         dependencies.applyUsageDataChoice()
         let coordinator = AppCoordinator(dependencies: dependencies)
-        _dependencies = State(initialValue: dependencies)
-        _flowController = State(initialValue: AppFlowController(settings: dependencies.settings))
         _coordinator = State(initialValue: coordinator)
 
         notificationDelegate.onOpenItem = { id in
-            Task { @MainActor in coordinator.showItem(id: id) }
+            Task { @MainActor in coordinator.eventLoop(event: .didOpenItemNotification(id)) }
         }
         UNUserNotificationCenter.current().delegate = notificationDelegate
 
@@ -40,15 +36,11 @@ struct ZeroBiteApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView(flowController: flowController, coordinator: coordinator)
+            RootView(coordinator: coordinator)
         }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
-            Task {
-                await dependencies.notifications.refreshAuthorizationStatus()
-                await dependencies.syncNotifications()
-                await dependencies.refreshRecalls()
-            }
+            coordinator.eventLoop(event: .didBecomeActive)
         }
     }
 }
