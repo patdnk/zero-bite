@@ -16,14 +16,14 @@ struct ScanReviewView: View {
         }
     }
 
-    private func content(_ review: ScanFlow.Review) -> some View {
+    private func content(_ review: ScanCoordinator.Review) -> some View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
                     DetailTitle(overline: String(localized: "Scanned label"), title: String(localized: "Check the details"))
 
                     VStack(alignment: .leading, spacing: Spacing.sm) {
-                        LabeledInput(label: String(localized: "Name"), placeholder: String(localized: "Product name"), text: Binding(get: { coordinator.state.review?.name ?? "" }, set: { coordinator.send(.nameChanged($0)) }), accessibilityID: "review.name")
+                        LabeledInput(label: String(localized: "Name"), placeholder: String(localized: "Product name"), text: Binding(get: { coordinator.state.review?.name ?? "" }, set: { coordinator.eventLoop(event: .didChangeName($0)) }), accessibilityID: "review.name")
                         if review.isLookingUp {
                             HStack(spacing: Spacing.sm) {
                                 ProgressView().controlSize(.small)
@@ -36,7 +36,7 @@ struct ScanReviewView: View {
 
                     VStack(alignment: .leading, spacing: Spacing.sm) {
                         Overline(String(localized: "Category"))
-                        ChipFilter(options: FoodCategory.allCases, selection: Binding(get: { coordinator.state.review?.category ?? .other }, set: { coordinator.send(.categoryChanged($0)) })) { $0.label }
+                        ChipFilter(options: FoodCategory.allCases, selection: Binding(get: { coordinator.state.review?.category ?? .other }, set: { coordinator.eventLoop(event: .didChangeCategory($0)) })) { $0.label }
                     }
 
                     if review.product != nil || review.result.barcode != nil {
@@ -76,7 +76,7 @@ struct ScanReviewView: View {
             }
             .scrollDismissesKeyboard(.interactively)
 
-            PrimaryButton(String(localized: "Continue"), isEnabled: review.canContinue) { coordinator.send(.continueTapped(now: .now)) }
+            PrimaryButton(String(localized: "Continue"), isEnabled: review.canContinue) { coordinator.eventLoop(event: .didTapContinue(now: .now)) }
                 .accessibilityIdentifier("review.continue")
                 .padding(.horizontal, Spacing.gutter)
                 .padding(.vertical, Spacing.sm)
@@ -87,7 +87,7 @@ struct ScanReviewView: View {
     }
 
     @ViewBuilder
-    private func expiry(_ review: ScanFlow.Review) -> some View {
+    private func expiry(_ review: ScanCoordinator.Review) -> some View {
         if review.result.candidates.isEmpty {
             CardSection(String(localized: "Expiry date")) {
                 Text("No date was found on the label. You can set one on the next screen.")
@@ -97,13 +97,13 @@ struct ScanReviewView: View {
         } else {
             CardSection(String(localized: "Expiry date"), footer: String(localized: "Pick the best-before or use-by date. Most likely first.")) {
                 ForEach(review.result.candidates) { candidate in
-                    Button { coordinator.send(.candidateSelected(candidate.id)) } label: {
+                    Button { coordinator.eventLoop(event: .didSelectCandidate(candidate.id)) } label: {
                         candidateRow(candidate, isSelected: review.selectedCandidateID == candidate.id)
                     }
                     .buttonStyle(.plain)
                 }
                 ActionRow(title: String(localized: "None of these"), symbol: "xmark", tint: Constants.TextSecondary) {
-                    coordinator.send(.candidateSelected(nil))
+                    coordinator.eventLoop(event: .didSelectCandidate(nil))
                 }
             }
         }
@@ -152,9 +152,9 @@ private struct ConfidenceDots: View {
         barcode: "5000119000000",
         now: now
     )
-    let coordinator = ScanCoordinator(supportsLiveScanning: true, productLookup: AppDependencies.preview().productLookup, onFinished: {})
-    coordinator.send(.liveScanTapped)
-    coordinator.send(.liveScanFinished(result))
+    let coordinator = ScanCoordinator(supportsLiveScanning: true, productLookup: AppDependencies.preview().productLookup)
+    coordinator.eventLoop(event: .didTapLiveScan)
+    coordinator.eventLoop(event: .didFinishLiveScan(result))
     return NavigationStack {
         ScanReviewView(coordinator: coordinator)
     }

@@ -7,12 +7,11 @@ import SwiftUI
 
 struct SettingsView: View {
     @Bindable var viewModel: SettingsViewModel
+    let coordinator: SettingsCoordinator
     let dependencies: AppDependencies
 
-    private enum Route: Hashable { case alerts }
-
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: Binding(get: { coordinator.state.path }, set: { coordinator.eventLoop(event: .didChangePath($0)) })) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
                     ScreenHeader(overline: "Zero Bite \(viewModel.appVersion)", title: String(localized: "Settings"))
@@ -78,7 +77,7 @@ struct SettingsView: View {
                         .disabled(!viewModel.recallChecksEnabled)
                         .opacity(viewModel.recallChecksEnabled ? 1 : 0.45)
 
-                        NavigationLink(value: Route.alerts) {
+                        NavigationLink(value: SettingsRoute.foodAlerts) {
                             HStack(spacing: Spacing.md) {
                                 Image(systemName: "exclamationmark.triangle")
                                     .font(.system(size: 14, weight: .semibold))
@@ -164,17 +163,39 @@ struct SettingsView: View {
             .pageBackground()
             .toolbar(.hidden, for: .navigationBar)
             .task { await viewModel.refresh() }
-            .navigationDestination(for: Route.self) { route in
+            .navigationDestination(for: SettingsRoute.self) { route in
                 switch route {
-                case .alerts: FoodAlertsFactory.makeList(dependencies: dependencies)
+                case .foodAlerts:
+                    FoodAlertsFactory.makeList(dependencies: dependencies) {
+                        coordinator.eventLoop(event: .didSelectFoodAlert($0))
+                    }
+                case .foodAlert(let alert):
+                    FoodAlertDetailView(alert: alert)
                 }
             }
+        }
+        .alert(
+            coordinator.state.alert?.title ?? "",
+            isPresented: Binding(
+                get: { coordinator.state.alert != nil },
+                set: { if !$0 { coordinator.eventLoop(event: .didDismissAlert) } }
+            ),
+            presenting: coordinator.state.alert
+        ) { alert in
+            if let actionTitle = alert.actionTitle {
+                Button(actionTitle, role: .destructive) { coordinator.eventLoop(event: .didConfirmAlert(alert)) }
+                Button(String(localized: "Cancel"), role: .cancel) { coordinator.eventLoop(event: .didDismissAlert) }
+            } else {
+                Button(String(localized: "OK")) { coordinator.eventLoop(event: .didDismissAlert) }
+            }
+        } message: { alert in
+            Text(alert.message)
         }
     }
 }
 
 #Preview {
     let dependencies = AppDependencies.preview()
-    let coordinator = AppCoordinator(dependencies: dependencies)
-    SettingsFactory.make(coordinator: coordinator.settingsCoordinator, dependencies: dependencies)
+    let coordinator = MainCoordinator(dependencies: dependencies)
+    SettingsFactory.make(coordinator: coordinator.settings, dependencies: dependencies)
 }

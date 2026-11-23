@@ -90,7 +90,7 @@ final class InventoryViewModel {
     var recalledItemIDs: Set<UUID> { Set(recallMatches.map(\.itemID)) }
 
     func showRecalledItem(_ match: RecallMatch) {
-        coordinator.showItem(id: match.itemID)
+        coordinator.eventLoop(event: .didSelectItem(match.itemID))
     }
 
     /// The single most urgent item, highlighted above the grid while browsing (not searching).
@@ -162,15 +162,15 @@ final class InventoryViewModel {
     }
 
     func showDetails(_ item: FoodItem) {
-        coordinator.showItem(id: item.id)
+        coordinator.eventLoop(event: .didSelectItem(item.id))
     }
 
     func showScan() {
-        coordinator.showScan()
+        coordinator.eventLoop(event: .didTapScan)
     }
 
     func showAddItem() {
-        coordinator.showAddItem()
+        coordinator.eventLoop(event: .didTapAddItem(now: .now))
     }
 
     func loadSampleData() {

@@ -1,5 +1,5 @@
 //
-//  ScanFlowTests.swift
+//  ScanCoordinatorTests.swift
 //  ZeroBiteTests
 //
 
@@ -16,126 +16,126 @@ private func labelResult(barcode: String? = "5000000000000") -> ScanResult {
 
 private let milk = ProductInfo(barcode: "5000000000000", name: "Organic Semi Skimmed Milk", brand: "Yeo", category: .dairy)
 
-/// Applies events in order and returns the final state and the effects of the last one.
-private func run(_ events: [ScanFlow.Event], from state: ScanFlow.State = .init()) -> (ScanFlow.State, [ScanFlow.Effect]) {
+/// Applies events in order and returns the final state and the commands of the last one.
+private func run(_ events: [ScanCoordinator.Event], from state: ScanCoordinator.State = .init()) -> (ScanCoordinator.State, [ScanCoordinator.Command]) {
     var state = state
-    var effects: [ScanFlow.Effect] = []
-    for event in events { effects = ScanFlow.reduce(&state, event) }
-    return (state, effects)
+    var commands: [ScanCoordinator.Command] = []
+    for event in events { commands = ScanCoordinator.stateMachine(&state, event) }
+    return (state, commands)
 }
 
-// MARK: - Reducer
+// MARK: - State machine
 
-struct ScanFlowReducerTests {
+struct ScanStateMachineTests {
 
     @Test func choosingAPhotoStartsReadingItOnce() {
         let data = Data([1, 2, 3])
-        let (state, effects) = run([.photoChosen(data)])
+        let (state, commands) = run([.didChoosePhoto(data)])
         #expect(state.status == .processing)
-        #expect(effects == [.readLabel(data)])
+        #expect(commands == [.willReadLabel(data)])
 
-        let (_, again) = run([.photoChosen(data)], from: state)
+        let (_, again) = run([.didChoosePhoto(data)], from: state)
         #expect(again.isEmpty)
     }
 
     @Test func aReadLabelOpensReviewAndLooksUpTheBarcode() {
         let result = labelResult()
-        let (state, effects) = run([.photoChosen(Data()), .labelRead(result)])
+        let (state, commands) = run([.didChoosePhoto(Data()), .didReadLabel(result)])
         #expect(state.status == .idle)
         #expect(state.path == [.review])
         #expect(state.review?.name == "Semi Skimmed Milk")
         #expect(state.review?.isLookingUp == true)
-        #expect(effects == [.lookUpProduct(barcode: "5000000000000")])
+        #expect(commands == [.willLookUpProduct(barcode: "5000000000000")])
     }
 
     @Test func noBarcodeMeansNoLookup() {
-        let (state, effects) = run([.photoChosen(Data()), .labelRead(labelResult(barcode: nil))])
+        let (state, commands) = run([.didChoosePhoto(Data()), .didReadLabel(labelResult(barcode: nil))])
         #expect(state.review?.isLookingUp == false)
-        #expect(effects.isEmpty)
+        #expect(commands.isEmpty)
     }
 
     @Test func anEmptyReadIsAFailureTheUserCanDismiss() {
-        let (state, _) = run([.photoChosen(Data()), .labelRead(ScanResult())])
+        let (state, _) = run([.didChoosePhoto(Data()), .didReadLabel(ScanResult())])
         #expect(state.status == .failed(.nothingFound))
         #expect(state.path.isEmpty)
 
-        let (dismissed, _) = run([.errorDismissed], from: state)
+        let (dismissed, _) = run([.didDismissError], from: state)
         #expect(dismissed.status == .idle)
     }
 
     @Test func aResultThatArrivesWhenNotReadingIsIgnored() {
-        let (state, effects) = run([.labelRead(labelResult())])
-        #expect(state == ScanFlow.State())
-        #expect(effects.isEmpty)
+        let (state, commands) = run([.didReadLabel(labelResult())])
+        #expect(state == ScanCoordinator.State())
+        #expect(commands.isEmpty)
     }
 
     @Test func liveScanPushesReviewOnTopOfTheScanner() {
-        let (state, _) = run([.liveScanTapped, .liveScanFinished(labelResult())])
+        let (state, _) = run([.didTapLiveScan, .didFinishLiveScan(labelResult())])
         #expect(state.path == [.live, .review])
     }
 
     @Test func barcodeLookupFillsNameAndCategoryWithoutOverwritingUserEdits() {
-        let (filled, _) = run([.liveScanTapped, .liveScanFinished(labelResult()), .productLookedUp(milk)])
+        let (filled, _) = run([.didTapLiveScan, .didFinishLiveScan(labelResult()), .didLookUpProduct(milk)])
         #expect(filled.review?.name == "Organic Semi Skimmed Milk")
         #expect(filled.review?.category == .dairy)
         #expect(filled.review?.isLookingUp == false)
 
-        let (edited, _) = run([.liveScanTapped, .liveScanFinished(labelResult()), .nameChanged("My milk"), .productLookedUp(milk)])
+        let (edited, _) = run([.didTapLiveScan, .didFinishLiveScan(labelResult()), .didChangeName("My milk"), .didLookUpProduct(milk)])
         #expect(edited.review?.name == "My milk")
         #expect(edited.review?.product == milk)
     }
 
     @Test func goingBackFromReviewCancelsTheLookup() {
-        let (reviewing, _) = run([.liveScanTapped, .liveScanFinished(labelResult())])
-        let (back, effects) = run([.pathChanged([.live])], from: reviewing)
+        let (reviewing, _) = run([.didTapLiveScan, .didFinishLiveScan(labelResult())])
+        let (back, commands) = run([.didChangePath([.live])], from: reviewing)
         #expect(back.path == [.live])
         #expect(back.review?.isLookingUp == false)
-        #expect(effects == [.cancelLookUp])
+        #expect(commands == [.willCancelLookUp])
 
         // Continue can't be sent from a screen that isn't review.
-        let (stillBack, _) = run([.continueTapped(now: now)], from: back)
+        let (stillBack, _) = run([.didTapContinue(now: now)], from: back)
         #expect(stillBack.path == [.live])
 
         // A lookup that finishes afterwards changes nothing.
-        let (late, _) = run([.productLookedUp(milk)], from: back)
+        let (late, _) = run([.didLookUpProduct(milk)], from: back)
         #expect(late == back)
     }
 
     @Test func continueUsesTheSelectedDateOrFallsBackToShelfLife() throws {
-        let (state, _) = run([.liveScanTapped, .liveScanFinished(labelResult()), .continueTapped(now: now)])
+        let (state, _) = run([.didTapLiveScan, .didFinishLiveScan(labelResult()), .didTapContinue(now: now)])
         guard case .form(let draft) = state.path.last else { Issue.record("no form on the path"); return }
         let day = TestSupport.calendar.dateComponents([.year, .month, .day], from: draft.expiresAt)
         #expect([day.year, day.month, day.day] == [2026, 9, 12])
         #expect(draft.barcode == "5000000000000")
 
-        let review = try #require(run([.liveScanTapped, .liveScanFinished(labelResult()), .candidateSelected(nil), .categoryChanged(.dairy)]).0.review)
+        let review = try #require(run([.didTapLiveScan, .didFinishLiveScan(labelResult()), .didSelectCandidate(nil), .didChangeCategory(.dairy)]).0.review)
         let fallback = review.makeDraft(now: now, calendar: TestSupport.calendar)
         let days = TestSupport.calendar.dateComponents([.day], from: TestSupport.calendar.startOfDay(for: now), to: TestSupport.calendar.startOfDay(for: fallback.expiresAt)).day
         #expect(days == FoodCategory.dairy.defaultShelfLifeDays)
     }
 
     @Test func continueNeedsAName() {
-        let (state, _) = run([.liveScanTapped, .liveScanFinished(labelResult()), .nameChanged("  "), .continueTapped(now: now)])
+        let (state, _) = run([.didTapLiveScan, .didFinishLiveScan(labelResult()), .didChangeName("  "), .didTapContinue(now: now)])
         #expect(state.path == [.live, .review])
     }
 
     @Test func closingCancelsAllWorkAndIgnoresEverythingAfter() {
-        let (state, effects) = run([.photoChosen(Data()), .closeTapped])
+        let (state, commands) = run([.didChoosePhoto(Data()), .didTapClose])
         #expect(state.isFinished)
-        #expect(effects == [.cancelReadLabel, .cancelLookUp, .close])
+        #expect(commands == [.willCancelReadLabel, .willCancelLookUp, .willFinish])
 
-        let (after, more) = run([.labelRead(labelResult()), .liveScanTapped], from: state)
+        let (after, more) = run([.didReadLabel(labelResult()), .didTapLiveScan], from: state)
         #expect(after == state)
         #expect(more.isEmpty)
     }
 
     @Test func swipingTheSheetAwayCancelsWorkWithoutClosingAgain() {
-        let (_, effects) = run([.photoChosen(Data()), .dismissed])
-        #expect(effects == [.cancelReadLabel, .cancelLookUp])
+        let (_, commands) = run([.didChoosePhoto(Data()), .didDismiss])
+        #expect(commands == [.willCancelReadLabel, .willCancelLookUp])
     }
 }
 
-// MARK: - Coordinator (effects)
+// MARK: - Coordinator (commands)
 
 @MainActor
 struct ScanCoordinatorTests {
@@ -150,25 +150,26 @@ struct ScanCoordinatorTests {
         let coordinator = ScanCoordinator(
             supportsLiveScanning: false,
             productLookup: StubProductLookup(info: milk),
-            readLabel: { _ in result },
-            onFinished: {}
+            readLabel: { _ in result }
         )
-        await coordinator.send(.photoChosen(photo)).value
+        await coordinator.eventLoop(event: .didChoosePhoto(photo)).value
         #expect(coordinator.state.path == [.review])
         #expect(coordinator.state.review?.name == "Organic Semi Skimmed Milk")
         #expect(coordinator.state.review?.isLookingUp == false)
     }
 
     @Test func somethingThatIsNotAPhotoFails() async {
-        let coordinator = ScanCoordinator(supportsLiveScanning: false, productLookup: StubProductLookup(info: nil), readLabel: { _ in labelResult() }, onFinished: {})
-        await coordinator.send(.photoChosen(Data([0, 1, 2]))).value
+        let coordinator = ScanCoordinator(supportsLiveScanning: false, productLookup: StubProductLookup(info: nil), readLabel: { _ in labelResult() })
+        await coordinator.eventLoop(event: .didChoosePhoto(Data([0, 1, 2]))).value
         #expect(coordinator.state.status == .failed(.notAPhoto))
     }
 
-    @Test func closingWhileReadingStopsTheReadAndClosesOnce() async {
-        let closed = CallCount()
+    @Test func closingWhileReadingStopsTheReadAndClosesTheSheet() async {
         let readCancelled = CallCount()
+        let main = MainCoordinator(dependencies: .preview(withSampleData: false))
+        main.eventLoop(event: .didRequestSheet(.scan))
         let coordinator = ScanCoordinator(
+            parent: main,
             supportsLiveScanning: false,
             productLookup: StubProductLookup(info: nil),
             readLabel: { _ in
@@ -179,14 +180,13 @@ struct ScanCoordinatorTests {
                     throw error
                 }
                 return labelResult()
-            },
-            onFinished: { closed.hit() }
+            }
         )
-        let reading = coordinator.send(.photoChosen(photo))
-        coordinator.send(.closeTapped)
-        coordinator.send(.dismissed)
+        let reading = coordinator.eventLoop(event: .didChoosePhoto(photo))
+        coordinator.eventLoop(event: .didTapClose)
+        coordinator.eventLoop(event: .didDismiss)
         await reading.value
-        #expect(closed.value == 1)
+        #expect(main.state.sheet == nil)
         #expect(readCancelled.value == 1)
         #expect(coordinator.state.review == nil)
     }

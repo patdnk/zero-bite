@@ -130,10 +130,10 @@ final class RecipesViewModel {
     // MARK: - Actions
 
     func showRecipe(_ match: RecipeMatch) {
-        coordinator.showRecipe(id: match.recipe.id)
+        coordinator.eventLoop(event: .didSelectRecipe(match.recipe.id))
     }
 
     func showItem(_ item: FoodItem) {
-        coordinator.showItem(id: item.id)
+        coordinator.eventLoop(event: .didSelectItem(item.id))
     }
 }

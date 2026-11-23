@@ -7,13 +7,13 @@ import SwiftUI
 
 struct RecipesView: View {
     @Bindable var viewModel: RecipesViewModel
-    @Bindable var coordinator: RecipesCoordinator
+    let coordinator: RecipesCoordinator
     let dependencies: AppDependencies
 
     private let columns = [GridItem(.flexible(), spacing: Spacing.sm), GridItem(.flexible(), spacing: Spacing.sm)]
 
     var body: some View {
-        NavigationStack(path: $coordinator.navigationPath) {
+        NavigationStack(path: Binding(get: { coordinator.state.path }, set: { coordinator.eventLoop(event: .didChangePath($0)) })) {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
@@ -98,16 +98,16 @@ struct RecipesView: View {
             RecipesFactory.makeDetail(
                 recipeID: id,
                 dependencies: dependencies,
-                onShowItem: { coordinator.showItem(id: $0) },
-                onCooked: { coordinator.showCooked(recipeID: $0) }
+                onShowItem: { coordinator.eventLoop(event: .didSelectItem($0)) },
+                onCooked: { coordinator.eventLoop(event: .didTapCooked(recipeID: $0)) }
             )
         case .itemDetail(let id):
             InventoryFactory.makeDetail(
                 itemID: id,
                 dependencies: dependencies,
-                onEdit: { coordinator.showEditItem(id: $0) },
-                onShowRecipe: { coordinator.showRecipe(id: $0) },
-                onDeleted: { coordinator.pop() }
+                onEdit: { coordinator.eventLoop(event: .didTapEditItem($0)) },
+                onShowRecipe: { coordinator.eventLoop(event: .didSelectRecipe($0)) },
+                onDeleted: { coordinator.eventLoop(event: .didDeleteItem) }
             )
         }
     }
@@ -115,6 +115,6 @@ struct RecipesView: View {
 
 #Preview {
     let dependencies = AppDependencies.preview()
-    let coordinator = AppCoordinator(dependencies: dependencies)
-    RecipesFactory.makeList(coordinator: coordinator.recipesCoordinator, dependencies: dependencies)
+    let coordinator = MainCoordinator(dependencies: dependencies)
+    RecipesFactory.makeList(coordinator: coordinator.recipes, dependencies: dependencies)
 }

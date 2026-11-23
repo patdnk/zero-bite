@@ -7,19 +7,20 @@ import SwiftUI
 
 @MainActor
 enum FoodAlertsFactory {
-    static func makeList(dependencies: AppDependencies) -> some View {
+    static func makeList(dependencies: AppDependencies, onSelect: @escaping (FoodAlert) -> Void) -> some View {
         ViewModelHost(FoodAlertsViewModel(
             recalls: dependencies.recalls,
             inventory: dependencies.inventory,
             settings: dependencies.settings
         )) { viewModel in
-            FoodAlertsView(viewModel: viewModel)
+            FoodAlertsView(viewModel: viewModel, onSelect: onSelect)
         }
     }
 }
 
 struct FoodAlertsView: View {
     @Bindable var viewModel: FoodAlertsViewModel
+    let onSelect: (FoodAlert) -> Void
 
     var body: some View {
         ScrollView {
@@ -48,7 +49,7 @@ struct FoodAlertsView: View {
                 } else {
                     VStack(spacing: Spacing.sm) {
                         ForEach(rows) { row in
-                            NavigationLink(value: row.alert) {
+                            Button { onSelect(row.alert) } label: {
                                 FoodAlertRow(alert: row.alert, highlight: row.highlight)
                                     .cardStyle(accent: row.highlight == nil ? nil : row.alert.kind.tint)
                             }
@@ -74,9 +75,6 @@ struct FoodAlertsView: View {
             if viewModel.isRefreshing {
                 ProgressView().frame(width: 38, height: 38)
             }
-        }
-        .navigationDestination(for: FoodAlert.self) { alert in
-            FoodAlertDetailView(alert: alert)
         }
     }
 }
@@ -202,7 +200,7 @@ struct FlowLayout: Layout {
 #Preview {
     let dependencies = AppDependencies.preview()
     NavigationStack {
-        FoodAlertsFactory.makeList(dependencies: dependencies)
+        FoodAlertsFactory.makeList(dependencies: dependencies, onSelect: { _ in })
     }
     .task { await dependencies.recalls.refresh(force: true) }
 }

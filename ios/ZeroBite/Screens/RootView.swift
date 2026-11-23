@@ -2,37 +2,34 @@
 //  RootView.swift
 //  ZeroBite
 //
-//  Root view driven by app flow phase: Launch → Welcome → Main.
+//  Root view driven by AppCoordinator's phase: Launch → Welcome → Main.
 //
 
 import SwiftUI
 
 struct RootView: View {
-    let flowController: AppFlowController
     let coordinator: AppCoordinator
 
     var body: some View {
         Group {
-            switch flowController.phase {
+            switch coordinator.state.phase {
             case .launch:
-                SplashView(onFinish: { flowController.finishLaunch() })
+                SplashView(onFinish: { coordinator.finishLaunch() })
             case .welcome:
                 WelcomeFactory.make(dependencies: coordinator.dependencies) {
-                    flowController.send(.welcomeFinished)
+                    coordinator.eventLoop(event: .didFinishWelcome)
                 }
             case .main:
-                MainView(coordinator: coordinator)
+                if let main = coordinator.main {
+                    MainView(coordinator: main)
+                }
             }
         }
         .font(.app(.body))
-        .animation(.easeInOut(duration: 0.3), value: flowController.phase)
+        .animation(.easeInOut(duration: 0.3), value: coordinator.state.phase)
     }
 }
 
 #Preview {
-    let dependencies = AppDependencies.preview()
-    RootView(
-        flowController: AppFlowController(settings: dependencies.settings),
-        coordinator: AppCoordinator(dependencies: dependencies)
-    )
+    RootView(coordinator: AppCoordinator(dependencies: .preview()))
 }

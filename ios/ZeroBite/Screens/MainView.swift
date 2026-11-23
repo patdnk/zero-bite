@@ -2,13 +2,13 @@
 //  MainView.swift
 //  ZeroBite
 //
-//  Tab navigation bound to AppCoordinator, plus app-level sheets and alerts.
+//  The tabs, bound to MainCoordinator, plus the sheet and the "how it works" replay over them.
 //
 
 import SwiftUI
 
 struct MainView: View {
-    @Bindable var coordinator: AppCoordinator
+    let coordinator: MainCoordinator
 
     private var dependencies: AppDependencies { coordinator.dependencies }
 
@@ -18,8 +18,8 @@ struct MainView: View {
         VStack(spacing: 0) {
             // Every tab stays alive in the ZStack so scroll position and search text survive switching.
             ZStack {
-                ForEach(AppCoordinator.AppTab.allCases, id: \.self) { tab in
-                    let isSelected = coordinator.selectedTab == tab
+                ForEach(MainCoordinator.Tab.allCases, id: \.self) { tab in
+                    let isSelected = coordinator.state.selectedTab == tab
                     tabContent(for: tab)
                         .opacity(isSelected ? 1 : 0)
                         .allowsHitTesting(isSelected)
@@ -39,8 +39,8 @@ struct MainView: View {
             // Hidden while typing so the bottom search field sits directly on the keyboard.
             if !isKeyboardVisible {
                 AppTabBar(selection: Binding(
-                    get: { coordinator.selectedTab },
-                    set: { coordinator.selectTab($0) }
+                    get: { coordinator.state.selectedTab },
+                    set: { coordinator.eventLoop(event: .didSelectTab($0)) }
                 ))
             }
         }
@@ -51,80 +51,64 @@ struct MainView: View {
             isKeyboardVisible = false
         }
         .tint(Constants.BrandOrange)
-        .fullScreenCover(isPresented: $coordinator.isShowingHowItWorks) {
+        .fullScreenCover(isPresented: Binding(
+            get: { coordinator.state.isShowingHowItWorks },
+            set: { if !$0 { coordinator.eventLoop(event: .didFinishHowItWorks) } }
+        )) {
             WelcomeFactory.make(mode: .replay, dependencies: dependencies) {
-                coordinator.isShowingHowItWorks = false
+                coordinator.eventLoop(event: .didFinishHowItWorks)
             }
         }
-        .sheet(item: $coordinator.presentedSheet) { destination in
-            sheetContent(for: destination)
-        }
-        .alert(
-            coordinator.alertConfig?.title ?? "",
-            isPresented: Binding(
-                get: { coordinator.alertConfig != nil },
-                set: { if !$0 { coordinator.dismissAlert() } }
-            )
-        ) {
-            if let config = coordinator.alertConfig {
-                Button(config.primaryButton.title, role: config.primaryButton.isDestructive ? .destructive : nil) {
-                    config.primaryButton.action()
-                    coordinator.dismissAlert()
-                }
-                if let secondary = config.secondaryButton {
-                    Button(secondary.title, role: .cancel) {
-                        secondary.action()
-                        coordinator.dismissAlert()
-                    }
-                }
-            }
-        } message: {
-            if let message = coordinator.alertConfig?.message {
-                Text(message)
-            }
+        .sheet(item: Binding(
+            get: { coordinator.state.sheet },
+            set: { if $0 == nil { coordinator.eventLoop(event: .didDismissSheet) } }
+        )) { sheet in
+            sheetContent(for: sheet)
         }
     }
 
     @ViewBuilder
-    private func tabContent(for tab: AppCoordinator.AppTab) -> some View {
+    private func tabContent(for tab: MainCoordinator.Tab) -> some View {
         switch tab {
         case .fridge:
-            InventoryFactory.makeList(coordinator: coordinator.inventoryCoordinator, dependencies: dependencies)
+            InventoryFactory.makeList(coordinator: coordinator.inventory, dependencies: dependencies)
         case .recipes:
-            RecipesFactory.makeList(coordinator: coordinator.recipesCoordinator, dependencies: dependencies)
+            RecipesFactory.makeList(coordinator: coordinator.recipes, dependencies: dependencies)
         case .settings:
-            SettingsFactory.make(coordinator: coordinator.settingsCoordinator, dependencies: dependencies)
+            SettingsFactory.make(coordinator: coordinator.settings, dependencies: dependencies)
         }
     }
 
     @ViewBuilder
-    private func sheetContent(for destination: AppCoordinator.SheetDestination) -> some View {
-        switch destination {
+    private func sheetContent(for sheet: MainCoordinator.Sheet) -> some View {
+        switch sheet {
         case .scan:
-            ScanFactory.makeFlow(dependencies: dependencies, onFinished: { coordinator.dismissSheet() })
+            if let scan = coordinator.scan {
+                ScanFactory.makeFlow(coordinator: scan, dependencies: dependencies)
+            }
         case .addItem(let draft):
             NavigationStack {
                 InventoryFactory.makeForm(mode: .add, draft: draft, dependencies: dependencies,
-                                          onCancel: { coordinator.dismissSheet() },
-                                          onSaved: { _ in coordinator.dismissSheet() })
+                                          onCancel: { coordinator.eventLoop(event: .didDismissSheet) },
+                                          onSaved: { _ in coordinator.eventLoop(event: .didDismissSheet) })
             }
         case .editItem(let id):
             NavigationStack {
                 if let item = dependencies.inventory.item(id: id) {
                     InventoryFactory.makeForm(mode: .edit(id), draft: ItemDraft(item: item), dependencies: dependencies,
-                                              onCancel: { coordinator.dismissSheet() },
-                                              onSaved: { _ in coordinator.dismissSheet() })
+                                              onCancel: { coordinator.eventLoop(event: .didDismissSheet) },
+                                              onSaved: { _ in coordinator.eventLoop(event: .didDismissSheet) })
                 } else {
                     ContentUnavailableView("Item not found", systemImage: "questionmark.circle")
                 }
             }
         case .cooked(let recipeID):
-            RecipesFactory.makeCooked(recipeID: recipeID, dependencies: dependencies, onDone: { coordinator.dismissSheet() })
+            RecipesFactory.makeCooked(recipeID: recipeID, dependencies: dependencies, onDone: { coordinator.eventLoop(event: .didDismissSheet) })
                 .presentationDetents([.medium, .large])
         }
     }
 }
 
 #Preview {
-    MainView(coordinator: AppCoordinator(dependencies: .preview()))
+    MainView(coordinator: MainCoordinator(dependencies: .preview()))
 }

@@ -2,7 +2,8 @@
 //  ScanFactory.swift
 //  ZeroBite
 //
-//  Factory for the add-food flow (scan → review → form).
+//  Factory for the add-food flow (scan → review → form). MainCoordinator starts the
+//  ScanCoordinator when the sheet opens and stops it when the sheet goes away.
 //
 
 import SwiftUI
@@ -10,13 +11,15 @@ import SwiftUI
 @MainActor
 enum ScanFactory {
 
-    static func makeFlow(dependencies: AppDependencies, onFinished: @escaping @MainActor () -> Void) -> some View {
-        ViewModelHost(ScanCoordinator(
+    static func makeCoordinator(parent: MainCoordinator?, dependencies: AppDependencies) -> ScanCoordinator {
+        ScanCoordinator(
+            parent: parent,
             supportsLiveScanning: LiveScannerView.isSupported,
-            productLookup: dependencies.productLookup,
-            onFinished: onFinished
-        )) { coordinator in
-            ScanFlowView(coordinator: coordinator, dependencies: dependencies)
-        }
+            productLookup: dependencies.productLookup
+        )
+    }
+
+    static func makeFlow(coordinator: ScanCoordinator, dependencies: AppDependencies) -> some View {
+        ScanFlowView(coordinator: coordinator, dependencies: dependencies)
     }
 }

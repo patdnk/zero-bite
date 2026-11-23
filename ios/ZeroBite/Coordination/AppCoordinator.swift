@@ -2,7 +2,9 @@
 //  AppCoordinator.swift
 //  ZeroBite
 //
-//  Main-content coordinator: tabs, sheets, alerts, and the feature coordinators.
+//  The root of the coordinator tree: which root screen is shown (splash → welcome → main),
+//  starting MainCoordinator, holding a notification tap until main is on screen, and
+//  refreshing services when the app becomes active.
 //
 
 import Foundation
@@ -10,149 +12,122 @@ import Observation
 
 @MainActor
 @Observable
-final class AppCoordinator {
-
-    // MARK: - Navigation State
-
-    var selectedTab: AppTab = .fridge
-    var presentedSheet: SheetDestination?
-    var alertConfig: AlertConfig?
-    /// Onboarding replayed from Settings, shown full screen over the tabs.
-    var isShowingHowItWorks = false
+final class AppCoordinator: EventDrivenCoordinator {
 
     let dependencies: AppDependencies
+    let loop = EventLoop<State, Event, Command>(State())
 
-    // MARK: - Feature Coordinators
-
-    let inventoryCoordinator: InventoryCoordinator
-    let recipesCoordinator: RecipesCoordinator
-    let settingsCoordinator: SettingsCoordinator
+    /// Started by willStartMain; nil until the app reaches the main phase.
+    private(set) var main: MainCoordinator?
 
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
-        inventoryCoordinator = InventoryCoordinator()
-        recipesCoordinator = RecipesCoordinator()
-        settingsCoordinator = SettingsCoordinator()
-        inventoryCoordinator.parent = self
-        recipesCoordinator.parent = self
-        settingsCoordinator.parent = self
     }
 
-    // MARK: - Tabs
+    /// The splash is done. Reads the stored flag here so stateMachine stays pure.
+    func finishLaunch() {
+        eventLoop(event: .didFinishLaunch(hasCompletedWelcome: dependencies.settings.hasCompletedWelcome))
+    }
 
-    enum AppTab: Hashable, CaseIterable {
-        case fridge, recipes, settings
+    func execute(_ command: Command) -> CommandTask<Event> {
+        switch command {
+        case .willRememberWelcomeCompleted:
+            return .perform { [dependencies] in dependencies.settings.hasCompletedWelcome = true }
 
-        var title: String {
-            switch self {
-            case .fridge: String(localized: "My food")
-            case .recipes: String(localized: "Recipes")
-            case .settings: String(localized: "Settings")
+        case .willStartMain:
+            return .perform { [weak self] in
+                guard let self, main == nil else { return }
+                main = MainCoordinator(parent: self, dependencies: dependencies)
             }
-        }
 
-        /// Language-independent name for accessibility identifiers.
-        var identifier: String {
-            switch self {
-            case .fridge: "fridge"
-            case .recipes: "recipes"
-            case .settings: "settings"
-            }
-        }
+        case .willShowItem(let id):
+            return .perform { [weak self] in self?.main?.eventLoop(event: .didRequestItem(id)) }
 
-        var symbol: String {
-            switch self {
-            case .fridge: "refrigerator"
-            case .recipes: "frying.pan"
-            case .settings: "gearshape"
-            }
-        }
-
-        var selectedSymbol: String {
-            switch self {
-            case .fridge: "refrigerator.fill"
-            case .recipes: "frying.pan.fill"
-            case .settings: "gearshape.fill"
+        case .willRefreshServices:
+            let dependencies = dependencies
+            return .run {
+                await dependencies.notifications.refreshAuthorizationStatus()
+                await dependencies.syncNotifications()
+                await dependencies.refreshRecalls()
+                return nil
             }
         }
     }
+}
 
-    func selectTab(_ tab: AppTab) {
-        selectedTab = tab
+// MARK: - State
+
+extension AppCoordinator {
+
+    /// Which root screen is shown.
+    enum Phase: Equatable {
+        case launch   // splash
+        case welcome  // first-run onboarding
+        case main     // tabs
     }
 
-    // MARK: - Sheets
+    struct State: Equatable {
+        var phase: Phase = .launch
+        /// A notification was tapped before the tabs were on screen; open it once they are.
+        var pendingItemID: UUID?
+    }
+}
 
-    enum SheetDestination: Identifiable {
-        case scan
-        case addItem(ItemDraft)
-        case editItem(UUID)
-        case cooked(recipeID: String)
+// MARK: - Events and commands
 
-        var id: String {
-            switch self {
-            case .scan: "scan"
-            case .addItem: "addItem"
-            case .editItem(let id): "editItem-\(id.uuidString)"
-            case .cooked(let recipeID): "cooked-\(recipeID)"
+extension AppCoordinator {
+
+    enum Event: Equatable, Sendable {
+        case didFinishLaunch(hasCompletedWelcome: Bool)
+        /// Onboarding done, with or without notifications.
+        case didFinishWelcome
+        case didOpenItemNotification(UUID)
+        case didBecomeActive
+    }
+
+    enum Command: Equatable {
+        case willRememberWelcomeCompleted
+        case willStartMain
+        case willShowItem(UUID)
+        case willRefreshServices
+    }
+}
+
+// MARK: - State machine
+
+extension AppCoordinator {
+
+    nonisolated static func stateMachine(_ state: inout State, _ event: Event) -> [Command] {
+        switch (state.phase, event) {
+        case (.launch, .didFinishLaunch(let hasCompletedWelcome)):
+            guard hasCompletedWelcome else {
+                state.phase = .welcome
+                return []
             }
+            return enterMain(&state)
+
+        case (.welcome, .didFinishWelcome):
+            return [.willRememberWelcomeCompleted] + enterMain(&state)
+
+        case (.main, .didOpenItemNotification(let id)):
+            return [.willShowItem(id)]
+
+        case (_, .didOpenItemNotification(let id)):
+            state.pendingItemID = id
+            return []
+
+        case (_, .didBecomeActive):
+            return [.willRefreshServices]
+
+        default:
+            return []
         }
     }
 
-    func presentSheet(_ destination: SheetDestination) {
-        presentedSheet = destination
-    }
-
-    func dismissSheet() {
-        presentedSheet = nil
-    }
-
-    func showHowItWorks() {
-        isShowingHowItWorks = true
-    }
-
-    // MARK: - Alerts
-
-    struct AlertConfig: Identifiable {
-        let id = UUID()
-        let title: String
-        let message: String?
-        let primaryButton: AlertButton
-        let secondaryButton: AlertButton?
-
-        struct AlertButton {
-            let title: String
-            let isDestructive: Bool
-            let action: () -> Void
-
-            init(title: String, isDestructive: Bool = false, action: @escaping () -> Void = {}) {
-                self.title = title
-                self.isDestructive = isDestructive
-                self.action = action
-            }
-        }
-    }
-
-    func showAlert(
-        title: String,
-        message: String? = nil,
-        primaryButton: AlertConfig.AlertButton,
-        secondaryButton: AlertConfig.AlertButton? = nil
-    ) {
-        alertConfig = AlertConfig(title: title, message: message, primaryButton: primaryButton, secondaryButton: secondaryButton)
-    }
-
-    func dismissAlert() {
-        alertConfig = nil
-    }
-
-    // MARK: - Cross-feature routing
-
-    /// Deep link (e.g. from a notification tap): jump to the Fridge tab and open the item.
-    func showItem(id: UUID) {
-        presentedSheet = nil
-        selectedTab = .fridge
-        inventoryCoordinator.popToRoot()
-        inventoryCoordinator.showItem(id: id)
+    private nonisolated static func enterMain(_ state: inout State) -> [Command] {
+        state.phase = .main
+        guard let id = state.pendingItemID else { return [.willStartMain] }
+        state.pendingItemID = nil
+        return [.willStartMain, .willShowItem(id)]
     }
 }

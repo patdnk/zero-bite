@@ -672,7 +672,7 @@ struct RecallSourcesSettingTests {
     @Test func settingsViewModelPicksFeedAndRefreshes() async throws {
         let counting = CountingClient()
         let dependencies = AppDependencies.preview(alerts: counting)
-        let viewModel = SettingsViewModel(dependencies: dependencies, coordinator: SettingsCoordinator())
+        let viewModel = SettingsViewModel(dependencies: dependencies, coordinator: SettingsCoordinator(inventory: dependencies.inventory))
         dependencies.settings.recallSources = [.fsa]
         #expect(viewModel.recallFeed == .uk)
 
