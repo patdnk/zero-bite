@@ -52,8 +52,8 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mazesys.zerobite.R
-import com.mazesys.zerobite.coordination.AlertButton
-import com.mazesys.zerobite.coordination.AlertConfig
+import com.mazesys.zerobite.screens.root.AlertButton
+import com.mazesys.zerobite.screens.root.AlertConfig
 import com.mazesys.zerobite.scanning.LabelReading
 import com.mazesys.zerobite.screens.root.AppAlert
 import com.mazesys.zerobite.ui.components.AppButton

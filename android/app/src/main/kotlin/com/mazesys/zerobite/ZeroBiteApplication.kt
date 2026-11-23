@@ -1,6 +1,8 @@
 package com.mazesys.zerobite
 
 import android.app.Application
+import android.util.Log
+import com.mazesys.zerobite.coordination.FlowLog
 import com.mazesys.zerobite.reminders.Notifications
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -13,6 +15,7 @@ class ZeroBiteApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        if (BuildConfig.DEBUG) FlowLog.sink = { Log.d("flow", it) }
         Notifications.createChannels(this)
         dependencies.reminders.start(dependencies.appScope)
         dependencies.usageData.start(dependencies.appScope)

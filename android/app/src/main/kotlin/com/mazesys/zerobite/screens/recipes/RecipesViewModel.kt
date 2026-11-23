@@ -150,7 +150,11 @@ class RecipesViewModel(
         dayCheck.value = clock.today()
     }
 
-    fun showRecipe(match: RecipeMatch) = coordinator.showRecipe(match.recipe.id)
+    fun showRecipe(match: RecipeMatch) {
+        coordinator.eventLoop(RecipesCoordinator.Event.DidSelectRecipe(match.recipe.id))
+    }
 
-    fun showItem(item: FoodItem) = coordinator.showItem(item.id)
+    fun showItem(item: FoodItem) {
+        coordinator.eventLoop(RecipesCoordinator.Event.DidSelectItem(item.id))
+    }
 }

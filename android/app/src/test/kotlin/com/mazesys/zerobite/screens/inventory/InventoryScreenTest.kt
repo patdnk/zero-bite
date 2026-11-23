@@ -16,7 +16,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.Density
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.coordination.InventoryRoute
 import com.mazesys.zerobite.testing.FakeInventoryRepository
 import com.mazesys.zerobite.testing.FakeSettings
@@ -24,6 +23,7 @@ import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.SequentialIds
 import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.sampleFridge
+import com.mazesys.zerobite.testing.testMain
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
 import org.junit.Rule
 import org.junit.Test
@@ -44,10 +44,10 @@ class InventoryScreenTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private val app = AppCoordinator { TestClock.today }
+    private val coordinator = testMain()
 
     private fun show(inventory: FakeInventoryRepository, dark: Boolean = false, fontScale: Float? = null) {
-        val vm = InventoryViewModel(inventory, FakeSettings(SettingsSnapshot(dismissedNotificationTip = true)), TestClock.fixed(), SequentialIds(), app.inventory, FakeAccess(), EnglishStrings)
+        val vm = InventoryViewModel(inventory, FakeSettings(SettingsSnapshot(dismissedNotificationTip = true)), TestClock.fixed(), SequentialIds(), coordinator.inventory, FakeAccess(), EnglishStrings)
         compose.setContent {
             ZeroBiteTheme(darkTheme = dark) {
                 if (fontScale == null) {
@@ -74,7 +74,7 @@ class InventoryScreenTest {
         show(inventory)
         compose.onNodeWithText("Spinach").performClick()
         val spinach = inventory.current.first { it.name == "Spinach" }
-        assertEquals(InventoryRoute.ItemDetail(spinach.id), app.inventory.backStack.last())
+        assertEquals(InventoryRoute.ItemDetail(spinach.id), coordinator.inventory.state.backStack.last())
     }
 
     @Test

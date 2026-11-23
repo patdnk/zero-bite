@@ -1,7 +1,7 @@
 package com.mazesys.zerobite.screens.recipes
 
 import com.mazesys.zerobite.testing.english
-import com.mazesys.zerobite.coordination.AppCoordinator
+import com.mazesys.zerobite.coordination.RecipesCoordinator
 import com.mazesys.zerobite.coordination.RecipesRoute
 import com.mazesys.zerobite.testing.FakeInventoryRepository
 import com.mazesys.zerobite.testing.FakeRecipes
@@ -10,6 +10,7 @@ import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.recipeFridge
 import com.mazesys.zerobite.testing.testRecipes
+import com.mazesys.zerobite.testing.testMain
 import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
@@ -22,8 +23,8 @@ class RecipesViewModelTest {
     @get:Rule
     val main = MainDispatcherRule()
 
-    private val app = AppCoordinator { TestClock.today }
-    private val vm by lazy { RecipesViewModel(FakeInventoryRepository(recipeFridge()), FakeSettings(), FakeRecipes(testRecipes()), TestClock.fixed(), app.recipes, Dispatchers.Unconfined) }
+    private val coordinator = testMain()
+    private val vm by lazy { RecipesViewModel(FakeInventoryRepository(recipeFridge()), FakeSettings(), FakeRecipes(testRecipes()), TestClock.fixed(), coordinator.recipes, Dispatchers.Unconfined) }
     private fun ids() = vm.state.value.displayed.map { it.recipe.id }
 
     @Test
@@ -63,7 +64,7 @@ class RecipesViewModelTest {
         assertEquals(emptyList(), ids())
         assertEquals("Nothing to cook yet", english(vm.state.value.emptyTitle))
         assertEquals("Try a different search.", english(vm.state.value.emptyMessage))
-        val empty = RecipesViewModel(FakeInventoryRepository(), FakeSettings(), FakeRecipes(), TestClock.fixed(), app.recipes, Dispatchers.Unconfined)
+        val empty = RecipesViewModel(FakeInventoryRepository(), FakeSettings(), FakeRecipes(), TestClock.fixed(), coordinator.recipes, Dispatchers.Unconfined)
         empty.setScope(RecipeScope.NEARLY)
         assertEquals("No near-misses", english(empty.state.value.emptyTitle))
         assertEquals(
@@ -75,10 +76,11 @@ class RecipesViewModelTest {
     @Test
     fun `taps route through the coordinator`() {
         vm.showRecipe(vm.state.value.displayed.first())
-        assertEquals(RecipesRoute.RecipeDetail("omelette"), app.recipes.backStack.last())
+        assertEquals(RecipesRoute.RecipeDetail("omelette"), coordinator.recipes.state.backStack.last())
         vm.showItem(vm.state.value.expiringItems.first())
-        assertEquals(RecipesRoute.ItemDetail("eggs"), app.recipes.backStack.last())
-        app.recipes.popToRoot()
-        assertEquals(listOf<RecipesRoute>(RecipesRoute.Catalogue), app.recipes.backStack.toList())
+        assertEquals(RecipesRoute.ItemDetail("eggs"), coordinator.recipes.state.backStack.last())
+        coordinator.recipes.eventLoop(RecipesCoordinator.Event.DidTapBack)
+        coordinator.recipes.eventLoop(RecipesCoordinator.Event.DidTapBack)
+        assertEquals(listOf<RecipesRoute>(RecipesRoute.Catalogue), coordinator.recipes.state.backStack.toList())
     }
 }

@@ -1,7 +1,7 @@
 package com.mazesys.zerobite.screens.settings
 
 import com.mazesys.zerobite.testing.english
-import com.mazesys.zerobite.coordination.AppCoordinator
+import com.mazesys.zerobite.coordination.SettingsAlert
 import com.mazesys.zerobite.coordination.SheetDestination
 import com.mazesys.zerobite.core.model.Allergen
 import com.mazesys.zerobite.data.SettingsSnapshot
@@ -15,6 +15,7 @@ import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.sampleFridge
 import com.mazesys.zerobite.testing.testDependencies
+import com.mazesys.zerobite.testing.testMain
 import com.mazesys.zerobite.testing.testRecipes
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
@@ -28,18 +29,13 @@ class SettingsViewModelTest {
     @get:Rule
     val main = MainDispatcherRule()
 
-    private val app = AppCoordinator { TestClock.today }
     private val inventory = FakeInventoryRepository(sampleFridge())
     private val settings = FakeSettings()
     private val access = FakeAccess(NotificationPermission.NOT_ASKED)
     private val notifier = FakeNotifier()
-    private val vm by lazy {
-        SettingsViewModel(
-        testDependencies(inventory = inventory, settings = settings, recipes = FakeRecipes(testRecipes()), access = access, notifier = notifier),
-        app.settings,
-        appVersion = "1.0 (1)",
-        )
-    }
+    private val dependencies = testDependencies(inventory = inventory, settings = settings, recipes = FakeRecipes(testRecipes()), access = access, notifier = notifier)
+    private val coordinator = testMain(dependencies)
+    private val vm by lazy { SettingsViewModel(dependencies, coordinator.settings, appVersion = "1.0 (1)") }
 
     @Test
     fun `notification state follows the system permission`() = runBlocking {
@@ -65,7 +61,8 @@ class SettingsViewModelTest {
         access.current = NotificationPermission.DENIED
         vm.setNotificationsEnabled(true) { false }
         assertFalse(settings.state.value.notificationsEnabled)
-        assertEquals("Notifications are off", app.alert?.title?.english())
+        assertEquals(SettingsAlert.NotificationsOff, vm.alert)
+        assertEquals("Notifications are off", vm.alert?.title?.english())
     }
 
     @Test
@@ -116,15 +113,18 @@ class SettingsViewModelTest {
         assertEquals(1, vm.state.value.usedCount)
 
         vm.clearUsedHistory()
-        assertEquals("Clear used-up history?", app.alert?.title?.english())
-        assertEquals("Removes 1 items you've already marked as used.", app.alert?.message?.english())
-        app.alert!!.primary.action()
+        assertEquals("Clear used-up history?", vm.alert?.title?.english())
+        assertEquals("Removes 1 items you've already marked as used.", vm.alert?.message?.english())
+        vm.confirmAlert(vm.alert!!)
         assertEquals(0, vm.state.value.usedCount)
         assertEquals(20, vm.state.value.activeCount)
 
         vm.deleteEverything()
-        assertEquals("Delete everything?", app.alert?.title?.english())
-        app.alert!!.primary.action()
+        assertEquals("Delete everything?", vm.alert?.title?.english())
+        vm.dismissAlert()
+        assertEquals(20, vm.state.value.activeCount, "cancel deletes nothing")
+        vm.deleteEverything()
+        vm.confirmAlert(vm.alert!!)
         assertEquals(0, vm.state.value.activeCount)
     }
 
@@ -133,7 +133,7 @@ class SettingsViewModelTest {
         vm.sendTest()
         assertEquals(1, notifier.tests)
         vm.showHowItWorks()
-        assertEquals(SheetDestination.HowItWorks, app.presentedSheet?.destination)
+        assertEquals(SheetDestination.HowItWorks, coordinator.state.sheet?.destination)
         runBlocking { inventory.deleteAll() }
         vm.loadSampleData()
         assertEquals(21, vm.state.value.activeCount)

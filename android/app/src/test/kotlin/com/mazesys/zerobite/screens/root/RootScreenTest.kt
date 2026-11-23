@@ -11,7 +11,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.mazesys.zerobite.coordination.AppCoordinator
-import com.mazesys.zerobite.coordination.AppFlowController
+import com.mazesys.zerobite.coordination.AppTab
+import com.mazesys.zerobite.coordination.InventoryCoordinator
+import com.mazesys.zerobite.coordination.MainCoordinator
 import com.mazesys.zerobite.coordination.SheetViewModelStores
 import com.mazesys.zerobite.data.SettingsSnapshot
 import com.mazesys.zerobite.testing.FakeInventoryRepository
@@ -21,6 +23,8 @@ import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.sampleFridge
 import com.mazesys.zerobite.testing.testDependencies
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
@@ -42,13 +46,15 @@ class RootScreenTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private val app = AppCoordinator { TestClock.today }
+    private lateinit var app: AppCoordinator
 
-    private fun show(settings: FakeSettings, inventory: FakeInventoryRepository = FakeInventoryRepository(sampleFridge())): AppFlowController {
+    /** The tabs, once the app has reached them. */
+    private val tabs: MainCoordinator get() = app.main!!
+
+    private fun show(settings: FakeSettings, inventory: FakeInventoryRepository = FakeInventoryRepository(sampleFridge())) {
         val dependencies = testDependencies(inventory = inventory, settings = settings)
-        val flow = AppFlowController(settings)
-        compose.setContent { ZeroBiteTheme { RootScreen(flow, app, SheetViewModelStores(), dependencies) } }
-        return flow
+        app = AppCoordinator(dependencies, CoroutineScope(Dispatchers.Unconfined))
+        compose.setContent { ZeroBiteTheme { RootScreen(app, SheetViewModelStores(), dependencies) } }
     }
 
     private fun waitFor(text: String) = compose.waitUntil(3_000) { compose.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty() }
@@ -93,12 +99,12 @@ class RootScreenTest {
     fun `adding by hand puts the item in the fridge`() {
         show(FakeSettings(SettingsSnapshot(hasCompletedWelcome = true, dismissedNotificationTip = true)), FakeInventoryRepository())
         waitFor("Try it with sample food")
-        compose.runOnUiThread { app.inventory.showAddItem() }
+        compose.runOnUiThread { tabs.inventory.eventLoop(InventoryCoordinator.Event.DidTapAddItem(TestClock.today)) }
         waitForTag("itemForm.name")
         compose.onNodeWithTag("itemForm.name").performTextInput("Oat milk")
         compose.onNodeWithTag("itemForm.save").performClick()
         waitFor("Oat milk")
-        assertNull(app.presentedSheet)
+        assertNull(tabs.state.sheet)
     }
 
     @Test
@@ -108,7 +114,7 @@ class RootScreenTest {
         compose.onNodeWithTag("tab.settings").performClick()
         compose.waitForIdle()
         pressBack()
-        compose.waitUntil(3_000) { app.selectedTab == com.mazesys.zerobite.coordination.AppTab.FRIDGE }
+        compose.waitUntil(3_000) { tabs.state.selectedTab == AppTab.FRIDGE }
         assertTrue(!compose.activity.isFinishing, "back on Settings returns to the Fridge tab")
     }
 
@@ -119,18 +125,18 @@ class RootScreenTest {
         compose.onNodeWithText("Spinach").performClick()
         waitFor("Details")
 
-        compose.runOnUiThread { app.inventory.showScan() }
+        compose.runOnUiThread { tabs.inventory.eventLoop(InventoryCoordinator.Event.DidTapScan) }
         waitFor("Choose a photo of the label")
         pressBack()
-        compose.waitUntil(3_000) { app.presentedSheet == null }
+        compose.waitUntil(3_000) { tabs.state.sheet == null }
         compose.onNodeWithText("Details").assertExists()
 
         pressBack()
-        compose.waitUntil(3_000) { app.inventory.backStack.size == 1 }
+        compose.waitUntil(3_000) { tabs.inventory.state.backStack.size == 1 }
         compose.waitForIdle() // let the pop transition finish, as a person would
 
         pressBack()
         assertTrue(compose.activity.isFinishing, "back at the root leaves the app")
-        assertEquals(1, app.inventory.backStack.size)
+        assertEquals(1, tabs.inventory.state.backStack.size)
     }
 }

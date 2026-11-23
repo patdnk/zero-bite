@@ -1,6 +1,5 @@
 package com.mazesys.zerobite.screens.recipes
 
-import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.core.model.Recipe
 import com.mazesys.zerobite.core.recipes.RecipeMatch
 import com.mazesys.zerobite.core.recipes.RecipeRepository
@@ -12,6 +11,7 @@ import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.recipeFridge
 import com.mazesys.zerobite.testing.testRecipes
+import com.mazesys.zerobite.testing.testMain
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,7 +40,7 @@ class RecipesViewModelMatchingTest {
     @get:Rule
     val main = MainDispatcherRule()
 
-    private val app = AppCoordinator { TestClock.today }
+    private val coordinator = testMain()
     private val inventory = FakeInventoryRepository(recipeFridge())
     private val clock = object : AppClock {
         var instant: Instant = TestClock.now
@@ -51,7 +51,7 @@ class RecipesViewModelMatchingTest {
     private fun viewModel(
         recipes: RecipeRepository = FakeRecipes(testRecipes()),
         computation: CoroutineDispatcher = Dispatchers.Unconfined,
-    ) = RecipesViewModel(inventory, FakeSettings(), recipes, clock, app.recipes, computation).apply { setScope(RecipeScope.ALL) }
+    ) = RecipesViewModel(inventory, FakeSettings(), recipes, clock, coordinator.recipes, computation).apply { setScope(RecipeScope.ALL) }
 
     private fun RecipesViewModel.match(id: String): RecipeMatch = state.value.displayed.first { it.recipe.id == id }
 

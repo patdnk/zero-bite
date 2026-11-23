@@ -23,7 +23,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -35,10 +34,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mazesys.zerobite.R
+import com.mazesys.zerobite.coordination.ScanCoordinator
+import com.mazesys.zerobite.coordination.ScanCoordinator.Event
 import com.mazesys.zerobite.core.model.DateCandidate
 import com.mazesys.zerobite.core.model.FoodCategory
+import com.mazesys.zerobite.core.time.AppClock
 import com.mazesys.zerobite.ui.components.ActionRow
 import com.mazesys.zerobite.ui.components.AppButton
 import com.mazesys.zerobite.ui.components.CardSection
@@ -59,12 +60,12 @@ import com.mazesys.zerobite.ui.theme.semibold
 
 /** Check what was read: name, category, product and which date is the expiry. */
 @Composable
-fun ScanReviewScreen(viewModel: ScanReviewViewModel, onBack: () -> Unit) {
-    val ui by viewModel.state.collectAsStateWithLifecycle()
+fun ScanReviewScreen(coordinator: ScanCoordinator, clock: AppClock) {
+    val ui = coordinator.state.review ?: return
     val colors = ZeroBiteTheme.colors
 
     Column(Modifier.fillMaxSize().background(colors.backgroundPrimary)) {
-        TopBar(TopBarLeading.Back(onBack))
+        TopBar(TopBarLeading.Back { coordinator.eventLoop(Event.DidTapBack) })
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = Spacing.gutter, end = Spacing.gutter, bottom = Spacing.xl),
             verticalArrangement = Arrangement.spacedBy(Spacing.xl),
@@ -75,7 +76,7 @@ fun ScanReviewScreen(viewModel: ScanReviewViewModel, onBack: () -> Unit) {
                 LabeledInput(
                     label = stringResource(R.string.form_name),
                     value = ui.name,
-                    onValueChange = viewModel::setName,
+                    onValueChange = { coordinator.eventLoop(Event.DidChangeName(it)) },
                     placeholder = stringResource(R.string.scan_name_placeholder),
                     testTag = "review.name",
                 )
@@ -90,7 +91,7 @@ fun ScanReviewScreen(viewModel: ScanReviewViewModel, onBack: () -> Unit) {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                 Overline(stringResource(R.string.form_category))
                 ChipFilter(
-                    FoodCategory.entries, ui.category, viewModel::setCategory,
+                    FoodCategory.entries, ui.category, { coordinator.eventLoop(Event.DidChangeCategory(it)) },
                     label = { stringResource(it.labelRes) },
                     modifier = Modifier.bleed(Spacing.gutter),
                 )
@@ -127,9 +128,9 @@ fun ScanReviewScreen(viewModel: ScanReviewViewModel, onBack: () -> Unit) {
                     footer = stringResource(R.string.scan_pick_date),
                     rows = buildList<@Composable () -> Unit> {
                         ui.candidates.forEachIndexed { index, candidate ->
-                            add { CandidateRow(candidate, index == ui.selectedIndex) { viewModel.select(index) } }
+                            add { CandidateRow(candidate, index == ui.selectedIndex) { coordinator.eventLoop(Event.DidSelectCandidate(index)) } }
                         }
-                        add { ActionRow(stringResource(R.string.scan_none_of_these), viewModel::clearSelection, icon = Icons.Rounded.Close, tint = colors.textSecondary) }
+                        add { ActionRow(stringResource(R.string.scan_none_of_these), { coordinator.eventLoop(Event.DidSelectCandidate(null)) }, icon = Icons.Rounded.Close, tint = colors.textSecondary) }
                     },
                 )
             }
@@ -143,7 +144,7 @@ fun ScanReviewScreen(viewModel: ScanReviewViewModel, onBack: () -> Unit) {
                             ActionRow(
                                 if (ui.showsLines) pluralStringResource(R.plurals.scan_lines_hide, count, count)
                                 else pluralStringResource(R.plurals.scan_lines_show, count, count),
-                                viewModel::toggleLines,
+                                { coordinator.eventLoop(Event.DidToggleLines) },
                                 icon = if (ui.showsLines) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
                                 tint = colors.textSecondary,
                             )
@@ -161,7 +162,7 @@ fun ScanReviewScreen(viewModel: ScanReviewViewModel, onBack: () -> Unit) {
         }
         AppButton(
             stringResource(R.string.action_continue),
-            onClick = viewModel::continueToForm,
+            onClick = { coordinator.eventLoop(Event.DidTapContinue(clock.today())) },
             enabled = ui.canContinue,
             modifier = Modifier.padding(horizontal = Spacing.gutter, vertical = Spacing.sm).testTag("review.continue"),
         )

@@ -153,13 +153,21 @@ class InventoryViewModel(
         viewModelScope.launch { inventory.delete(item.id) }
     }
 
-    fun showDetails(item: FoodItem) = coordinator.showItem(item.id)
+    fun showDetails(item: FoodItem) {
+        coordinator.eventLoop(InventoryCoordinator.Event.DidSelectItem(item.id))
+    }
 
-    fun showScan() = coordinator.showScan()
+    fun showScan() {
+        coordinator.eventLoop(InventoryCoordinator.Event.DidTapScan)
+    }
 
-    fun showAddItem() = coordinator.showAddItem()
+    fun showAddItem() {
+        coordinator.eventLoop(InventoryCoordinator.Event.DidTapAddItem(clock.today()))
+    }
 
-    fun showEditItem(item: FoodItem) = coordinator.showEditItem(item.id)
+    fun showEditItem(item: FoodItem) {
+        coordinator.eventLoop(InventoryCoordinator.Event.DidTapEditItem(item.id))
+    }
 
     fun enableNotifications(requester: PermissionRequester) {
         viewModelScope.launch {

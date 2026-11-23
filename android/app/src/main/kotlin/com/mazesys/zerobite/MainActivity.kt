@@ -12,13 +12,12 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
+import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.reminders.LocalPermissionRequester
 import com.mazesys.zerobite.reminders.Notifications
 import com.mazesys.zerobite.reminders.PermissionRequester
 import com.mazesys.zerobite.screens.root.RootScreen
 import com.mazesys.zerobite.ui.theme.ZeroBiteTheme
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -51,7 +50,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ZeroBiteTheme {
                 CompositionLocalProvider(LocalPermissionRequester provides requester) {
-                    RootScreen(app.flow, app.coordinator, app.sheetStores, dependencies)
+                    RootScreen(app.coordinator, app.sheetStores, dependencies)
                 }
             }
         }
@@ -64,14 +63,13 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Notification permission may have been changed in system settings meanwhile.
-        lifecycleScope.launch { dependencies.reminders.resyncNow() }
+        app.coordinator.eventLoop(AppCoordinator.Event.DidBecomeActive)
     }
 
-    /** A reminder tap: jump to the Fridge tab and open the item, from wherever the app was. */
+    /** A reminder tap: open the item on the Fridge tab, from wherever the app was (or once it gets there). */
     fun handleIntent(intent: Intent) {
         val itemId = intent.getStringExtra(Notifications.EXTRA_ITEM_ID) ?: return
         intent.removeExtra(Notifications.EXTRA_ITEM_ID)
-        app.coordinator.showItem(itemId)
+        app.coordinator.eventLoop(AppCoordinator.Event.DidOpenItemNotification(itemId))
     }
 }

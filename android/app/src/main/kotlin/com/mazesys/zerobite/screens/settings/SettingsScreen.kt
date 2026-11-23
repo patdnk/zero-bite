@@ -46,6 +46,11 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.mazesys.zerobite.R
 import com.mazesys.zerobite.core.model.Allergen
+import com.mazesys.zerobite.coordination.SettingsAlert
+import com.mazesys.zerobite.screens.root.AlertButton
+import com.mazesys.zerobite.screens.root.AlertConfig
+import com.mazesys.zerobite.screens.root.AppAlert
+import com.mazesys.zerobite.ui.text.uiText
 import com.mazesys.zerobite.ui.text.labelRes
 import com.mazesys.zerobite.reminders.LocalPermissionRequester
 import com.mazesys.zerobite.ui.components.ActionRow
@@ -186,6 +191,32 @@ fun SettingsScreen(viewModel: SettingsViewModel, modifier: Modifier = Modifier) 
         pickingTime = false
         viewModel.setNotifyTime(h, m)
     }
+}
+
+/**
+ * Settings' alert, drawn by MainScreen over whichever tab is showing: a refused notification
+ * permission can come back after the user has already moved to another tab.
+ */
+@Composable
+fun SettingsAlertHost(viewModel: SettingsViewModel) {
+    viewModel.alert?.let { alert ->
+        SettingsAlertDialog(alert, onConfirm = { viewModel.confirmAlert(alert) }, onDismiss = viewModel::dismissAlert)
+    }
+}
+
+/** An info message gets OK; a confirmation gets its destructive action and Cancel. */
+@Composable
+private fun SettingsAlertDialog(alert: SettingsAlert, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    val action = alert.actionTitle
+    AppAlert(
+        AlertConfig(
+            title = alert.title,
+            message = alert.message,
+            primary = if (action == null) AlertButton(uiText(R.string.action_ok), action = onConfirm) else AlertButton(action, isDestructive = true, action = onConfirm),
+            secondary = if (action == null) null else AlertButton(uiText(R.string.action_cancel)),
+        ),
+        onDismiss = onDismiss,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

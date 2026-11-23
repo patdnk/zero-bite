@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.camera.core.ImageAnalysis
 import com.mazesys.zerobite.AppDependencies
 import com.mazesys.zerobite.IdGenerator
+import com.mazesys.zerobite.coordination.MainCoordinator
+import com.mazesys.zerobite.coordination.ScanCoordinator
 import com.mazesys.zerobite.core.inventory.InventoryRepository
 import com.mazesys.zerobite.core.model.FoodItem
 import com.mazesys.zerobite.core.model.ProductInfo
@@ -25,10 +27,13 @@ import com.mazesys.zerobite.data.SampleData
 import com.mazesys.zerobite.data.SettingsRepository
 import com.mazesys.zerobite.data.SettingsSnapshot
 import com.mazesys.zerobite.privacy.UsageDataCollection
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -113,6 +118,22 @@ fun testDependencies(
     usageData = usageData, computation = Dispatchers.Unconfined,
 )
 
+/** Main with no parent, as screen and view model tests need it: its work runs at once on the calling thread. */
+fun testMain(dependencies: AppDependencies = testDependencies()) =
+    MainCoordinator(parent = null, dependencies = dependencies, scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined))
+
+/** A scan sheet's coordinator with no parent, as screen tests need it: its work runs at once on the calling thread. */
+fun testScan(labels: FakeLabels = FakeLabels(), productLookup: FakeProductLookup = FakeProductLookup()) = ScanCoordinator(
+    parent = null, supportsLiveScanning = labels.supportsLiveScanning, scanner = labels, productLookup = productLookup,
+    scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined),
+)
+
+/** [testScan] already on the review screen for [result], as a live scan leaves it. */
+fun testReview(result: ScanResult, productLookup: FakeProductLookup = FakeProductLookup()) = testScan(productLookup = productLookup).apply {
+    eventLoop(ScanCoordinator.Event.DidTapLiveScan)
+    eventLoop(ScanCoordinator.Event.DidFinishLiveScan(result))
+}
+
 /** Runs `viewModelScope` work immediately on the test thread. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainDispatcherRule(private val dispatcher: TestDispatcher = UnconfinedTestDispatcher()) : TestWatcher() {
@@ -181,8 +202,19 @@ class FakeLabels(
     override val supportsLiveScanning: Boolean = true,
 ) : LabelReading {
     var scans = 0
+    /** With `hold`, a scan never finishes on its own; `cancelled` counts the scans that were stopped. */
+    var hold = false
+    var cancelled = 0
     override suspend fun scan(photo: Uri, today: LocalDate): ScanResult {
         scans++
+        if (hold) {
+            try {
+                awaitCancellation()
+            } catch (e: CancellationException) {
+                cancelled++
+                throw e
+            }
+        }
         failure?.let { throw it }
         return result
     }

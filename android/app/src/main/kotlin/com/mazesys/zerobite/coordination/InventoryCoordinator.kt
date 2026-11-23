@@ -1,9 +1,9 @@
 package com.mazesys.zerobite.coordination
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavKey
 import com.mazesys.zerobite.core.model.ItemDraft
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,32 +18,53 @@ sealed interface InventoryRoute : NavKey {
     data class RecipeDetail(val recipeId: String) : InventoryRoute
 }
 
-/** Navigation within the Fridge tab. The back stack is the Android counterpart of iOS's NavigationPath. */
-class InventoryCoordinator(private val parent: AppCoordinator) {
+/**
+ * The Fridge tab's back stack (the Android counterpart of iOS's NavigationPath). Sheets belong to
+ * MainCoordinator, so this asks for them with DidRequestSheet.
+ */
+class InventoryCoordinator(private val parent: MainCoordinator?, scope: CoroutineScope) :
+    EventDrivenCoordinator<InventoryCoordinator.State, InventoryCoordinator.Event, InventoryCoordinator.Command>(State(), InventoryCoordinator, scope) {
 
-    val backStack: SnapshotStateList<InventoryRoute> = mutableStateListOf(InventoryRoute.Fridge)
+    data class State(val backStack: List<InventoryRoute> = listOf(InventoryRoute.Fridge))
 
-    fun showItem(id: String) {
-        backStack.add(InventoryRoute.ItemDetail(id))
+    sealed interface Event {
+        data class DidSelectItem(val itemId: String) : Event
+        data class DidSelectRecipe(val recipeId: String) : Event
+        /** Back button, gesture or the system back. Never pops the list itself. */
+        data object DidTapBack : Event
+        /** The item on screen was deleted: leave its page. */
+        data object DidDeleteItem : Event
+        /** A notification was tapped: show just that item over the list. */
+        data class DidRequestItem(val itemId: String) : Event
+        data object DidTapScan : Event
+        data class DidTapAddItem(val today: LocalDate) : Event
+        data class DidTapEditItem(val itemId: String) : Event
+        data class DidTapCooked(val recipeId: String) : Event
     }
 
-    fun showRecipe(id: String) {
-        backStack.add(InventoryRoute.RecipeDetail(id))
+    sealed interface Command {
+        data class WillPresent(val destination: SheetDestination) : Command
     }
 
-    fun showCooked(recipeId: String) = parent.presentSheet(SheetDestination.Cooked(recipeId))
+    companion object : StateMachine<State, Event, Command> {
+        override fun stateMachine(state: State, event: Event): Step<State, Command> = when (event) {
+            is Event.DidSelectItem -> Step(state.copy(backStack = state.backStack + InventoryRoute.ItemDetail(event.itemId)))
+            is Event.DidSelectRecipe -> Step(state.copy(backStack = state.backStack + InventoryRoute.RecipeDetail(event.recipeId)))
+            Event.DidTapBack, Event.DidDeleteItem -> Step(state.copy(backStack = pop(state.backStack)))
+            is Event.DidRequestItem -> Step(state.copy(backStack = listOf(InventoryRoute.Fridge, InventoryRoute.ItemDetail(event.itemId))))
+            Event.DidTapScan -> present(state, SheetDestination.Scan)
+            is Event.DidTapAddItem -> present(state, SheetDestination.AddItem(ItemDraft.new(event.today)))
+            is Event.DidTapEditItem -> present(state, SheetDestination.EditItem(event.itemId))
+            is Event.DidTapCooked -> present(state, SheetDestination.Cooked(event.recipeId))
+        }
 
-    fun showScan() = parent.presentSheet(SheetDestination.Scan)
-
-    fun showAddItem() = parent.presentSheet(SheetDestination.AddItem(ItemDraft.new(parent.today())))
-
-    fun showEditItem(id: String) = parent.presentSheet(SheetDestination.EditItem(id))
-
-    fun pop() {
-        if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+        private fun present(state: State, destination: SheetDestination) = Step<State, Command>(state, listOf(Command.WillPresent(destination)))
     }
 
-    fun popToRoot() {
-        while (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+    override fun execute(command: Command): CommandTask<Event> = when (command) {
+        is Command.WillPresent -> CommandTask.Perform { parent?.eventLoop(MainCoordinator.Event.DidRequestSheet(command.destination)) }
     }
 }
+
+/** Drops the top page, never the root. */
+internal fun <T> pop(backStack: List<T>): List<T> = if (backStack.size > 1) backStack.dropLast(1) else backStack

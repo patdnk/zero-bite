@@ -3,15 +3,13 @@ package com.mazesys.zerobite.screens.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mazesys.zerobite.AppDependencies
-import com.mazesys.zerobite.R
+import com.mazesys.zerobite.coordination.SettingsAlert
 import com.mazesys.zerobite.coordination.SettingsCoordinator
 import com.mazesys.zerobite.core.model.Allergen
 import com.mazesys.zerobite.data.SampleData
 import com.mazesys.zerobite.data.SettingsSnapshot
 import com.mazesys.zerobite.reminders.NotificationPermission
 import com.mazesys.zerobite.reminders.PermissionRequester
-import com.mazesys.zerobite.ui.text.uiPlural
-import com.mazesys.zerobite.ui.text.uiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -86,12 +84,7 @@ class SettingsViewModel(
                 dependencies.notifications.markAsked()
                 refreshPermission()
                 settings.update { it.copy(notificationsEnabled = granted) }
-                if (!granted) {
-                    coordinator.showInfo(
-                        uiText(R.string.alert_notifications_off_title),
-                        uiText(R.string.alert_notifications_off_message),
-                    )
-                }
+                if (!granted) coordinator.eventLoop(SettingsCoordinator.Event.DidFindNotificationsDenied)
             } else {
                 settings.update { it.copy(notificationsEnabled = false) }
             }
@@ -124,29 +117,29 @@ class SettingsViewModel(
 
     fun clearUsedHistory() {
         viewModelScope.launch {
-            val used = inventory.items.first().filter { it.isConsumed }
-            if (used.isEmpty()) return@launch
-            coordinator.confirm(
-                uiText(R.string.alert_clear_history_title),
-                uiPlural(R.plurals.alert_clear_history_message, used.size),
-                uiText(R.string.alert_clear_history_action),
-            ) {
-                viewModelScope.launch { used.forEach { inventory.delete(it.id) } }
-            }
+            val used = inventory.items.first().filter { it.isConsumed }.map { it.id }
+            coordinator.eventLoop(SettingsCoordinator.Event.DidTapClearUsedHistory(used))
         }
     }
 
     fun deleteEverything() {
-        coordinator.confirm(
-            uiText(R.string.alert_delete_everything_title),
-            uiText(R.string.alert_delete_everything_message),
-            uiText(R.string.alert_delete_everything_action),
-        ) {
-            viewModelScope.launch { inventory.deleteAll() }
-        }
+        coordinator.eventLoop(SettingsCoordinator.Event.DidTapDeleteEverything)
     }
 
-    fun showHowItWorks() = coordinator.showHowItWorks()
+    fun showHowItWorks() {
+        coordinator.eventLoop(SettingsCoordinator.Event.DidTapHowItWorks)
+    }
+
+    /** The alert Settings is showing, if any. Compose state, so reading it recomposes. */
+    val alert: SettingsAlert? get() = coordinator.state.alert
+
+    fun confirmAlert(alert: SettingsAlert) {
+        coordinator.eventLoop(SettingsCoordinator.Event.DidConfirmAlert(alert))
+    }
+
+    fun dismissAlert() {
+        coordinator.eventLoop(SettingsCoordinator.Event.DidDismissAlert)
+    }
 
     private fun update(transform: (SettingsSnapshot) -> SettingsSnapshot) {
         viewModelScope.launch { settings.update(transform) }

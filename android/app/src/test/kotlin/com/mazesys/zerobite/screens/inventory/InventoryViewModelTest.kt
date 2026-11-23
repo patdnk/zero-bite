@@ -5,8 +5,8 @@ import com.mazesys.zerobite.testing.english
 import com.mazesys.zerobite.data.SettingsSnapshot
 import com.mazesys.zerobite.testing.FakeAccess
 import com.mazesys.zerobite.reminders.NotificationPermission
-import com.mazesys.zerobite.coordination.AppCoordinator
 import com.mazesys.zerobite.coordination.InventoryRoute
+import com.mazesys.zerobite.coordination.MainCoordinator
 import com.mazesys.zerobite.coordination.SheetDestination
 import com.mazesys.zerobite.core.model.StorageLocation
 import com.mazesys.zerobite.testing.FakeInventoryRepository
@@ -15,6 +15,7 @@ import com.mazesys.zerobite.testing.MainDispatcherRule
 import com.mazesys.zerobite.testing.SequentialIds
 import com.mazesys.zerobite.testing.TestClock
 import com.mazesys.zerobite.testing.sampleFridge
+import com.mazesys.zerobite.testing.testMain
 import kotlinx.datetime.LocalDate
 import org.junit.Rule
 import org.junit.Test
@@ -30,10 +31,10 @@ class InventoryViewModelTest {
     val main = MainDispatcherRule()
 
     private val inventory = FakeInventoryRepository(sampleFridge())
-    private val app = AppCoordinator { TestClock.today }
+    private val coordinator = testMain()
 
     private fun viewModel(repository: FakeInventoryRepository = inventory) =
-        InventoryViewModel(repository, FakeSettings(SettingsSnapshot(dismissedNotificationTip = true)), TestClock.fixed(), SequentialIds(), app.inventory, FakeAccess(), EnglishStrings)
+        InventoryViewModel(repository, FakeSettings(SettingsSnapshot(dismissedNotificationTip = true)), TestClock.fixed(), SequentialIds(), coordinator.inventory, FakeAccess(), EnglishStrings)
 
     private fun InventoryUiState.gridNames() = gridSections.flatMap { it.items }.map { it.name }
 
@@ -106,17 +107,19 @@ class InventoryViewModelTest {
         val vm = viewModel()
         val spinach = inventory.current.first { it.name == "Spinach" }
         vm.showDetails(spinach)
-        assertEquals(InventoryRoute.ItemDetail(spinach.id), app.inventory.backStack.last())
+        assertEquals(InventoryRoute.ItemDetail(spinach.id), coordinator.inventory.state.backStack.last())
         vm.showAddItem()
-        assertIs<SheetDestination.AddItem>(app.presentedSheet?.destination)
+        assertIs<SheetDestination.AddItem>(coordinator.state.sheet?.destination)
+        coordinator.eventLoop(MainCoordinator.Event.DidDismissSheet)
         vm.showEditItem(spinach)
-        assertEquals(SheetDestination.EditItem(spinach.id), app.presentedSheet?.destination)
+        assertEquals(SheetDestination.EditItem(spinach.id), coordinator.state.sheet?.destination)
+        coordinator.eventLoop(MainCoordinator.Event.DidDismissSheet)
         vm.showScan()
-        assertEquals(SheetDestination.Scan, app.presentedSheet?.destination)
+        assertEquals(SheetDestination.Scan, coordinator.state.sheet?.destination)
     }
 
     private fun tipViewModel(access: FakeAccess, settings: FakeSettings = FakeSettings()) =
-        InventoryViewModel(inventory, settings, TestClock.fixed(), SequentialIds(), app.inventory, access, EnglishStrings)
+        InventoryViewModel(inventory, settings, TestClock.fixed(), SequentialIds(), coordinator.inventory, access, EnglishStrings)
 
     @Test
     fun `reminder tip shows until answered`() {
